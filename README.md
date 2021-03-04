@@ -12,21 +12,62 @@ git clone https://github.com/PaulRitsche/ACSAuto_DeepLearning
 
 2. Anaconda setup (only before first usage)
 
-Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box)
-Open an Anaconda prompt window (in windows, click ‘start’ then use the search window), then create a virtual environment using the following as an example (here we use "Deep_ACSAuto" as the virtual environment name, but this can be anything):
+Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
+Open an Anaconda prompt window and create a virtual environment using the following as an example (you can choose the name of the environment freely): 
+
+```sh
 conda create --name Deep_ACSAuto python=3.8
-(If prompted, type y to confirm that the relevant packages can be installed)
-Activate the virtual environment by typing activate Deep_ACSAuto (where Deep_ACSAuto is replaced by the name you chose).
-cd to where you have saved the project folder, e.g. by typing cd c:/Deep_ACSAuto
-type the following command: pip install -r requirements.txt
-(this step may take some time)
-type jupyter notebook and Jupyter notebooks should load in your browser
+```
 
-3. Usage
+Activate the virtual environment by typing:
 
-Open an Anaconda prompt window
-Activate your virtual environment, as done in step 4 above
-cd to the folder where you have the tracking software, e.g. cd c:/Deep_ACSAuto
-Type jupyter notebook in the prompt window
-Now you should see the different Jupyter notebooks that allow you to train a model or to run inference on single images or videos (each labelled accordingly)
-Open the notebook you need. Within each notebook, use ctrl-enter to run a cell
+```sh
+conda activate Deep_ACSAuto 
+```
+Change the directory to where you have saved the project folder, e.g. by typing:
+
+```sh
+cd c:/Users/Paul/Desktop/Deep_ACSAuto
+```
+
+Then, type the following command to install all requirements for the code (takes some time): 
+
+```sh
+pip install -r requirements.txt
+```
+
+## Usage
+
+Open an Anaconda prompt window.
+Activate your virtual environment and change to the directory containing the code, as done above.
+Type the here presented command into the prompt window, while entering the required parameters. 
+
+```sh
+htsinfer [-h] -rp ROOTPATH [-fp FLIP_FLAG_PATH] -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
+
+```
+## Parameters
+
+```console
+required arguments:
+  -rp, --rootpath 
+      path to root directory of images
+  -mp, modelpath
+  	  file path to .h5 file containing model used for prediction
+  -d, --depth
+  	  Ultrasound scanning depth (cm)
+  -m, --muscle
+  	  muscle that is analyzed
+  -s, --scaling
+  	  scaling type present in ultrasound image
+
+optional arguments:
+  -fp, --flip_flag_path 
+  	  file path to txt file containing flipping info
+  -sp, --spacing
+  	  distance (mm) between detetec vertical scaling lines
+  -h, --help
+      show this help message and exit
+```
+
+
