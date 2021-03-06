@@ -44,7 +44,7 @@ setup(
         'muscle',
     ],
     project_urls={
-        "Repository": "https://github.com/PaulRitsche/ACSAuto_DeepLearning.git",
+        "Github": "https://github.com/PaulRitsche/ACSAuto_DeepLearning.git",
     },
     packages=find_packages(),
     include_package_data=True,
