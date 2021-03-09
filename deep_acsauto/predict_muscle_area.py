@@ -58,12 +58,14 @@ def import_image_efov(path_to_image: str):
         >>>import_image(C:/Desktop/Test/Img1.tif)
         (Img1.tif, array[[[[...]]]], 864, 1152)
     """
-
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
-    img = load_img(image_add, color_mode='grayscale')
+    img = cv2.imread(path_to_image, 0)
+    org_img = img.copy()
 
     # print("Loaded image at " + path_to_image)
+    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
+    img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
     weight = img.shape[1]
@@ -71,7 +73,7 @@ def import_image_efov(path_to_image: str):
     img = resize(img, (1, 256, 256, 1), mode='constant', preserve_range=True)
     img = img/255.0
 
-    return filename, img,  height, weight
+    return filename, org_img, img,  height, weight
 
 
 def import_image(path_to_image: str):
@@ -91,13 +93,14 @@ def import_image(path_to_image: str):
         <PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550>,
         864, 1152)
     """
-
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
-    img = load_img(image_add, color_mode='grayscale')
+    img = cv2.imread(path_to_image, 0)
+    org_img = img.copy()
 
     # print("Loaded image at " + path_to_image)
-    nonflipped_img = img
+    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
+    img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
     weight = img.shape[1]
@@ -217,13 +220,13 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
         for imagepath in list_of_files:
 
             # load image
-            filename, img, height, width = import_image_efov(imagepath)
+            filename, org_img, img, height, width = import_image_efov(imagepath)
 
             # find length of the scalingline
             scalingline_length = calibrate_distance_efov(imagepath, muscle)
 
             # predict area
-            pred_apo_t, fig = apo_model.predict_t(img, width, height)
+            pred_apo_t, fig = apo_model.predict_t(org_img, img, width, height)
             area = calc_area(depth, scalingline_length, pred_apo_t)
 
             # append results to dataframe
