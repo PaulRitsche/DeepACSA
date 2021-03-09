@@ -7,22 +7,13 @@ import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
 
-<<<<<<< HEAD
 def _resize(img, width: int, height: int):
-=======
-def _resize(img, height: int, width: int):
->>>>>>> 1c084e7f70bc8eec3873facdba02b8bd6b7b3732
     """Resizes an image to height x width.
 
     Args:
         Image to be resized,
-<<<<<<< HEAD
         Target width,
         Target height,
-=======
-        Target height,
-        Target width,
->>>>>>> 1c084e7f70bc8eec3873facdba02b8bd6b7b3732
 
     Returns:
         The resized image.
