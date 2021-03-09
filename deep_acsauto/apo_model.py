@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
 
-def _resize(img, height: int, width: int):
+def _resize(img, width: int, height: int):
     """Resizes an image to height x width.
 
     Args:
         Image to be resized,
-        Target height,
         Target width,
+        Target height,
 
     Returns:
         The resized image.
@@ -106,7 +106,7 @@ class ApoModel:
             return pred_apo_t
 
         img = _resize(img, width, height)
-        pred_apo_t = _resize(img, width, height)
+        pred_apo_t = _resize(pred_apo_t, width, height)
 
         fig = plt.figure(figsize=(20, 20))
         ax1 = fig.add_subplot(1, 2, 1)
