@@ -14,7 +14,11 @@ def _resize(img, width: int, height: int):
         Image to be resized,
         Target width,
         Target height,
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> c257b77567c2790c221966b7525d3308a47496fe
     Returns:
         The resized image.
 
