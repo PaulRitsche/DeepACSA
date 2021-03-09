@@ -169,36 +169,31 @@ def calc_area(depth: int, scalingline_length: int, img: np.ndarray):
     return pred_muscle_area
 
 
-def compile_save_results(rootpath: str, filename: str, muscle: str, area: int):
+def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     """Saves analysis results to excel and pdf files.
 
     Arguments:
         Path to root directory of files,
         filename (str),
-        defined muscle for analysis (str),
-        predicted muscle area (int)
+        dataframe (pd.DataFrame) containing filename, muscle
+        and predicted area
 
     Returns:
-        Excel file containing filename, muscle and predicted area,
-        pdf file containing pairs of original images and model predictions.
+        Excel file containing filename, muscle and predicted area.
 
     Example:
     >>>compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif,
-                            Image1.tif, str("RF"), float(3.813))
+                            dataframe)
     """
     excelpath = rootpath + '/Results.xlsx'
     if os.path.exists(excelpath):
         with pd.ExcelWriter(excelpath, mode='a') as writer:
-            data = pd.DataFrame({'Image_ID': filename,
-                                'Muscle': muscle, 'Area_cm²': area},
-                                index=[0])
-            data.to_excel(writer)
+            data = dataframe
+            data.to_excel(writer, sheet_name="Results")
     else:
         with pd.ExcelWriter(excelpath, mode='w') as writer:
-            data = pd.DataFrame({'Image_ID': filename,
-                                'Muscle': muscle, 'Area_cm²': area},
-                                index=[0])
-            data.to_excel(writer)
+            data = dataframe
+            data.to_excel(writer, sheet_name="Results")
 
 
 def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
@@ -218,6 +213,7 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
+        dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
         for imagepath in list_of_files:
 
             # load image
@@ -230,10 +226,18 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
             pred_apo_t, fig = apo_model.predict_t(img, width, height)
             area = calc_area(depth, scalingline_length, pred_apo_t)
 
-            # save results and clean up
-            compile_save_results(rootpath, filename, muscle, area)
+            # append results to dataframe
+            dataframe = dataframe.append({"File": filename,
+                                          "Muscle": muscle,
+                                          "Area_cm²": area},
+                                         ignore_index=True)
+
+            # save figures
             pdf.savefig(fig)
             plt.close(fig)
+
+        # save predicted area values
+        compile_save_results(rootpath, dataframe)
 
 
 def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
@@ -254,6 +258,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
     flip_flags = get_flip_flags_list(flip_file_path)
 
     apo_model = ApoModel(modelpath)
+    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
@@ -279,10 +284,19 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
                 pred_apo_t, fig = apo_model.predict_t(img, width, height)
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 
-                # save results and clean up
-                compile_save_results(rootpath, filename, muscle, area)
+                # append results to dataframe
+                dataframe = dataframe.append({"File": filename,
+                                              "Muscle": muscle,
+                                              "Area_cm²": area},
+                                             ignore_index=True)
+
+                # save figures
                 pdf.savefig(fig)
                 plt.close(fig)
+
+            # save predicted area results
+            compile_save_results(rootpath, filename, dataframe)
+
         else:
             print("Warning: number of flipFlags and images doesn\'t match! " +
                   "Calculations aborted.")
