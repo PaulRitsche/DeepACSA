@@ -45,7 +45,7 @@ def get_list_of_files(pathname: str):
     return glob.glob(pathname)
 
 
-def import_image_efov(path_to_image: str):
+def import_image_efov(path_to_image: str, muscle: str):
     """Define the image to analyse, import and reshape the image.
 
     Arguments:
@@ -64,7 +64,12 @@ def import_image_efov(path_to_image: str):
     org_img = img.copy()
 
     # print("Loaded image at " + path_to_image)
-    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
+    if muscle == "RF": 
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
+    if muscle == "VL": 
+        clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
+    if muscle == "GM": 
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
@@ -73,10 +78,10 @@ def import_image_efov(path_to_image: str):
     img = resize(img, (1, 256, 256, 1), mode='constant', preserve_range=True)
     img = img/255.0
 
-    return filename, org_img, img,  height, weight
+    return filename, img,  height, weight
 
 
-def import_image(path_to_image: str):
+def import_image(path_to_image: str, muscle: str):
     """Define the image to analyse, import and reshape the image.
 
     Arguments:
@@ -96,10 +101,15 @@ def import_image(path_to_image: str):
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
     img = cv2.imread(path_to_image, 0)
-    org_img = img.copy()
+    nonflipped_img = img.copy()
 
     # print("Loaded image at " + path_to_image)
-    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
+    if muscle == "RF": 
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
+    if muscle == "VL": 
+        clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
+    if muscle == "GM": 
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
@@ -220,13 +230,13 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
         for imagepath in list_of_files:
 
             # load image
-            filename, org_img, img, height, width = import_image_efov(imagepath)
+            filename, img, height, width = import_image_efov(imagepath, muscle)
 
             # find length of the scalingline
             scalingline_length = calibrate_distance_efov(imagepath, muscle)
 
             # predict area
-            pred_apo_t, fig = apo_model.predict_t(org_img, img, width, height)
+            pred_apo_t, fig = apo_model.predict_t(img, width, height)
             area = calc_area(depth, scalingline_length, pred_apo_t)
 
             # append results to dataframe
@@ -271,7 +281,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
 
                 # load image
                 # flip = flip_flags.pop(0)
-                imported = import_image(imagepath)
+                imported = import_image(imagepath, muscle)
                 filename, img, nonflipped_img, height, width = imported
 
                 if scaling == "Static":
@@ -298,7 +308,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
                 plt.close(fig)
 
             # save predicted area results
-            compile_save_results(rootpath, filename, dataframe)
+            compile_save_results(rootpath, dataframe)
 
         else:
             print("Warning: number of flipFlags and images doesn\'t match! " +

@@ -84,7 +84,7 @@ class ApoModel:
         pred_apo = self.model_apo.predict(img)
         return pred_apo
 
-    def predict_t(self, org_img,img, width: int, 
+    def predict_t(self, img, width: int, 
                   height: int, return_fig: bool = True):
         """Runs a segmentation model on the input image and thresholds result.
 
@@ -105,12 +105,12 @@ class ApoModel:
             # don't plot the input/output, simply return mask
             return pred_apo_t
 
-        org_img = _resize(org_img, width, height)
+        img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
 
         fig = plt.figure(figsize=(20, 20))
         ax1 = fig.add_subplot(1, 2, 1)
-        ax1.imshow(org_img.squeeze(), cmap='gray')
+        ax1.imshow(img.squeeze(), cmap='gray')
         ax1.grid(False)
         ax1.set_title('Original image')
         ax2 = fig.add_subplot(1, 2, 2)

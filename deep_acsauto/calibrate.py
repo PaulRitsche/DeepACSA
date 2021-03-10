@@ -5,6 +5,9 @@ import numpy as np
 import cv2
 
 
+mlocs = []
+
+
 def region_of_interest(img, vertices):
     """Defines region of interest where ridges are searched.
 
