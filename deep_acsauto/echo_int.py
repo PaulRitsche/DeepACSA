@@ -5,21 +5,21 @@ import numpy as np
 
 
 def calculate_echo_int(imagepath: str, mask):
-	"""Calculates echo intensity (mean grey value) of pixels within 
-	   given region. 
+    """Calculates echo intensity (mean grey value) of pixels within 
+       given region. 
 
-	Arguments:
-		Path to image,
-		predicted mask of the respective image as binary np.array.
+    Arguments:
+        Path to image,
+        predicted mask of the respective image as binary np.array.
 
-	Returns: 
-		Echo intensity value of predicted muscle area.
+    Returns: 
+        Echo intensity value of predicted muscle area.
 
-	Example:
-		>>>calculate_echo_int(C:/Desktop/Test, C:/Desktop/Test/Img1.tif,
-						  pred_apo_t)
-		65.728
-	"""
+    Example:
+        >>>calculate_echo_int(C:/Desktop/Test, C:/Desktop/Test/Img1.tif,
+                          pred_apo_t)
+        65.728
+    """
     img = cv2.imread(imagepath, 0)
     mask = mask.astype(np.uint8)
 
