@@ -5,9 +5,9 @@ from apo_model import ApoModel
 from calibrate import calibrate_distance_efov
 from calibrate import calibrate_distance_manually
 from calibrate import calibrate_distance_static
+from echo_int import calculate_echo_int
 
 import os
-
 import glob
 import pandas as pd
 import numpy as np
@@ -237,12 +237,14 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
 
             # predict area
             pred_apo_t, fig = apo_model.predict_t(img, width, height)
+            echo_int = echo_int.calculate_echo_int(imagepath, pred_apo_t)
             area = calc_area(depth, scalingline_length, pred_apo_t)
 
             # append results to dataframe
             dataframe = dataframe.append({"File": filename,
                                           "Muscle": muscle,
-                                          "Area_cm²": area},
+                                          "Area_cm²": area, 
+                                          "Echo_intensity": echo_int},
                                          ignore_index=True)
 
             # save figures
@@ -295,12 +297,14 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
 
                 # predict area
                 pred_apo_t, fig = apo_model.predict_t(img, width, height)
+                echo_int = echo_int.calculate_echo_int(imagepath, pred_apo_t)
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
                                               "Muscle": muscle,
-                                              "Area_cm²": area},
+                                              "Area_cm²": area, 
+                                              "Echo_intensity": echo_int},
                                              ignore_index=True)
 
                 # save figures
