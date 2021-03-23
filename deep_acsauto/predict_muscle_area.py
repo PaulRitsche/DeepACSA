@@ -1,4 +1,4 @@
-"""Python module to automatically calcuate muscle area in ultrasound images"""
+"""Python module to automatically calcuate muscle area in US images"""
 
 # Import necessary packages
 from apo_model import ApoModel
@@ -21,7 +21,7 @@ import cv2
 # import tensorflow as tf
 import matplotlib.pyplot as plt
 from keras.preprocessing.image import img_to_array
-from keras.preprocessing.image import load_img
+# from keras.preprocessing.image import load_img
 # from keras.preprocessing.image import array_to_img
 # from keras.preprocessing.image import ImageDataGenerator
 from matplotlib.backends.backend_pdf import PdfPages
@@ -61,14 +61,14 @@ def import_image_efov(path_to_image: str, muscle: str):
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
     img = cv2.imread(path_to_image, 0)
-    org_img = img.copy()
+    img_copy = img.copy()
 
     # print("Loaded image at " + path_to_image)
-    if muscle == "RF": 
+    if muscle == "RF":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
-    if muscle == "VL": 
+    if muscle == "VL":
         clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
-    if muscle == "GM": 
+    if muscle == "GM":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
@@ -78,7 +78,7 @@ def import_image_efov(path_to_image: str, muscle: str):
     img = resize(img, (1, 256, 256, 1), mode='constant', preserve_range=True)
     img = img/255.0
 
-    return filename, img,  height, weight
+    return filename, img_copy, img,  height, weight
 
 
 def import_image(path_to_image: str, muscle: str):
@@ -104,11 +104,11 @@ def import_image(path_to_image: str, muscle: str):
     nonflipped_img = img.copy()
 
     # print("Loaded image at " + path_to_image)
-    if muscle == "RF": 
+    if muscle == "RF":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
-    if muscle == "VL": 
+    if muscle == "VL":
         clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
-    if muscle == "GM": 
+    if muscle == "GM":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
@@ -230,20 +230,21 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
         for imagepath in list_of_files:
 
             # load image
-            filename, img, height, width = import_image_efov(imagepath, muscle)
+            imported = import_image_efov(imagepath, muscle)
+            filename, img_copy, img, height, width = imported
 
             # find length of the scalingline
             scalingline_length = calibrate_distance_efov(imagepath, muscle)
 
             # predict area
             pred_apo_t, fig = apo_model.predict_t(img, width, height)
-            echo = calculate_echo_int(imagepath, pred_apo_t)
+            echo = calculate_echo_int(img_copy, pred_apo_t)
             area = calc_area(depth, scalingline_length, pred_apo_t)
 
             # append results to dataframe
             dataframe = dataframe.append({"File": filename,
                                           "Muscle": muscle,
-                                          "Area_cm²": area, 
+                                          "Area_cm²": area,
                                           "Echo_intensity": echo},
                                          ignore_index=True)
 
@@ -297,13 +298,13 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
 
                 # predict area
                 pred_apo_t, fig = apo_model.predict_t(img, width, height)
-                echo = calculate_echo_int(imagepath, pred_apo_t)
+                echo = calculate_echo_int(nonflipped_img, pred_apo_t)
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
                                               "Muscle": muscle,
-                                              "Area_cm²": area, 
+                                              "Area_cm²": area,
                                               "Echo_intensity": echo},
                                              ignore_index=True)
 
