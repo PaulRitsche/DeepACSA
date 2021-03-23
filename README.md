@@ -81,10 +81,10 @@ python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul
 
 This is an example command for an extended-field-of-view ultrasound image containing scaling bars:
 ```sh
-python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" - fp"C:\Users\Paul\Desktop\Test_image\Flip.txt" -mp "C:\Users\Paul\Desktop\Test_image\model\mode.h5" -d 6 -sp 5 -m "RF" -s "Static"
+python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" - fp"C:\Users\Paul\Desktop\Test_image\Flip.txt" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -sp 5 -m "RF" -s "Static"
 ```
 This is an example command for an extended-field-of-view ultrasound image where manual scaling is used:
 ```sh
-python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" - fp"C:\Users\Paul\Desktop\Test_image\Flip.txt" -mp "C:\Users\Paul\Desktop\Test_image\model\mode.h5" -d 6 -sp 5 -m "RF" -s "Manual"
+python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" - fp"C:\Users\Paul\Desktop\Test_image\Flip.txt" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -sp 5 -m "RF" -s "Manual"
 ```
 Please note that optional parameters can be used for "Static" and "Manual" scaling options. 
