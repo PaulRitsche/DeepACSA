@@ -74,7 +74,7 @@ optional arguments:
 
 This is an example command for an extended-field-of-view ultrasound image containing a continuous scaling line (see Image):
 ```sh
-python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\mode.h5" -d 6 -m "RF" -s "EFOV"
+python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -m "RF" -s "EFOV"
 ```
 ![RF_EFOV_CONT](https://user-images.githubusercontent.com/71383228/110342363-9a8fda80-802b-11eb-93ec-c643c499449a.jpg)
 
