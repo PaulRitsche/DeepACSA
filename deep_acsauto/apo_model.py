@@ -99,7 +99,7 @@ class ApoModel:
 
         """
         pred_apo = self.predict(img)
-        pred_apo_t = (pred_apo > self.apo_threshold).astype(np.uint8)
+        pred_apo_t = (pred_apo > self.apo_threshold)
 
         if not return_fig:
             # don't plot the input/output, simply return mask
