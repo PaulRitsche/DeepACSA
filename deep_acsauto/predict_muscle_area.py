@@ -175,7 +175,7 @@ def calc_area(depth: int, scalingline_length: int, img: np.ndarray):
         >>>calc_area(float(4.5), int(571), Image1.tif)
         3.813
     """
-    pix_per_cm = scalingline_length / depth
+    pix_per_cm = scalingline_length / float(depth)
     # Counts pixels with values != 0
     pred_muscle_area = cv2.countNonZero(img) / pix_per_cm**2
     # print(pred_muscle_area)
