@@ -110,6 +110,8 @@ def import_image(path_to_image: str, muscle: str):
         clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
     if muscle == "GM":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
+    if muscle == "GL":
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
@@ -160,7 +162,7 @@ def plot_image(image):
     plt.savefig("Ridge_test_1.tif")
 
 
-def calc_area(depth: int, scalingline_length: int, img: np.ndarray):
+def calc_area(depth: float, scalingline_length: float, img: np.ndarray):
     """Calculates predicted muscle aread.
 
     Arguments:
@@ -209,7 +211,7 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
             data.to_excel(writer, sheet_name="Results")
 
 
-def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
+def calculate_batch_efov(rootpath: str, modelpath: str, depth: float,
                          muscle: str):
     """Calculates area predictions for batches of EFOV US images
         containing continous scaling line.
@@ -257,7 +259,7 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
 
 
 def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
-                    depth: int, spacing: int, muscle: str, scaling: str):
+                    depth: float, spacing: int, muscle: str, scaling: str):
     """Calculates area predictions for batches of (EFOV) US images
         not containing a continous scaling line.
 
@@ -283,19 +285,19 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
             for imagepath in list_of_files:
 
                 # load image
-                # flip = flip_flags.pop(0)
+                flip = flip_flags.pop(0)
                 imported = import_image(imagepath, muscle)
                 filename, img, nonflipped_img, height, width = imported
 
                 if scaling == "Static":
                     calibrate_fn = calibrate_distance_static
+                    # find length of the scaling line
+                    scalingline_length = calibrate_fn(
+                    nonflipped_img, spacing, depth, flip
+                    )
                 else:
                     calibrate_fn = calibrate_distance_manually
-                # find length of the scaling line
-                scalingline_length = calibrate_fn(
-                    nonflipped_img, spacing, depth
-                )
-
+                
                 # predict area
                 pred_apo_t, fig = apo_model.predict_t(img, width, height)
                 echo = calculate_echo_int(nonflipped_img, pred_apo_t)
@@ -306,7 +308,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
                                               "Muscle": muscle,
                                               "Area_cm²": area,
                                               "Echo_intensity": echo},
-                                             ignore_index=True)
+                                              ignore_index=True)
 
                 # save figures
                 pdf.savefig(fig)

@@ -72,7 +72,7 @@ def draw_the_lines(img, lines):
     return img
 
 
-def calibrate_distance_efov(path_to_image, arg_muscle):
+def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     """Calculates scalingline length of image based computed
         length of detected rigdes.
 
@@ -135,26 +135,30 @@ def calibrate_distance_efov(path_to_image, arg_muscle):
     scalingline_length = math.sqrt(((point1[0] - point2[0])**2)
                                    + ((point1[1] - point2[1])**2))
     # plot_image(image_with_lines)
-    return scalingline_length
+    return float(scalingline_length)
 
 
-def calibrate_distance_static(nonflipped_img, spacing, depth):
+def calibrate_distance_static(nonflipped_img, spacing: int, depth: float, 
+                              flip: int):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
 
     Arguments:
-        Original(nonflipped) image,
+        Original(nonflipped) image with scaling lines on right border,
         distance between scaling points (mm),
-        US scanning depth (cm).
+        US scanning depth (cm), 
+        flip flag of image.
 
     Returns:
         Length of scaling line (pixel).
 
     Example:
-        >>>calibrate_distance_manually(Image, 5, 4.5)
+        >>>calibrate_distance_manually(Image, 5, 4.5, 0)
         5 mm corresponds to 95 pixels
     """
     # calibrate according to scale at the right border of image
+    if flip == 1:
+        nonflipped_img = np.fliplr(nonflipped_img)
     img2 = np.uint8(nonflipped_img)
     imgscale = img2[70:, 1100:1115]
     # search for rows with white pixels, calculate median of distance
@@ -164,10 +168,10 @@ def calibrate_distance_static(nonflipped_img, spacing, depth):
 
     print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
 
-    return scalingline_length
+    return float(scalingline_length)
 
 
-def calibrate_distance_manually(nonflipped_img, spacing, depth):
+def calibrate_distance_manually(nonflipped_img, spacing: int, depth: float):
     """Calculates scalingline length of image based on manual specified
         distance between two points on image and image depth.
 
@@ -199,4 +203,4 @@ def calibrate_distance_manually(nonflipped_img, spacing, depth):
 
     print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
 
-    return scalingline_length
+    return float(scalingline_length)
