@@ -1,6 +1,5 @@
-from tkinter import *
+from tkinter import StringVar, Tk, tkk, filedialog, N, S, W, E
 from tkinter.tix import *
-from tkinter import ttk, filedialog
 from PIL import Image, ImageTk
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 
@@ -25,7 +24,7 @@ class DeepACSA:
 
         # Tooltips
         tip = Balloon(root)
-        
+
         # Paths
         # Input directory
         self.input = StringVar()
@@ -43,19 +42,19 @@ class DeepACSA:
         # Radiobuttons
         # Image Type
         self.scaling = StringVar()
-        efov = ttk.Radiobutton(main, text="EFOV", variable=self.scaling, 
+        efov = ttk.Radiobutton(main, text="EFOV", variable=self.scaling,
                                value="EFOV")
         efov.grid(column=2, row=4, sticky=W)
-        static = ttk.Radiobutton(main, text="Static", variable=self.scaling, 
+        static = ttk.Radiobutton(main, text="Static", variable=self.scaling,
                                  value="Static")
-        static.grid(column=3, row=4, sticky=(W,E))
-        manual = ttk.Radiobutton(main, text="Manual", variable=self.scaling, 
+        static.grid(column=3, row=4, sticky=(W, E))
+        manual = ttk.Radiobutton(main, text="Manual", variable=self.scaling,
                                  value="Manual")
         manual.grid(column=4, row=4, sticky=E)
-        tip.bind_widget(efov, 
-                        balloonmsg="Choose image type from dropdown list." + 
-                        " If image taken in panoramic mode, choose EFOV."  + 
-                        " If image taken in static B-mode, choose Static." + 
+        tip.bind_widget(efov,
+                        balloonmsg="Choose image type from dropdown list." +
+                        " If image taken in panoramic mode, choose EFOV." +
+                        " If image taken in static B-mode, choose Static." +
                         " If image taken in other modality, choose Manual" +
                         " in order to scale the image manually.")
         # Comboboxes
@@ -66,7 +65,7 @@ class DeepACSA:
         muscle_entry["values"] = muscle
         muscle_entry["state"] = "readonly"
         muscle_entry.grid(column=2, row=6, sticky=(W, E))
-        tip.bind_widget(muscle_entry, 
+        tip.bind_widget(muscle_entry,
                         balloonmsg="Choose muscle from dropdown list, " +
                         "depending on which muscle is analyzed.")
         # Image Depth
@@ -76,8 +75,8 @@ class DeepACSA:
         depth_entry["values"] = depth
         depth_entry["state"] = "readonly"
         depth_entry.grid(column=2, row=7, sticky=(W, E))
-        tip.bind_widget(depth_entry, 
-                        balloonmsg="Choose image depth from dropdown list. " + 
+        tip.bind_widget(depth_entry,
+                        balloonmsg="Choose image depth from dropdown list. " +
                         "Analyzed images must have the same depth.")
         # Spacing
         self.spacing = StringVar()
@@ -86,7 +85,7 @@ class DeepACSA:
         spacing_entry["values"] = spacing
         spacing_entry["state"] = "readonly"
         spacing_entry.grid(column=2, row=8, sticky=(W, E))
-        tip.bind_widget(spacing_entry, 
+        tip.bind_widget(spacing_entry,
                         balloonmsg="Choose disance between scaling bars" +
                                    " in image form dropdown list. " +
                                    "Distance needs to be similar " +
@@ -97,26 +96,26 @@ class DeepACSA:
         input_button = ttk.Button(main, text="Input",
                                   command=self.get_root_dir)
         input_button.grid(column=5, row=1, sticky=E)
-        tip.bind_widget(input_button, 
-                        balloonmsg="Choose root directory." + 
+        tip.bind_widget(input_button,
+                        balloonmsg="Choose root directory." +
                         " This is the folder containing all images.")
         # Model path
         model_button = ttk.Button(main, text="Model",
                                   command=self.get_model_path)
         model_button.grid(column=5, row=2, sticky=E)
-        tip.bind_widget(model_button, 
-                        balloonmsg="Choose model path." + 
+        tip.bind_widget(model_button,
+                        balloonmsg="Choose model path." +
                         " This is the path to the respective model.")
         # Flip Flag path
         flags_button = ttk.Button(main, text="Flip Flag",
                                   command=self.get_flag_dir)
         flags_button.grid(column=5, row=3, sticky=E)
-        tip.bind_widget(flags_button, 
-                        balloonmsg="Choose Flag File Path." + 
-                        " This is the path to the .txt file containing" + 
+        tip.bind_widget(flags_button,
+                        balloonmsg="Choose Flag File Path." +
+                        " This is the path to the .txt file containing" +
                         " flipping info.")
         # Break Button
-        break_button = ttk.Button(main, text="Break", command=self)
+        break_button = ttk.Button(main, text="Break", command=self.do_break)
         break_button.grid(column=1, row=9, sticky=W)
         # Run Button
         run_button = ttk.Button(main, text="Run", command=self.run_code)
@@ -170,7 +169,7 @@ class DeepACSA:
                 selected_input_dir,
                 selected_model_path,
                 selected_depth,
-                selected_muscle    
+                selected_muscle
                 )
 
         else:
@@ -184,10 +183,11 @@ class DeepACSA:
                 selected_scaling
                 )
 
-    # def do_break(self):
+    def do_break(self):
+        raise NotImplementedError()
 
-    
 
-root = Tk()
-DeepACSA(root)
-root.mainloop()
+if __name__ == "__main__":
+    root = Tk()
+    DeepACSA(root)
+    root.mainloop()
