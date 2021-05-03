@@ -1,10 +1,26 @@
-from tkinter import StringVar, Tk, tkk, filedialog, N, S, W, E
+from tkinter import StringVar, Tk, N, S, W, E
+from tkinter import ttk, filedialog
 from tkinter.tix import *
 from PIL import Image, ImageTk
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 
 
 class DeepACSA:
+    """Class which provides the utility of a graphical user interface.
+
+    Attributes:
+        input_dir: Path to root directory containings all files. 
+        model_path: Path to the keras segmentation model.
+        flag_path: Path to .txt file containing flip-flags for images. 
+        depth: Scanning depth (cm) of ultrasound image. 
+        muscle: Muscle that is visible on ultrasound image.
+        spacing: Distance (mm) between two scaling lines on ultrasound images.
+        scaling: Scanning modaltity of ultrasound image. 
+
+
+    Examples:
+        >>> 
+    """
     def __init__(self, root):
 
         root.title("DeepACSA")
@@ -70,7 +86,7 @@ class DeepACSA:
                         "depending on which muscle is analyzed.")
         # Image Depth
         self.depth = StringVar()
-        depth = (2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7)
+        depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
         depth_entry = ttk.Combobox(main, width=10, textvariable=self.depth)
         depth_entry["values"] = depth
         depth_entry["state"] = "readonly"
@@ -184,7 +200,9 @@ class DeepACSA:
                 )
 
     def do_break(self):
-        raise NotImplementedError()
+        # root.quit()
+        # raise NotImplementedError()
+        pass
 
 
 if __name__ == "__main__":

@@ -11,19 +11,10 @@ import os
 import glob
 import pandas as pd
 import numpy as np
-# import openpyxl
 from skimage.transform import resize
-# from skimage.morphology import skeletonize
-# from scipy.signal import resample, savgol_filter, butter, filtfilt
-# from PIL import Image, ImageDraw
 import cv2
-# from cv2 import EVENT_LBUTTONDOWN
-# import tensorflow as tf
 import matplotlib.pyplot as plt
 from keras.preprocessing.image import img_to_array
-# from keras.preprocessing.image import load_img
-# from keras.preprocessing.image import array_to_img
-# from keras.preprocessing.image import ImageDataGenerator
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
 
