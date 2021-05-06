@@ -288,6 +288,9 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
                     )
                 else:
                     calibrate_fn = calibrate_distance_manually
+                    scalingline_length = calibrate_fn(
+                    nonflipped_img, spacing, depth
+                    )
                 
                 # predict area
                 pred_apo_t, fig = apo_model.predict_t(img, width, height)

@@ -1,6 +1,7 @@
 from tkinter import StringVar, Tk, N, S, W, E
 from tkinter import ttk, filedialog
 from tkinter.tix import *
+import os
 from PIL import Image, ImageTk
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 
@@ -201,8 +202,8 @@ class DeepACSA:
 
     def do_break(self):
         # root.quit()
-        # raise NotImplementedError()
-        pass
+        raise NotImplementedError()
+        
 
 
 if __name__ == "__main__":

@@ -127,6 +127,14 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 minLineLength=200,
                                 maxLineGap=3)  # Gap between lines
         # image_with_lines = draw_the_lines(image, lines)
+    if muscle == "GL" or "GM":
+        lines = cv2.HoughLinesP(cropped_image,
+                                rho=1,  # Distance of pixels in accumulator
+                                theta=np.pi / 180,  # Angle resolution
+                                threshold=50,  # Only lines with higher vote
+                                lines=np.array([]),
+                                minLineLength=300,
+                                maxLineGap=3)
 
     # Calculate length of the scaling line
     scalingline = lines[0][0]
