@@ -284,7 +284,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
                     calibrate_fn = calibrate_distance_static
                     # find length of the scaling line
                     scalingline_length = calibrate_fn(
-                    nonflipped_img, spacing, depth, flip
+                    nonflipped_img, imagepath, spacing, depth, flip
                     )
                 else:
                     calibrate_fn = calibrate_distance_manually

@@ -22,11 +22,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
 
 class BatchCalculator: 
-
-    def __init__(self): 
-
-        self.is_running = False
-        
+      
     def calculate_batch_efov(rootpath: str, modelpath: str, depth: float,
                              muscle: str, is_running):
         """Calculates area predictions for batches of EFOV US images
@@ -47,33 +43,28 @@ class BatchCalculator:
             dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
             for imagepath in list_of_files:
 
-                if is_running == True:
+                # load image
+                imported = import_image_efov(imagepath, muscle)
+                filename, img_copy, img, height, width = imported
 
-                    # load image
-                    imported = import_image_efov(imagepath, muscle)
-                    filename, img_copy, img, height, width = imported
+                # find length of the scalingline
+                scalingline_length = calibrate_distance_efov(imagepath, muscle)
+                    
+                # predict area
+                pred_apo_t, fig = apo_model.predict_t(img, width, height)
+                echo = calculate_echo_int(img_copy, pred_apo_t)
+                area = calc_area(depth, scalingline_length, pred_apo_t)
 
-                    # find length of the scalingline
-                    scalingline_length = calibrate_distance_efov(imagepath, muscle)
+                # append results to dataframe
+                dataframe = dataframe.append({"File": filename,
+                                              "Muscle": muscle,
+                                              "Area_cm²": area,
+                                              "Echo_intensity": echo},
+                                             ignore_index=True)
 
-                    # predict area
-                    pred_apo_t, fig = apo_model.predict_t(img, width, height)
-                    echo = calculate_echo_int(img_copy, pred_apo_t)
-                    area = calc_area(depth, scalingline_length, pred_apo_t)
-
-                    # append results to dataframe
-                    dataframe = dataframe.append({"File": filename,
-                                                  "Muscle": muscle,
-                                                  "Area_cm²": area,
-                                                  "Echo_intensity": echo},
-                                                 ignore_index=True)
-
-                    # save figures
-                    pdf.savefig(fig)
-                    plt.close(fig)
-
-                else: 
-                    break
+                # save figures
+                pdf.savefig(fig)
+                plt.close(fig)
 
             # save predicted area values
             compile_save_results(rootpath, dataframe)
@@ -106,39 +97,35 @@ class BatchCalculator:
 
                 for imagepath in list_of_files:
                     
-                    if is_running == True:
-                        # load image
-                        flip = flip_flags.pop(0)
-                        imported = import_image(imagepath, muscle)
-                        filename, img, nonflipped_img, height, width = imported
+                    # load image
+                    flip = flip_flags.pop(0)
+                    imported = import_image(imagepath, muscle)
+                    filename, img, nonflipped_img, height, width = imported
 
-                        if scaling == "Static":
-                            calibrate_fn = calibrate_distance_static
-                            # find length of the scaling line
-                            scalingline_length = calibrate_fn(
-                            nonflipped_img, spacing, depth, flip
-                            )
-                        else:
-                            calibrate_fn = calibrate_distance_manually
-                        
-                        # predict area
-                        pred_apo_t, fig = apo_model.predict_t(img, width, height)
-                        echo = calculate_echo_int(nonflipped_img, pred_apo_t)
-                        area = calc_area(depth, scalingline_length, pred_apo_t)
+                    if scaling == "Static":
+                        calibrate_fn = calibrate_distance_static
+                        # find length of the scaling line
+                        scalingline_length = calibrate_fn(
+                        nonflipped_img, imagepath, spacing, depth, flip
+                        )
+                    else:
+                        calibrate_fn = calibrate_distance_manually
+                     
+                    # predict area
+                    pred_apo_t, fig = apo_model.predict_t(img, width, height)
+                    echo = calculate_echo_int(nonflipped_img, pred_apo_t)
+                    area = calc_area(depth, scalingline_length, pred_apo_t)
 
-                        # append results to dataframe
-                        dataframe = dataframe.append({"File": filename,
-                                                      "Muscle": muscle,
-                                                      "Area_cm²": area,
-                                                      "Echo_intensity": echo},
-                                                      ignore_index=True)
+                    # append results to dataframe
+                    dataframe = dataframe.append({"File": filename,
+                                                  "Muscle": muscle,
+                                                  "Area_cm²": area,
+                                                  "Echo_intensity": echo},
+                                                  ignore_index=True)
 
-                        # save figures
-                        pdf.savefig(fig)
-                        plt.close(fig)
-
-                    else: 
-                        break
+                    # save figures
+                    pdf.savefig(fig)
+                    plt.close(fig)
 
                 # save predicted area results
                 compile_save_results(rootpath, dataframe)

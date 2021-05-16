@@ -2,7 +2,14 @@
 
 import math
 import numpy as np
+import pandas as pd
 import cv2
+
+class ScalinglineError(Exception):
+    pass
+
+class StaticScalingError(Exception):
+    pass
 
 
 mlocs = []
@@ -113,7 +120,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 theta=np.pi/180,
                                 threshold=50,
                                 lines=np.array([]),
-                                minLineLength=400,
+                                minLineLength=350,
                                 maxLineGap=1)
         # image_with_lines = draw_the_lines(image, lines)
 
@@ -133,10 +140,13 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 theta=np.pi / 180,  # Angle resolution
                                 threshold=50,  # Only lines with higher vote
                                 lines=np.array([]),
-                                minLineLength=300,
+                                minLineLength=250,
                                 maxLineGap=3)
+    
+    if lines is None: 
+        raise ScalinglineError(f"Scalingline not found in {path_to_image}")
 
-    # Calculate length of the scaling line
+    # Calculate length of the scaling line   
     scalingline = lines[0][0]
     point1 = [scalingline[0], scalingline[1]]
     point2 = [scalingline[2], scalingline[3]]
@@ -146,13 +156,14 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     return float(scalingline_length)
 
 
-def calibrate_distance_static(nonflipped_img, spacing: int, depth: float, 
-                              flip: int):
+def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int, 
+                              depth: float, flip: int):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
 
     Arguments:
         Original(nonflipped) image with scaling lines on right border,
+        Path to image that should be analyzed,
         distance between scaling points (mm),
         US scanning depth (cm), 
         flip flag of image.
@@ -172,6 +183,10 @@ def calibrate_distance_static(nonflipped_img, spacing: int, depth: float,
     # search for rows with white pixels, calculate median of distance
     calib_dist = np.median(np.diff(np.argwhere(imgscale.sum(axis=1) > 200),
                                    axis=0))
+   
+    if pd.isnull(calib_dist) is True: 
+        raise StaticScalingError(f"Spacing not found in {path_to_image}")
+
     scalingline_length = depth * calib_dist
 
     print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
