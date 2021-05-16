@@ -90,11 +90,13 @@ class DeepACSA:
         depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
         depth_entry = ttk.Combobox(main, width=10, textvariable=self.depth)
         depth_entry["values"] = depth
-        depth_entry["state"] = "readonly"
+        # depth_entry["state"] = "readonly"
         depth_entry.grid(column=2, row=7, sticky=(W, E))
         tip.bind_widget(depth_entry,
-                        balloonmsg="Choose image depth from dropdown list. " +
-                        "Analyzed images must have the same depth.")
+                        balloonmsg="Choose image depth from dropdown list " +
+                        "or enter costum depth. Analyzed images must have " +
+                        "the same depth.")
+        
         # Spacing
         self.spacing = StringVar()
         spacing = (5, 10, 15, 20)
