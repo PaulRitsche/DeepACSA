@@ -61,6 +61,8 @@ def import_image_efov(path_to_image: str, muscle: str):
         clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
     if muscle == "GM":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
+    if muscle == "GL":
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
