@@ -53,6 +53,8 @@ def import_image_efov(path_to_image: str, muscle: str):
     filename = os.path.splitext(os.path.basename(image_add))[0]
     img = cv2.imread(path_to_image, 0)
     img_copy = img.copy()
+    rows,cols = img.shape
+    img = img[75:rows-50,50:cols-100]
 
     # print("Loaded image at " + path_to_image)
     if muscle == "RF":
