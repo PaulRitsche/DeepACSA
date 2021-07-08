@@ -52,9 +52,10 @@ def import_image_efov(path_to_image: str, muscle: str):
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
     img = cv2.imread(path_to_image, 0)
-    img_copy = img.copy()
     rows,cols = img.shape
-    img = img[75:rows-50,50:cols-100]
+    img = img[75:rows,20:cols-10]
+    img_copy = img.copy()
+
 
     # print("Loaded image at " + path_to_image)
     if muscle == "RF":
@@ -206,18 +207,19 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
             data.to_excel(writer, sheet_name="Results")
 
 
-def calculate_batch_efov(rootpath: str, modelpath: str, depth: float,
-                         muscle: str):
+def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
+                         depth: float, muscle: str):
     """Calculates area predictions for batches of EFOV US images
         containing continous scaling line.
 
     Arguments:
         Path to root directory of images,
+        type of image files,
         path to model used for predictions,
         ultrasound scanning depth,
         analyzed muscle.
     """
-    list_of_files = glob.glob(rootpath + '/**/*.tif', recursive=True)
+    list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     apo_model = ApoModel(modelpath)
 
@@ -253,13 +255,15 @@ def calculate_batch_efov(rootpath: str, modelpath: str, depth: float,
         compile_save_results(rootpath, dataframe)
 
 
-def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
-                    depth: float, spacing: int, muscle: str, scaling: str):
+def calculate_batch(rootpath: str, filetype: str, flip_file_path: str, 
+                    modelpath: str, depth: float, spacing: int, muscle: str,
+                    scaling: str):
     """Calculates area predictions for batches of (EFOV) US images
         not containing a continous scaling line.
 
         Arguments:
             Path to root directory of images,
+            type of image files,
             path to txt file containing flipping information for images,
             path to model used for predictions,
             ultrasound scanning depth,
@@ -267,7 +271,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
             analyzed muscle,
             scaling type.
     """
-    list_of_files = glob.glob(rootpath + '/**/*.tif', recursive=True)
+    list_of_files = glob.glob(rootpath + filetype, recursive=True)
     flip_flags = get_flip_flags_list(flip_file_path)
 
     apo_model = ApoModel(modelpath)
@@ -284,7 +288,7 @@ def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
                 imported = import_image(imagepath, muscle)
                 filename, img, nonflipped_img, height, width = imported
 
-                if scaling == "Static":
+                if scaling == "Bar":
                     calibrate_fn = calibrate_distance_static
                     # find length of the scaling line
                     scalingline_length = calibrate_fn(

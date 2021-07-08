@@ -21,6 +21,7 @@ def calculate_echo_int(img_copy, mask):
         65.728
     """
     img = img_copy
+    img = img.astype(np.uint8)
     mask = mask.astype(np.uint8)
 
     # Find contours in binary mask image
