@@ -239,16 +239,16 @@ class DeepACSA:
             pass
 
     def run_code(self):
-
-        # don't run again if it is already running
+   
         if self.is_running:
+            # don't run again if it is already running
             return
         self.is_running = True
 
         selected_muscle = self.muscle.get()
         selected_depth = float(self.depth.get())
         selected_spacing = self.spacing.get()
-        selected_scaling = self.sscaling.get()
+        selected_scaling = self.scaling.get()
         selected_input_dir = self.input.get()
         selected_model_path = self.model.get()
         selected_flag_path = self.flags.get()
@@ -284,17 +284,16 @@ class DeepACSA:
 
         thread.start()
 
-
     @property
     def should_stop(self):
-        self._lock.acquire():
+        self._lock.acquire()
         should_stop = self._should_stop
         self._lock.release()
         return should_stop
 
     @property
     def is_running(self):
-        self._lock.acquire():
+        self._lock.acquire()
         is_running = self._is_running
         self._lock.release()
         return is_running
