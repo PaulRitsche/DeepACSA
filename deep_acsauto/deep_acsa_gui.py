@@ -6,6 +6,8 @@ from PIL import Image, ImageTk
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 from prepare_quad_imgs import prepare_quad_vl_imgs, prepare_quad_rf_imgs
 
+from threading import Thread, Lock
+
 
 class DeepACSA:
     """Class which provides the utility of a graphical user interface.
@@ -25,6 +27,12 @@ class DeepACSA:
     """
     def __init__(self, root):
 
+        # set up threading
+        self._lock = Lock()
+        self._is_running = False
+        self._should_stop = False
+
+        # set up gui
         root.title("DeepACSA")
         root.iconbitmap("icon.ico")
 
@@ -232,6 +240,11 @@ class DeepACSA:
 
     def run_code(self):
 
+        # don't run again if it is already running
+        if self.is_running:
+            return
+        self.is_running = True
+
         selected_muscle = self.muscle.get()
         selected_depth = float(self.depth.get())
         selected_spacing = self.spacing.get()
@@ -242,29 +255,64 @@ class DeepACSA:
         selected_filetype = self.filetype.get()
 
         if selected_scaling == "Line":
-            calculate_batch_efov(
-                selected_input_dir,
-                selected_filetype,
-                selected_model_path,
-                selected_depth,
-                selected_muscle
+            thread = Thread(
+                target=calculate_batch_efov,
+                args=(
+                    selected_input_dir,
+                    selected_filetype,
+                    selected_model_path,
+                    selected_depth,
+                    selected_muscle,
+                    self,
                 )
-
+            )
         else:
-            calculate_batch(
-                selected_input_dir,
-                selected_filetype,
-                selected_flag_path,
-                selected_model_path,
-                selected_depth,
-                selected_spacing,
-                selected_muscle,
-                selected_scaling
+            thread = Thread(
+                target=calculate_batch,
+                args=(
+                    selected_input_dir,
+                    selected_filetype,
+                    selected_flag_path,
+                    selected_model_path,
+                    selected_depth,
+                    selected_spacing,
+                    selected_muscle,
+                    selected_scaling,
+                    self,
                 )
+            )
+
+        thread.start()
+
+
+    @property
+    def should_stop(self):
+        self._lock.acquire():
+        should_stop = self._should_stop
+        self._lock.release()
+        return should_stop
+
+    @property
+    def is_running(self):
+        self._lock.acquire():
+        is_running = self._is_running
+        self._lock.release()
+        return is_running
+
+    @should_stop.setter
+    def should_stop(self, flag: bool):
+        self._lock.acquire()
+        self._should_stop = flag
+        self._lock.release()
+
+    @is_running.setter
+    def is_running(self, flag: bool):
+        self._lock.acquire()
+        self._is_running = flag
+        self._lock.release()
 
     def do_break(self):
-        # root.quit()
-        raise NotImplementedError()
+        self.should_stop = True
         
 
 
