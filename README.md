@@ -43,7 +43,7 @@ Activate your virtual environment and change to the directory containing the cod
 Type the here presented command into the prompt window, while entering the required parameters. 
 
 ```sh
-htsinfer [-h] -rp ROOTPATH [-fp FLIP_FLAG_PATH] -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
+deep_acsauto [-h] -rp ROOTPATH [-fp FLIP_FLAG_PATH] -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
 
 ```
 ## Parameters
