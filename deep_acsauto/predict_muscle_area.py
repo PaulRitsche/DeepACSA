@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
+plt.switch_backend("agg")
 
 
 def get_list_of_files(pathname: str):
