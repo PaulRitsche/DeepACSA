@@ -237,11 +237,13 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             imported = import_image_efov(imagepath, muscle)
             filename, img_copy, img, height, width = imported
 
+            calibrate_efov = calibrate_distance_efov
             # find length of the scalingline
-            scalingline_length = calibrate_distance_efov(imagepath, muscle)
+            scalingline_length, img_lines = calibrate_efov(imagepath, muscle)
 
             # predict area
-            pred_apo_t, fig = apo_model.predict_t(img, width, height)
+            pred_apo_t, fig = apo_model.predict_t(img, img_lines,
+                                                  width, height)
             echo = calculate_echo_int(img_copy, pred_apo_t)
             area = calc_area(depth, scalingline_length, pred_apo_t)
 

@@ -122,7 +122,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 lines=np.array([]),
                                 minLineLength=350,
                                 maxLineGap=1)
-        # image_with_lines = draw_the_lines(image, lines)
+        image_with_lines = draw_the_lines(image, lines)
 
     # For VL
     if muscle == "VL":
@@ -133,7 +133,9 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 lines=np.array([]),
                                 minLineLength=200,
                                 maxLineGap=3)  # Gap between lines
-        # image_with_lines = draw_the_lines(image, lines)
+        image_with_lines = draw_the_lines(image, lines)
+
+    # For GM / GL
     if muscle == "GL" or "GM":
         lines = cv2.HoughLinesP(cropped_image,
                                 rho=1,  # Distance of pixels in accumulator
@@ -142,6 +144,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 lines=np.array([]),
                                 minLineLength=250,
                                 maxLineGap=3)
+        image_with_lines = draw_the_lines(image, lines)
     
     if lines is None: 
         raise ScalinglineError(f"Scalingline not found in {path_to_image}")
@@ -152,8 +155,8 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     point2 = [scalingline[2], scalingline[3]]
     scalingline_length = math.sqrt(((point1[0] - point2[0])**2)
                                    + ((point1[1] - point2[1])**2))
-    # plot_image(image_with_lines)
-    return float(scalingline_length)
+    
+    return scalingline_length, image_with_lines
 
 
 def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int, 
