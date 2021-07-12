@@ -95,7 +95,8 @@ class DeepACSA:
         # Comboboxes
         # Filetype
         self.filetype = StringVar()
-        filetype = ("/*.tif", "/*.tiff", "/*.png", "/*.bmp", "/*.jpeg")
+        filetype = ("/**/*.tif", "/**/*.tiff", "/**/*.png", "/**/*.bmp",
+                    "/**/*.jpeg", "/**/*.jpg")
         filetype_entry = ttk.Combobox(main, width=10, textvariable=self.filetype)
         filetype_entry["values"] = filetype
         # filetype_entry["state"] = "readonly"
