@@ -311,7 +311,8 @@ class DeepACSA:
         self._lock.release()
 
     def do_break(self):
-        self.should_stop = True
+        if self.is_running:
+            self.should_stop = True
         
 
 
