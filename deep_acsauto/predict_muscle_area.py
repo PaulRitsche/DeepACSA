@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
+plt.switch_backend("agg")
 
 
 def get_list_of_files(pathname: str):
@@ -208,7 +209,7 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
 
 
 def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
-                         depth: float, muscle: str):
+                         depth: float, muscle: str, gui):
     """Calculates area predictions for batches of EFOV US images
         containing continous scaling line.
 
@@ -227,6 +228,10 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
         dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
         for imagepath in list_of_files:
+
+            if gui.should_stop:
+                # there was an input to stop the calculations
+                break
 
             # load image
             imported = import_image_efov(imagepath, muscle)
@@ -254,10 +259,14 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
         # save predicted area values
         compile_save_results(rootpath, dataframe)
 
+        # clean up
+        gui.should_stop = False
+        gui.is_running = False
+
 
 def calculate_batch(rootpath: str, filetype: str, flip_file_path: str, 
                     modelpath: str, depth: float, spacing: int, muscle: str,
-                    scaling: str):
+                    scaling: str, gui):
     """Calculates area predictions for batches of (EFOV) US images
         not containing a continous scaling line.
 
@@ -282,6 +291,10 @@ def calculate_batch(rootpath: str, filetype: str, flip_file_path: str,
         if len(list_of_files) == len(flip_flags):
 
             for imagepath in list_of_files:
+
+                if gui.should_stop:
+                    # there was an input to stop the calculations
+                    break
 
                 # load image
                 flip = flip_flags.pop(0)
@@ -322,3 +335,7 @@ def calculate_batch(rootpath: str, filetype: str, flip_file_path: str,
         else:
             print("Warning: number of flipFlags and images doesn\'t match! " +
                   "Calculations aborted.")
+
+        # clean up
+        gui.should_stop = False
+        gui.is_running = False
