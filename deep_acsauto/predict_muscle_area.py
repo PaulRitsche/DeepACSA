@@ -242,7 +242,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             scalingline_length, img_lines = calibrate_efov(imagepath, muscle)
 
             # predict area
-            pred_apo_t, fig = apo_model.predict_t(img, img_lines,
+            pred_apo_t, fig = apo_model.predict_e(img, img_lines,
                                                   width, height)
             echo = calculate_echo_int(img_copy, pred_apo_t)
             area = calc_area(depth, scalingline_length, pred_apo_t)
@@ -306,7 +306,7 @@ def calculate_batch(rootpath: str, filetype: str, flip_file_path: str,
                 if scaling == "Bar":
                     calibrate_fn = calibrate_distance_static
                     # find length of the scaling line
-                    scalingline_length = calibrate_fn(
+                    scalingline_length, imgscale, dist = calibrate_fn(
                     nonflipped_img, imagepath, spacing, depth, flip
                     )
                 else:
@@ -316,7 +316,8 @@ def calculate_batch(rootpath: str, filetype: str, flip_file_path: str,
                     )
                 
                 # predict area
-                pred_apo_t, fig = apo_model.predict_t(img, width, height)
+                pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
+                                                      width, height)
                 echo = calculate_echo_int(nonflipped_img, pred_apo_t)
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 

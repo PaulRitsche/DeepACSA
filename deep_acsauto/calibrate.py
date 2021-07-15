@@ -182,19 +182,21 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
     if flip == 1:
         nonflipped_img = np.fliplr(nonflipped_img)
     img2 = np.uint8(nonflipped_img)
-    imgscale = img2[70:, 1100:1115]
+    height = img2.shape[0]
+    width = img2.shape[1]
+    imgscale = img2[int(height*0.4):(height-int(height*0.3)), (width-int(width*0.15)):width]
+
     # search for rows with white pixels, calculate median of distance
-    calib_dist = np.median(np.diff(np.argwhere(imgscale.sum(axis=1) > 200),
+    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 175),
                                    axis=0))
-   
+    
     if pd.isnull(calib_dist) is True: 
         raise StaticScalingError(f"Spacing not found in {path_to_image}")
 
     scalingline_length = depth * calib_dist
-
-    print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
-
-    return float(scalingline_length)
+    scale_statement = str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels'
+    
+    return scalingline_length, imgscale, scale_statement
 
 
 def calibrate_distance_manually(nonflipped_img, spacing: int, depth: float):
