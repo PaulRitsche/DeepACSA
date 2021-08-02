@@ -202,11 +202,11 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
     apo_model = ApoModel(modelpath)
 
-    try:
-        with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
+        try: 
             dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
-        
+            
             for imagepath in list_of_files:
 
                 if gui.should_stop:
@@ -223,7 +223,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
                 # predict area
                 pred_apo_t, fig = apo_model.predict_e(img, img_lines,
-                                                      width, height)
+                                                          width, height)
                 echo = calculate_echo_int(img_copy, pred_apo_t)
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 
@@ -238,15 +238,15 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                 pdf.savefig(fig)
                 plt.close(fig)
 
-    except:
-        pass
+        except:
+            pass
 
-    finally:
-        # save predicted area values
-        compile_save_results(rootpath, dataframe)
-        # clean up
-        gui.should_stop = False
-        gui.is_running = False
+        finally:
+            # save predicted area values
+            compile_save_results(rootpath, dataframe)
+            # clean up
+            gui.should_stop = False
+            gui.is_running = False
 
 
 def calculate_batch(rootpath: str, filetype: str, modelpath: str, 
@@ -271,48 +271,54 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+
+        try:
     
-        for imagepath in list_of_files:
+            for imagepath in list_of_files:
 
-            if gui.should_stop:
-                # there was an input to stop the calculations
-                break
+                if gui.should_stop:
+                    # there was an input to stop the calculations
+                    break
 
-            # load image
-            imported = import_image(imagepath, muscle)
-            filename, img, nonflipped_img, height, width = imported
+                # load image
+                imported = import_image(imagepath, muscle)
+                filename, img, nonflipped_img, height, width = imported
 
-            if scaling == "Bar":
-                calibrate_fn = calibrate_distance_static
-                # find length of the scaling line
-                scalingline_length, imgscale, dist = calibrate_fn(
-                nonflipped_img, imagepath, spacing, depth
-                )
-            else:
-                calibrate_fn = calibrate_distance_manually
-                scalingline_length = calibrate_fn(
-                nonflipped_img, spacing, depth
-                )
-        
-            # predict area
-            pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
-                                                 width, height)
-            echo = calculate_echo_int(nonflipped_img, pred_apo_t)
-            area = calc_area(depth, scalingline_length, pred_apo_t)
+                if scaling == "Bar":
+                    calibrate_fn = calibrate_distance_static
+                    # find length of the scaling line
+                    scalingline_length, imgscale, dist = calibrate_fn(
+                    nonflipped_img, imagepath, spacing, depth
+                    )
+                else:
+                    calibrate_fn = calibrate_distance_manually
+                    scalingline_length = calibrate_fn(
+                    nonflipped_img, spacing, depth
+                    )
+            
+                # predict area
+                pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
+                                                     width, height)
+                echo = calculate_echo_int(nonflipped_img, pred_apo_t)
+                area = calc_area(depth, scalingline_length, pred_apo_t)
 
-            # append results to dataframe
-            dataframe = dataframe.append({"File": filename,
-                                          "Muscle": muscle,
-                                          "Area_cm²": area,
-                                          "Echo_intensity": echo},
-                                          ignore_index=True)
+                # append results to dataframe
+                dataframe = dataframe.append({"File": filename,
+                                              "Muscle": muscle,
+                                              "Area_cm²": area,
+                                              "Echo_intensity": echo},
+                                              ignore_index=True)
 
-            # save figures
-            pdf.savefig(fig)
-            plt.close(fig)
-              
-        # save predicted area results
-        compile_save_results(rootpath, dataframe)
-        # clean up
-        gui.should_stop = False
-        gui.is_running = False
+                # save figures
+                pdf.savefig(fig)
+                plt.close(fig)
+
+        except: 
+            pass
+
+        finally: 
+            # save predicted area results
+            compile_save_results(rootpath, dataframe)
+            # clean up
+            gui.should_stop = False
+            gui.is_running = False
