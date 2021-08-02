@@ -120,28 +120,6 @@ def import_image(path_to_image: str, muscle: str):
     return filename, img, nonflipped_img, height, weight
 
 
-def get_flip_flags_list(pathname: str):
-    """Define the path to text file including flipping flags.
-
-    Arguments:
-        Path to Flip.txt file.
-
-    Returns:
-        List of flipping flags.
-
-    Example:
-        >>>get(C:/Desktop/Test)
-        ["0", "1"]
-    """
-    flip_flags = []
-    file = open(pathname, 'r')
-    for line in file:
-        for digit in line:
-            if digit.isdigit():
-                flip_flags.append(digit)
-    return flip_flags
-
-
 # Optional, just for plotting
 def plot_image(image):
     """Plots image with detected ridges/scalingline.
@@ -224,50 +202,55 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
     apo_model = ApoModel(modelpath)
 
-    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    try:
+        with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
-        dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
-        for imagepath in list_of_files:
+            dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
+        
+            for imagepath in list_of_files:
 
-            if gui.should_stop:
-                # there was an input to stop the calculations
-                break
+                if gui.should_stop:
+                    # there was an input to stop the calculations
+                    break
 
-            # load image
-            imported = import_image_efov(imagepath, muscle)
-            filename, img_copy, img, height, width = imported
+                # load image
+                imported = import_image_efov(imagepath, muscle)
+                filename, img_copy, img, height, width = imported
 
-            calibrate_efov = calibrate_distance_efov
-            # find length of the scalingline
-            scalingline_length, img_lines = calibrate_efov(imagepath, muscle)
+                calibrate_efov = calibrate_distance_efov
+                # find length of the scalingline
+                scalingline_length, img_lines = calibrate_efov(imagepath, muscle)
 
-            # predict area
-            pred_apo_t, fig = apo_model.predict_e(img, img_lines,
-                                                  width, height)
-            echo = calculate_echo_int(img_copy, pred_apo_t)
-            area = calc_area(depth, scalingline_length, pred_apo_t)
+                # predict area
+                pred_apo_t, fig = apo_model.predict_e(img, img_lines,
+                                                      width, height)
+                echo = calculate_echo_int(img_copy, pred_apo_t)
+                area = calc_area(depth, scalingline_length, pred_apo_t)
 
-            # append results to dataframe
-            dataframe = dataframe.append({"File": filename,
-                                          "Muscle": muscle,
-                                          "Area_cm²": area,
-                                          "Echo_intensity": echo},
-                                         ignore_index=True)
+                # append results to dataframe
+                dataframe = dataframe.append({"File": filename,
+                                              "Muscle": muscle,
+                                              "Area_cm²": area,
+                                              "Echo_intensity": echo},
+                                             ignore_index=True)
 
-            # save figures
-            pdf.savefig(fig)
-            plt.close(fig)
+                # save figures
+                pdf.savefig(fig)
+                plt.close(fig)
 
+    except:
+        pass
+
+    finally:
         # save predicted area values
         compile_save_results(rootpath, dataframe)
-
         # clean up
         gui.should_stop = False
         gui.is_running = False
 
 
-def calculate_batch(rootpath: str, filetype: str, flip_file_path: str, 
-                    modelpath: str, depth: float, spacing: int, muscle: str,
+def calculate_batch(rootpath: str, filetype: str, modelpath: str, 
+                    depth: float, spacing: int, muscle: str,
                     scaling: str, gui):
     """Calculates area predictions for batches of (EFOV) US images
         not containing a continous scaling line.
@@ -283,62 +266,53 @@ def calculate_batch(rootpath: str, filetype: str, flip_file_path: str,
             scaling type.
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
-    flip_flags = get_flip_flags_list(flip_file_path)
 
     apo_model = ApoModel(modelpath)
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    
+        for imagepath in list_of_files:
 
-        if len(list_of_files) == len(flip_flags):
+            if gui.should_stop:
+                # there was an input to stop the calculations
+                break
 
-            for imagepath in list_of_files:
+            # load image
+            imported = import_image(imagepath, muscle)
+            filename, img, nonflipped_img, height, width = imported
 
-                if gui.should_stop:
-                    # there was an input to stop the calculations
-                    break
+            if scaling == "Bar":
+                calibrate_fn = calibrate_distance_static
+                # find length of the scaling line
+                scalingline_length, imgscale, dist = calibrate_fn(
+                nonflipped_img, imagepath, spacing, depth
+                )
+            else:
+                calibrate_fn = calibrate_distance_manually
+                scalingline_length = calibrate_fn(
+                nonflipped_img, spacing, depth
+                )
+        
+            # predict area
+            pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
+                                                 width, height)
+            echo = calculate_echo_int(nonflipped_img, pred_apo_t)
+            area = calc_area(depth, scalingline_length, pred_apo_t)
 
-                # load image
-                flip = flip_flags.pop(0)
-                imported = import_image(imagepath, muscle)
-                filename, img, nonflipped_img, height, width = imported
+            # append results to dataframe
+            dataframe = dataframe.append({"File": filename,
+                                          "Muscle": muscle,
+                                          "Area_cm²": area,
+                                          "Echo_intensity": echo},
+                                          ignore_index=True)
 
-                if scaling == "Bar":
-                    calibrate_fn = calibrate_distance_static
-                    # find length of the scaling line
-                    scalingline_length, imgscale, dist = calibrate_fn(
-                    nonflipped_img, imagepath, spacing, depth, flip
-                    )
-                else:
-                    calibrate_fn = calibrate_distance_manually
-                    scalingline_length = calibrate_fn(
-                    nonflipped_img, spacing, depth
-                    )
-                
-                # predict area
-                pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
-                                                      width, height)
-                echo = calculate_echo_int(nonflipped_img, pred_apo_t)
-                area = calc_area(depth, scalingline_length, pred_apo_t)
-
-                # append results to dataframe
-                dataframe = dataframe.append({"File": filename,
-                                              "Muscle": muscle,
-                                              "Area_cm²": area,
-                                              "Echo_intensity": echo},
-                                              ignore_index=True)
-
-                # save figures
-                pdf.savefig(fig)
-                plt.close(fig)
-
-            # save predicted area results
-            compile_save_results(rootpath, dataframe)
-
-        else:
-            print("Warning: number of flipFlags and images doesn\'t match! " +
-                  "Calculations aborted.")
-
+            # save figures
+            pdf.savefig(fig)
+            plt.close(fig)
+              
+        # save predicted area results
+        compile_save_results(rootpath, dataframe)
         # clean up
         gui.should_stop = False
         gui.is_running = False

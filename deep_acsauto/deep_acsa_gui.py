@@ -2,11 +2,19 @@ from tkinter import StringVar, Tk, N, S, W, E
 from tkinter import ttk, filedialog
 from tkinter.tix import *
 import os
+import tensorflow as tf
 from PIL import Image, ImageTk
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 from prepare_quad_imgs import prepare_quad_vl_imgs, prepare_quad_rf_imgs
 
 from threading import Thread, Lock
+
+
+#os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
+#gpus = tf.config.list_physical_devices('GPU')
+#tf.config.experimental.set_virtual_device_configuration(
+#        gpus[0],
+#        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=4096)])
 
 
 class DeepACSA:
@@ -60,10 +68,6 @@ class DeepACSA:
         self.model = StringVar()
         model_entry = ttk.Entry(main, width=30, textvariable=self.model)
         model_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-        # Flag path
-        self.flags = StringVar()
-        flags_entry = ttk.Entry(main, width=14, textvariable=self.flags)
-        flags_entry.grid(column=2, row=4, columnspan=3, sticky=(W, E))
 
         # Radiobuttons
         # Image Preparing
@@ -156,14 +160,6 @@ class DeepACSA:
         tip.bind_widget(model_button,
                         balloonmsg="Choose model path." +
                         " This is the path to the respective model.")
-        # Flip Flag path
-        flags_button = ttk.Button(main, text="Flip Flag",
-                                  command=self.get_flag_dir)
-        flags_button.grid(column=5, row=4, sticky=E)
-        tip.bind_widget(flags_button,
-                        balloonmsg="Choose Flag File Path." +
-                        " This is the path to the .txt file containing" +
-                        " flipping info.")
         # Prepare Imgs Button
         prepare_button = ttk.Button(main, text="Prepare Images", 
                                     command=self.prepare_imgs)
@@ -184,7 +180,6 @@ class DeepACSA:
         ttk.Label(main, text="Directories",font=("bold")).grid(column=1, row=1, sticky=W)
         ttk.Label(main, text="Root Directory").grid(column=1, row=2)
         ttk.Label(main, text="Model Path").grid(column=1, row=3)
-        ttk.Label(main, text="Flip Flag Path").grid(column=1, row=4)
         ttk.Label(main, text="Image Properties", font=("bold")).grid(column=1, row=5, sticky=W)
         ttk.Label(main, text="Image Type").grid(column=1, row=6)
         ttk.Label(main, text="Scaling Type").grid(column=1, row=7)
@@ -210,12 +205,6 @@ class DeepACSA:
         model_dir = filedialog.askopenfilename()
         self.model.set(model_dir)
         return model_dir
-
-    def get_flag_dir(self):
-
-        flag_dir = filedialog.askopenfilename()
-        self.flags.set(flag_dir)
-        return flag_dir
 
     def prepare_imgs(self):
 
@@ -252,7 +241,6 @@ class DeepACSA:
         selected_scaling = self.scaling.get()
         selected_input_dir = self.input.get()
         selected_model_path = self.model.get()
-        selected_flag_path = self.flags.get()
         selected_filetype = self.filetype.get()
 
         if selected_scaling == "Line":
@@ -273,7 +261,6 @@ class DeepACSA:
                 args=(
                     selected_input_dir,
                     selected_filetype,
-                    selected_flag_path,
                     selected_model_path,
                     selected_depth,
                     selected_spacing,

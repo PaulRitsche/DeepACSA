@@ -160,7 +160,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
 
 
 def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int, 
-                              depth: float, flip: int):
+                              depth: float):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
 
@@ -179,8 +179,6 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
         5 mm corresponds to 95 pixels
     """
     # calibrate according to scale at the right border of image
-    if flip == 1:
-        nonflipped_img = np.fliplr(nonflipped_img)
     img2 = np.uint8(nonflipped_img)
     height = img2.shape[0]
     width = img2.shape[1]

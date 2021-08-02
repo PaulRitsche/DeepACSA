@@ -79,7 +79,7 @@ def prepare_quad_rf_imgs(rootpath: str, filetype: str, output: str):
         trans_M = np.float32([[1, 0, -35], [0, 1, 50]])
         img_trans = cv2.warpAffine(img_rot, trans_M, (cols,rows))
         # Crop image
-        img_crop = img_trans[150:500, 200:700]
+        img_crop = img_trans[150:500, 200:720]
         #cv2.imshow("img_crop", img_crop)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
