@@ -1,15 +1,17 @@
+"""Python module to create GUI for DeepACSA"""
+
+import os
 from tkinter import StringVar, Tk, N, S, W, E
 from tkinter import ttk, filedialog
 from tkinter.tix import *
-import os
-import tensorflow as tf
-from PIL import Image, ImageTk
+#import tensorflow as tf
+from threading import Thread, Lock
+from PIL import Image
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 from prepare_quad_imgs import prepare_quad_vl_imgs, prepare_quad_rf_imgs
 
-from threading import Thread, Lock
 
-
+# Use to create xla-device and limit GPU memory growth
 #os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 #gpus = tf.config.list_physical_devices('GPU')
 #tf.config.experimental.set_virtual_device_configuration(
@@ -21,17 +23,15 @@ class DeepACSA:
     """Class which provides the utility of a graphical user interface.
 
     Attributes:
-        input_dir: Path to root directory containings all files. 
+        input_dir: Path to root directory containings all files.
         model_path: Path to the keras segmentation model.
-        flag_path: Path to .txt file containing flip-flags for images. 
-        depth: Scanning depth (cm) of ultrasound image. 
+        depth: Scanning depth (cm) of ultrasound image.
         muscle: Muscle that is visible on ultrasound image.
         spacing: Distance (mm) between two scaling lines on ultrasound images.
-        scaling: Scanning modaltity of ultrasound image. 
-
+        scaling: Scanning modaltity of ultrasound image.
 
     Examples:
-        >>> 
+        >>>
     """
     def __init__(self, root):
 
@@ -72,10 +72,10 @@ class DeepACSA:
         # Radiobuttons
         # Image Preparing
         self.image_preparation = StringVar()
-        yes = ttk.Radiobutton(main, text="Yes", variable=self.image_preparation, 
+        yes = ttk.Radiobutton(main, text="Yes", variable=self.image_preparation,
                               value="Yes")
         yes.grid(column=2, row=12, sticky=W)
-        no = ttk.Radiobutton(main, text="No", variable=self.image_preparation, 
+        no = ttk.Radiobutton(main, text="No", variable=self.image_preparation,
                              value="No")
         no.grid(column=3, row=12, sticky=(W,E))
 
@@ -109,7 +109,6 @@ class DeepACSA:
                         balloonmsg="Specifiy filetype of images in root" +
                         " that are taken as whole quadriceps images." +
                         " These images are being prepared for model prediction.")
-
         # Muscles
         self.muscle = StringVar()
         muscle = ("VL", "RF", "GM", "GL")
@@ -131,7 +130,6 @@ class DeepACSA:
                         balloonmsg="Choose image depth from dropdown list " +
                         "or enter costum depth. Analyzed images must have " +
                         "the same depth.")
-        
         # Spacing
         self.spacing = StringVar()
         spacing = (5, 10, 15, 20)
@@ -144,7 +142,6 @@ class DeepACSA:
                                    " in image form dropdown list. " +
                                    "Distance needs to be similar " +
                                    "in all analyzed images.")
-
         # Buttons
         # Input directory
         input_button = ttk.Button(main, text="Input",
@@ -161,7 +158,7 @@ class DeepACSA:
                         balloonmsg="Choose model path." +
                         " This is the path to the respective model.")
         # Prepare Imgs Button
-        prepare_button = ttk.Button(main, text="Prepare Images", 
+        prepare_button = ttk.Button(main, text="Prepare Images",
                                     command=self.prepare_imgs)
         prepare_button.grid(column=5, row=12, sticky=E)
         tip.bind_widget(prepare_button,
@@ -218,18 +215,18 @@ class DeepACSA:
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
             # Prepare imgs
-            prepare_quad_rf_imgs(selected_input_dir, 
+            prepare_quad_rf_imgs(selected_input_dir,
                                  selected_filetype,
                                  dirname)
-            prepare_quad_vl_imgs(selected_input_dir, 
+            prepare_quad_vl_imgs(selected_input_dir,
                                  selected_filetype,
                                  dirname)
 
-        else: 
+        else:
             pass
 
     def run_code(self):
-   
+
         if self.is_running:
             # don't run again if it is already running
             return
@@ -301,7 +298,6 @@ class DeepACSA:
     def do_break(self):
         if self.is_running:
             self.should_stop = True
-        
 
 
 if __name__ == "__main__":

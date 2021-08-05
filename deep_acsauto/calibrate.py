@@ -6,9 +6,15 @@ import pandas as pd
 import cv2
 
 class ScalinglineError(Exception):
+    """Raises error when scaling line is not
+       detected appropraitely.
+    """
     pass
 
 class StaticScalingError(Exception):
+    """Raises error when scaling bars are not
+       detected appropraitely.
+    """
     pass
 
 
@@ -37,7 +43,7 @@ def region_of_interest(img, vertices):
     return masked_image
 
 
-def mclick(event, x_val, y_val, flags, param):
+def mclick(event, y_val):
     """Detect mouse clicks for purpose of image calibration.
 
     Arguments:
@@ -145,21 +151,21 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 minLineLength=250,
                                 maxLineGap=3)
         image_with_lines = draw_the_lines(image, lines)
-    
-    if lines is None: 
+
+    if lines is None:
         raise ScalinglineError(f"Scalingline not found in {path_to_image}")
 
-    # Calculate length of the scaling line   
+    # Calculate length of the scaling line
     scalingline = lines[0][0]
     point1 = [scalingline[0], scalingline[1]]
     point2 = [scalingline[2], scalingline[3]]
     scalingline_length = math.sqrt(((point1[0] - point2[0])**2)
                                    + ((point1[1] - point2[1])**2))
-    
+
     return scalingline_length, image_with_lines
 
 
-def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int, 
+def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
                               depth: float):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
@@ -168,8 +174,7 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
         Original(nonflipped) image with scaling lines on right border,
         Path to image that should be analyzed,
         distance between scaling points (mm),
-        US scanning depth (cm), 
-        flip flag of image.
+        US scanning depth (cm).
 
     Returns:
         Length of scaling line (pixel).
@@ -187,13 +192,13 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
     # search for rows with white pixels, calculate median of distance
     calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 175),
                                    axis=0))
-    
-    if pd.isnull(calib_dist) is True: 
+
+    if pd.isnull(calib_dist) is True:
         raise StaticScalingError(f"Spacing not found in {path_to_image}")
 
     scalingline_length = depth * calib_dist
     scale_statement = str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels'
-    
+
     return scalingline_length, imgscale, scale_statement
 
 

@@ -86,7 +86,7 @@ class ApoModel:
         pred_apo = self.model_apo.predict(img)
         return pred_apo
 
-    def predict_e(self, img, img_lines, width: int, 
+    def predict_e(self, img, img_lines, width: int,
                   height: int, return_fig: bool = True):
         """Runs a segmentation model on the input image and thresholds result.
 
@@ -98,7 +98,7 @@ class ApoModel:
             Whether or not to plot the input/output and return the figure
 
         Returns:
-            The thresholded bit-mask and (optionally) a figure of 
+            The thresholded bit-mask and (optionally) a figure of
             input/scaling/output.
 
         """
@@ -128,44 +128,44 @@ class ApoModel:
 
         return pred_apo_t, fig
 
-    def predict_s(self, img, img_lines, dist: str, width: int, 
+    def predict_s(self, img, img_lines, dist: str, width: int,
                       height: int, return_fig: bool = True):
-            """Runs a segmentation model on the input image and thresholds result.
+        """Runs a segmentation model on the input image and thresholds result.
 
-            Arguments:
-                Input image
-                Image with scaling lines
-                Width of the original image
-                Height of the original image
-                Whether or not to plot the input/output and return the figure
+        Arguments:
+            Input image
+            Image with scaling lines
+            Width of the original image
+            Height of the original image
+            Whether or not to plot the input/output and return the figure
 
-            Returns:
-                The thresholded bit-mask and (optionally) a figure of 
-                input/scaling/output.
+        Returns:
+            The thresholded bit-mask and (optionally) a figure of
+            input/scaling/output.
 
-            """
-            pred_apo = self.predict(img)
-            pred_apo_t = (pred_apo > self.apo_threshold)
+        """
+        pred_apo = self.predict(img)
+        pred_apo_t = (pred_apo > self.apo_threshold)
 
-            if not return_fig:
-                # don't plot the input/output, simply return mask
-                return pred_apo_t
+        if not return_fig:
+            # don't plot the input/output, simply return mask
+            return pred_apo_t
 
-            img = _resize(img, width, height)
-            pred_apo_t = _resize(pred_apo_t, width, height)
+        img = _resize(img, width, height)
+        pred_apo_t = _resize(pred_apo_t, width, height)
 
-            fig = plt.figure(figsize=(20, 20))
-            ax1 = fig.add_subplot(3, 1, 1)
-            ax1.imshow(img_lines.squeeze(), cmap="gray")
-            ax1.grid(False)
-            ax1.set_title(str(dist))
-            ax2 = fig.add_subplot(3, 1, 2)
-            ax2.imshow(img.squeeze(), cmap='gray')
-            ax2.grid(False)
-            ax2.set_title('Original image with CLAHE')
-            ax3 = fig.add_subplot(3, 1, 3)
-            ax3.imshow(pred_apo_t.squeeze(), cmap="gray")
-            ax3.grid(False)
-            ax3.set_title('Predicted muscle area')
+        fig = plt.figure(figsize=(20, 20))
+        ax1 = fig.add_subplot(3, 1, 1)
+        ax1.imshow(img_lines.squeeze(), cmap="gray")
+        ax1.grid(False)
+        ax1.set_title(str(dist))
+        ax2 = fig.add_subplot(3, 1, 2)
+        ax2.imshow(img.squeeze(), cmap='gray')
+        ax2.grid(False)
+        ax2.set_title('Original image with CLAHE')
+        ax3 = fig.add_subplot(3, 1, 3)
+        ax3.imshow(pred_apo_t.squeeze(), cmap="gray")
+        ax3.grid(False)
+        ax3.set_title('Predicted muscle area')
 
-            return pred_apo_t, fig
+        return pred_apo_t, fig

@@ -1,19 +1,19 @@
 """Python module to automatically calcuate muscle area in US images"""
 
 # Import necessary packages
+import os
+import glob
+import cv2
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
 from apo_model import ApoModel
 from calibrate import calibrate_distance_efov
 from calibrate import calibrate_distance_manually
 from calibrate import calibrate_distance_static
 from echo_int import calculate_echo_int
-
-import os
-import glob
-import pandas as pd
-import numpy as np
 from skimage.transform import resize
-import cv2
-import matplotlib.pyplot as plt
 from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
@@ -204,9 +204,9 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
-        try: 
+        try:
             dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
-            
+
             for imagepath in list_of_files:
 
                 if gui.should_stop:
@@ -249,7 +249,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             gui.is_running = False
 
 
-def calculate_batch(rootpath: str, filetype: str, modelpath: str, 
+def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                     depth: float, spacing: int, muscle: str,
                     scaling: str, gui):
     """Calculates area predictions for batches of (EFOV) US images
@@ -273,7 +273,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
         try:
-    
+
             for imagepath in list_of_files:
 
                 if gui.should_stop:
@@ -295,7 +295,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                     scalingline_length = calibrate_fn(
                     nonflipped_img, spacing, depth
                     )
-            
+
                 # predict area
                 pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
                                                      width, height)
@@ -313,10 +313,10 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                 pdf.savefig(fig)
                 plt.close(fig)
 
-        except: 
+        except:
             pass
 
-        finally: 
+        finally:
             # save predicted area results
             compile_save_results(rootpath, dataframe)
             # clean up
