@@ -20,7 +20,6 @@ class StaticScalingError(Exception):
 
 mlocs = []
 
-
 def region_of_interest(img, vertices):
     """Defines region of interest where ridges are searched.
 
@@ -43,7 +42,7 @@ def region_of_interest(img, vertices):
     return masked_image
 
 
-def mclick(event, y_val):
+def mclick(event, x_val, y_val, flags, param):
     """Detect mouse clicks for purpose of image calibration.
 
     Arguments:
@@ -52,13 +51,14 @@ def mclick(event, y_val):
         List of y coordinates of clicked points.
     """
     global mlocs
+
     # if the left mouse button was clicked, record the (x, y) coordinates
     if event == cv2.EVENT_LBUTTONDOWN:
         mlocs.append(y_val)
 
 
 def draw_the_lines(img, lines):
-    """Draws lines along the detected ridges.
+    """Draws lines along the detected ridges
 
     Arguments:
         Original image,
@@ -128,6 +128,9 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 lines=np.array([]),
                                 minLineLength=350,
                                 maxLineGap=1)
+        if lines is None:
+           return None, None
+        # draw lines on image
         image_with_lines = draw_the_lines(image, lines)
 
     # For VL
@@ -139,6 +142,9 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 lines=np.array([]),
                                 minLineLength=200,
                                 maxLineGap=3)  # Gap between lines
+        if lines is None:
+           return None, None
+        # draw lines on image
         image_with_lines = draw_the_lines(image, lines)
 
     # For GM / GL
@@ -150,10 +156,10 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 lines=np.array([]),
                                 minLineLength=250,
                                 maxLineGap=3)
+        if lines is None:
+           return None, None
+        # draw scaling lines on image
         image_with_lines = draw_the_lines(image, lines)
-
-    if lines is None:
-        raise ScalinglineError(f"Scalingline not found in {path_to_image}")
 
     # Calculate length of the scaling line
     scalingline = lines[0][0]
@@ -193,8 +199,8 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
     calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 175),
                                    axis=0))
 
-    if pd.isnull(calib_dist) is True:
-        raise StaticScalingError(f"Spacing not found in {path_to_image}")
+    if int(calib_dist) < 10:
+        return None, None, None
 
     scalingline_length = depth * calib_dist
     scale_statement = str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels'
@@ -202,7 +208,7 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
     return scalingline_length, imgscale, scale_statement
 
 
-def calibrate_distance_manually(nonflipped_img, spacing: int, depth: float):
+def calibrate_distance_manually(nonflipped_img, depth: float):
     """Calculates scalingline length of image based on manual specified
         distance between two points on image and image depth.
 
@@ -232,6 +238,6 @@ def calibrate_distance_manually(nonflipped_img, spacing: int, depth: float):
     calib_dist = np.abs(mlocs[0] - mlocs[1])
     scalingline_length = depth * calib_dist
 
-    print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
+    # print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
 
-    return float(scalingline_length)
+    return float(scalingline_length), str(calib_dist)

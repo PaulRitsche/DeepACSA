@@ -56,6 +56,20 @@ class DeepACSA:
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
 
+        # Style
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure('TFrame', background = 'cadet blue')
+        style.configure('TLabel', font=('Lucida Sans', 12),
+                        foreground = 'light cyan', background = 'cadet blue')
+        style.configure('TRadiobutton', background = 'cadet blue',
+                        foreground = 'light cyan', font = ('Lucida Sans', 12))
+        style.configure('TButton', background = 'linen',
+                        foreground = 'black', font = ('Verdana', 11))
+        style.configure('TEntry', font = ('Lucida Sans', 12), background = 'linen',
+                        foregrund = 'black')
+        style.configure('TCombobox', background = 'cadet blue', foreground = 'black')
+
         # Tooltips
         tip = Balloon(root)
 
@@ -64,10 +78,12 @@ class DeepACSA:
         self.input = StringVar()
         input_entry = ttk.Entry(main, width=30, textvariable=self.input)
         input_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
+        self.input.set("Desktop/DeepACSA/")
         # Model path
         self.model = StringVar()
         model_entry = ttk.Entry(main, width=30, textvariable=self.model)
         model_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
+        self.model.set("Desktop/DeepACSA/models")
 
         # Radiobuttons
         # Image Preparing
@@ -75,9 +91,10 @@ class DeepACSA:
         yes = ttk.Radiobutton(main, text="Yes", variable=self.image_preparation,
                               value="Yes")
         yes.grid(column=2, row=12, sticky=W)
-        no = ttk.Radiobutton(main, text="No", variable=self.image_preparation,
+        nope = ttk.Radiobutton(main, text="No", variable=self.image_preparation,
                              value="No")
-        no.grid(column=3, row=12, sticky=(W,E))
+        nope.grid(column=3, row=12, sticky=(W,E))
+        self.image_preparation.set("No")
 
         # Image Type
         self.scaling = StringVar()
@@ -96,6 +113,8 @@ class DeepACSA:
                         " If image taken in static B-mode, choose Static." +
                         " If image taken in other modality, choose Manual" +
                         " in order to scale the image manually.")
+        self.scaling.set("Line")
+
         # Comboboxes
         # Filetype
         self.filetype = StringVar()
@@ -109,6 +128,7 @@ class DeepACSA:
                         balloonmsg="Specifiy filetype of images in root" +
                         " that are taken as whole quadriceps images." +
                         " These images are being prepared for model prediction.")
+        self.filetype.set("/**/*.tif")
         # Muscles
         self.muscle = StringVar()
         muscle = ("VL", "RF", "GM", "GL")
@@ -119,6 +139,7 @@ class DeepACSA:
         tip.bind_widget(muscle_entry,
                         balloonmsg="Choose muscle from dropdown list, " +
                         "depending on which muscle is analyzed.")
+        self.muscle.set("RF")
         # Image Depth
         self.depth = StringVar()
         depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
@@ -130,6 +151,7 @@ class DeepACSA:
                         balloonmsg="Choose image depth from dropdown list " +
                         "or enter costum depth. Analyzed images must have " +
                         "the same depth.")
+        self.depth.set(5.5)
         # Spacing
         self.spacing = StringVar()
         spacing = (5, 10, 15, 20)
@@ -142,6 +164,7 @@ class DeepACSA:
                                    " in image form dropdown list. " +
                                    "Distance needs to be similar " +
                                    "in all analyzed images.")
+        self.spacing.set(10)
         # Buttons
         # Input directory
         input_button = ttk.Button(main, text="Input",
@@ -174,16 +197,18 @@ class DeepACSA:
         run_button.grid(column=2, row=13, sticky=(W, E))
 
         # Labels
-        ttk.Label(main, text="Directories",font=("bold")).grid(column=1, row=1, sticky=W)
+        ttk.Label(main, text="Directories",font=('Verdana', 14)).grid(column=1, row=1, sticky=W)
         ttk.Label(main, text="Root Directory").grid(column=1, row=2)
         ttk.Label(main, text="Model Path").grid(column=1, row=3)
-        ttk.Label(main, text="Image Properties", font=("bold")).grid(column=1, row=5, sticky=W)
+        ttk.Label(main, text="Image Properties", font=('Verdana', 14)).grid(column=1, row=5,
+                  sticky=W)
         ttk.Label(main, text="Image Type").grid(column=1, row=6)
         ttk.Label(main, text="Scaling Type").grid(column=1, row=7)
         ttk.Label(main, text="Muscle").grid(column=1, row=8)
         ttk.Label(main, text="Depth (cm)").grid(column=1, row=9)
         ttk.Label(main, text="Spacing (mm)").grid(column=1, row=10)
-        ttk.Label(main, text="Image Preparation", font=("bold")).grid(column=1, row=11, sticky=W)
+        ttk.Label(main, text="Image Preparation", font=('Verdana', 14)).grid(column=1, row=11,
+                  sticky=W)
         ttk.Label(main, text="Prepare Images").grid(column=1, row=12)
         for child in main.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -192,19 +217,26 @@ class DeepACSA:
         root.bind("<Return>", self.run_code)  # execute by pressing return
 
     def get_root_dir(self):
-
+        """ Asks the user to select the root directory.
+            Can have up to two sub-levels.
+            All images files (of the same type) in root are analysed.
+        """
         root_dir = filedialog.askdirectory()
         self.input.set(root_dir)
         return root_dir
 
     def get_model_path(self):
-
+        """ Asks the user to select the model path.
+        """
         model_dir = filedialog.askopenfilename()
         self.model.set(model_dir)
         return model_dir
 
     def prepare_imgs(self):
-
+        """ Asks the user whether to prepare to quadriceps images.
+            Output folders are automatically created containing images.
+            Location of imgages to be cropped must be specified.
+        """
         selected_image_preparation = self.image_preparation.get()
         selected_filetype = self.filetype.get()
         selected_input_dir = self.input.get()
@@ -226,6 +258,8 @@ class DeepACSA:
             pass
 
     def run_code(self):
+        """ The code is run upon clicking.
+        """
 
         if self.is_running:
             # don't run again if it is already running

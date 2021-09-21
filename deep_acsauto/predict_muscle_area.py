@@ -3,6 +3,7 @@
 # Import necessary packages
 import os
 import glob
+import warnings
 import cv2
 import pandas as pd
 import numpy as np
@@ -14,6 +15,7 @@ from calibrate import calibrate_distance_manually
 from calibrate import calibrate_distance_static
 from echo_int import calculate_echo_int
 from skimage.transform import resize
+from skimage import morphology
 from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
@@ -153,8 +155,9 @@ def calc_area(depth: float, scalingline_length: float, img: np.ndarray):
         3.813
     """
     pix_per_cm = scalingline_length / float(depth)
+    mask = morphology.remove_small_objects(img > 0.2, min_size=200, connectivity=2).astype(int)
     # Counts pixels with values != 0
-    pred_muscle_area = cv2.countNonZero(img) / pix_per_cm**2
+    pred_muscle_area = cv2.countNonZero(mask) / pix_per_cm**2
     # print(pred_muscle_area)
     return pred_muscle_area
 
@@ -201,11 +204,12 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     apo_model = ApoModel(modelpath)
+    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
+    failed_files = []
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
         try:
-            dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
 
             for imagepath in list_of_files:
 
@@ -220,6 +224,12 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                 calibrate_efov = calibrate_distance_efov
                 # find length of the scalingline
                 scalingline_length, img_lines = calibrate_efov(imagepath, muscle)
+                # check for ScalinglineError
+                if scalingline_length is None:
+                    fail = f"Scalingline not found in {imagepath}"
+                    failed_files.append(fail)
+                    warnings.warn("Image fails with ScalinglineError")
+                    continue
 
                 # predict area
                 pred_apo_t, fig = apo_model.predict_e(img, img_lines,
@@ -238,12 +248,14 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                 pdf.savefig(fig)
                 plt.close(fig)
 
-        except:
-            pass
-
         finally:
             # save predicted area values
             compile_save_results(rootpath, dataframe)
+            # write failed images in file
+            file = open(rootpath + "/failed_images.txt", "w")
+            for fail in failed_files:
+                file.write(fail + "\n")
+            file.close()
             # clean up
             gui.should_stop = False
             gui.is_running = False
@@ -269,6 +281,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
 
     apo_model = ApoModel(modelpath)
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
+    failed_files = []
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
@@ -290,15 +303,27 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                     scalingline_length, imgscale, dist = calibrate_fn(
                     nonflipped_img, imagepath, spacing, depth
                     )
+                    # check for StaticScalingError
+                    if scalingline_length is None:
+                        fail = f"Scalingline not found in {imagepath}"
+                        failed_files.append(fail)
+                        warnings.warn("Image fails with ScalinglineError")
+                        continue
+
+                    # predict area on image
+                    pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
+                                                          width, height)
+
                 else:
                     calibrate_fn = calibrate_distance_manually
-                    scalingline_length = calibrate_fn(
-                    nonflipped_img, spacing, depth
+                    scalingline_length, dist = calibrate_fn(
+                    nonflipped_img, depth
                     )
 
-                # predict area
-                pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
-                                                     width, height)
+                    # predict area on image
+                    pred_apo_t, fig = apo_model.predict_m(img, width, height)
+
+                #calculate echo intensity and area
                 echo = calculate_echo_int(nonflipped_img, pred_apo_t)
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 
@@ -313,12 +338,14 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                 pdf.savefig(fig)
                 plt.close(fig)
 
-        except:
-            pass
-
         finally:
             # save predicted area results
             compile_save_results(rootpath, dataframe)
+            # write failed images in file
+            file = open(rootpath + "/failed_images.txt", "w")
+            for fail in failed_files:
+                file.write(fail + "\n")
+            file.close()
             # clean up
             gui.should_stop = False
             gui.is_running = False

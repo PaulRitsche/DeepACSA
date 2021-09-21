@@ -79,8 +79,6 @@ required arguments:
   	  scaling type present in ultrasound image
 
 optional arguments:
-  -fp, --flip_flag_path 
-  	  file path to txt file containing flipping info
   -sp, --spacing
   	  distance (mm) between detetec vertical scaling lines
   -h, --help
