@@ -78,7 +78,6 @@ if __name__ == "__main__":
             args.rootpath,
             args.filetype,
             args.modelpath,
-            args.depth,
             args.spacing,
             args.muscle,
             args.scaling

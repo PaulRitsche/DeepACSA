@@ -112,7 +112,14 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
+        # remove outlying pixel structures
+        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.9, min_size=10000,
+                                                      connectivity=50).astype(int)
+        # remove holes in predicted area
+        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.9, area_threshold=10000,
+                                                    connectivity=50).astype(int)
 
+        # create figure with images
         fig = plt.figure(figsize=(20, 20))
         ax1 = fig.add_subplot(3, 1, 1)
         ax1.imshow(img_lines.squeeze(), cmap="gray")
@@ -123,11 +130,11 @@ class ApoModel:
         ax2.grid(False)
         ax2.set_title('Original image with CLAHE')
         ax3 = fig.add_subplot(3, 1, 3)
-        ax3.imshow(pred_apo_t.squeeze(), cmap="gray")
+        ax3.imshow(pred_apo_th.squeeze(), cmap="gray")
         ax3.grid(False)
         ax3.set_title('Predicted muscle area')
 
-        return pred_apo_t, fig
+        return pred_apo_th, fig
 
     def predict_s(self, img, img_lines, dist: str, width: int,
                       height: int, return_fig: bool = True):
@@ -155,8 +162,14 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
-        mask = morphology.remove_small_objects(pred_apo_t > 0.5, min_size=200, connectivity=2).astype(int)
+        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.9, min_size=10000,
+                                                      connectivity=50).astype(int)
+        # remove holes in predicted area
+        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.9, area_threshold=10000,
+                                                    connectivity=50).astype(int)
 
+
+        # create figure with images
         fig = plt.figure(figsize=(20, 20))
         ax1 = fig.add_subplot(3, 1, 1)
         ax1.imshow(img_lines.squeeze(), cmap="gray")
@@ -167,11 +180,11 @@ class ApoModel:
         ax2.grid(False)
         ax2.set_title('Original image with CLAHE')
         ax3 = fig.add_subplot(3, 1, 3)
-        ax3.imshow(mask.squeeze(), cmap="gray")
+        ax3.imshow(pred_apo_th.squeeze(), cmap="gray")
         ax3.grid(False)
         ax3.set_title('Predicted muscle area')
 
-        return pred_apo_t, fig
+        return pred_apo_th, fig
 
     def predict_m(self, img, width: int, height: int, return_fig: bool = True):
         """Runs a segmentation model on the input image and thresholds result.
@@ -198,15 +211,22 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
+        # remove outlying pixel structures
+        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.9, min_size=10000,
+                                                      connectivity=50).astype(int)
+        # remove holes in predicted area
+        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.9, area_threshold=10000,
+                                                    connectivity=50).astype(int)
 
+        # create figure with images
         fig = plt.figure(figsize=(20, 20))
         ax1 = fig.add_subplot(2, 1, 1)
         ax1.imshow(img.squeeze(), cmap='gray')
         ax1.grid(False)
         ax1.set_title('Original image with CLAHE')
         ax2 = fig.add_subplot(2, 1, 2)
-        ax2.imshow(pred_apo_t.squeeze(), cmap="gray")
+        ax2.imshow(pred_apo_th.squeeze(), cmap="gray")
         ax2.grid(False)
         ax2.set_title('Predicted muscle area')
 
-        return pred_apo_t, fig
+        return pred_apo_th, fig

@@ -83,7 +83,7 @@ class DeepACSA:
         self.model = StringVar()
         model_entry = ttk.Entry(main, width=30, textvariable=self.model)
         model_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-        self.model.set("Desktop/DeepACSA/models")
+        self.model.set("C:/Users/Paul/Documents/Deep_Learning/DeepACSA/models/model-RF-256.h5")
 
         # Radiobuttons
         # Image Preparing
@@ -293,7 +293,6 @@ class DeepACSA:
                     selected_input_dir,
                     selected_filetype,
                     selected_model_path,
-                    selected_depth,
                     selected_spacing,
                     selected_muscle,
                     selected_scaling,

@@ -171,16 +171,13 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     return scalingline_length, image_with_lines
 
 
-def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
-                              depth: float):
+def calibrate_distance_static(nonflipped_img, spacing: int):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
 
     Arguments:
         Original(nonflipped) image with scaling lines on right border,
-        Path to image that should be analyzed,
-        distance between scaling points (mm),
-        US scanning depth (cm).
+        distance between scaling points (mm).
 
     Returns:
         Length of scaling line (pixel).
@@ -196,32 +193,39 @@ def calibrate_distance_static(nonflipped_img, path_to_image: str, spacing: int,
     imgscale = img2[int(height*0.4):(height-int(height*0.3)), (width-int(width*0.15)):width]
 
     # search for rows with white pixels, calculate median of distance
-    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 175),
-                                   axis=0))
+    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 200),
+                                axis=0))
 
-    if int(calib_dist) < 10:
+    if int(calib_dist) < 1:
         return None, None, None
 
-    scalingline_length = depth * calib_dist
+    # calculate calib_dist for 10mm
+    if spacing == 5:
+        calib_dist = calib_dist * 2
+    if spacing == 15:
+        calib_dist = calib_dist * (2/3)
+    if spacing == 20:
+        calib_dist = calib_dist / 2
+
+    #scalingline_length = depth * calib_dist
     scale_statement = str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels'
 
-    return scalingline_length, imgscale, scale_statement
+    return calib_dist, imgscale, scale_statement
 
 
-def calibrate_distance_manually(nonflipped_img, depth: float):
+def calibrate_distance_manually(nonflipped_img, spacing):
     """Calculates scalingline length of image based on manual specified
         distance between two points on image and image depth.
 
     Arguments:
         Original(nonflipped) image,
-        distance between scaling points (mm),
-        US scanning depth (cm).
+        distance between scaling points (mm).
 
     Returns:
         Length of scaling line (pixel).
 
     Example:
-        >>>calibrate_distance_manually(Image, 5, 4.5)
+        >>>calibrate_distance_manually(Image, 5)
         5 mm corresponds to 99 pixels
     """
     img2 = np.uint8(nonflipped_img)
@@ -236,8 +240,15 @@ def calibrate_distance_manually(nonflipped_img, depth: float):
         cv2.destroyAllWindows()
 
     calib_dist = np.abs(mlocs[0] - mlocs[1])
-    scalingline_length = depth * calib_dist
+
+    # calculate calib_dist for 10mm
+    if spacing == 5:
+        calib_dist = calib_dist * 2
+    if spacing == 15:
+        calib_dist = calib_dist * (2/3)
+    if spacing == 20:
+        calib_dist = calib_dist / 2
 
     # print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
 
-    return float(scalingline_length), str(calib_dist)
+    return fl, str(calib_dist)

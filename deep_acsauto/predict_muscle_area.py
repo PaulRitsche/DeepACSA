@@ -139,7 +139,7 @@ def plot_image(image):
     plt.savefig("Ridge_test_1.tif")
 
 
-def calc_area(depth: float, scalingline_length: float, img: np.ndarray):
+def calc_area(calib_dist: float, img: np.ndarray):
     """Calculates predicted muscle aread.
 
     Arguments:
@@ -151,14 +151,13 @@ def calc_area(depth: float, scalingline_length: float, img: np.ndarray):
         Predicted muscle area (cm²).
 
     Example:
-        >>>calc_area(float(4.5), int(571), Image1.tif)
+        >>>calc_area(int(54), Image1.tif)
         3.813
     """
-    pix_per_cm = scalingline_length / float(depth)
-    mask = morphology.remove_small_objects(img > 0.2, min_size=200, connectivity=2).astype(int)
+    pix_per_cm = calib_dist
     # Counts pixels with values != 0
-    pred_muscle_area = cv2.countNonZero(mask) / pix_per_cm**2
-    # print(pred_muscle_area)
+    pred_muscle_area = cv2.countNonZero(img) / pix_per_cm**2
+    print(pred_muscle_area)
     return pred_muscle_area
 
 
@@ -235,6 +234,9 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                 pred_apo_t, fig = apo_model.predict_e(img, img_lines,
                                                           width, height)
                 echo = calculate_echo_int(img_copy, pred_apo_t)
+                if echo is None:
+                    warnings.warn("Image fails with EchoIntensityError")
+                    continue
                 area = calc_area(depth, scalingline_length, pred_apo_t)
 
                 # append results to dataframe
@@ -252,18 +254,18 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             # save predicted area values
             compile_save_results(rootpath, dataframe)
             # write failed images in file
-            file = open(rootpath + "/failed_images.txt", "w")
-            for fail in failed_files:
-                file.write(fail + "\n")
-            file.close()
+            if len(failed_files) >= 1:
+                file = open(rootpath + "/failed_images.txt", "w")
+                for fail in failed_files:
+                    file.write(fail + "\n")
+                file.close()
             # clean up
             gui.should_stop = False
             gui.is_running = False
 
 
 def calculate_batch(rootpath: str, filetype: str, modelpath: str,
-                    depth: float, spacing: int, muscle: str,
-                    scaling: str, gui):
+                    spacing: int, muscle: str, scaling: str, gui):
     """Calculates area predictions for batches of (EFOV) US images
         not containing a continous scaling line.
 
@@ -272,7 +274,6 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
             type of image files,
             path to txt file containing flipping information for images,
             path to model used for predictions,
-            ultrasound scanning depth,
             distance between (vertical) scaling lines (mm),
             analyzed muscle,
             scaling type.
@@ -300,32 +301,32 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                 if scaling == "Bar":
                     calibrate_fn = calibrate_distance_static
                     # find length of the scaling line
-                    scalingline_length, imgscale, dist = calibrate_fn(
-                    nonflipped_img, imagepath, spacing, depth
-                    )
+                    calib_dist, imgscale, scale_statement = calibrate_fn(nonflipped_img, spacing)
                     # check for StaticScalingError
-                    if scalingline_length is None:
-                        fail = f"Scalingline not found in {imagepath}"
+                    if calib_dist is None:
+                        fail = f"Scalingbars not found in {imagepath}"
                         failed_files.append(fail)
-                        warnings.warn("Image fails with ScalinglineError")
+                        warnings.warn("Image fails with StaticScalingError")
                         continue
 
                     # predict area on image
-                    pred_apo_t, fig = apo_model.predict_s(img, imgscale, dist,
+                    pred_apo_t, fig = apo_model.predict_s(img, imgscale, scale_statement,
                                                           width, height)
 
                 else:
                     calibrate_fn = calibrate_distance_manually
-                    scalingline_length, dist = calibrate_fn(
-                    nonflipped_img, depth
-                    )
+                    calib_dist = calibrate_fn(nonflipped_img, spacing)
 
                     # predict area on image
                     pred_apo_t, fig = apo_model.predict_m(img, width, height)
 
                 #calculate echo intensity and area
                 echo = calculate_echo_int(nonflipped_img, pred_apo_t)
-                area = calc_area(depth, scalingline_length, pred_apo_t)
+                if echo is None:
+                    warnings.warn("Image fails with EchoIntensityError")
+                    continue
+                area = calc_area(calib_dist, pred_apo_t)
+                print(area)
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
@@ -342,10 +343,11 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
             # save predicted area results
             compile_save_results(rootpath, dataframe)
             # write failed images in file
-            file = open(rootpath + "/failed_images.txt", "w")
-            for fail in failed_files:
-                file.write(fail + "\n")
-            file.close()
+            if len(failed_files) >= 1:
+                file = open(rootpath + "/failed_images.txt", "w")
+                for fail in failed_files:
+                    file.write(fail + "\n")
+                file.close()
             # clean up
             gui.should_stop = False
             gui.is_running = False
