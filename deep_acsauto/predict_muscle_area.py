@@ -139,7 +139,7 @@ def plot_image(image):
     plt.savefig("Ridge_test_1.tif")
 
 
-def calc_area(calib_dist: float, img: np.ndarray):
+def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
     """Calculates predicted muscle aread.
 
     Arguments:
@@ -151,13 +151,31 @@ def calc_area(calib_dist: float, img: np.ndarray):
         Predicted muscle area (cm²).
 
     Example:
+        >>>calc_area(float(5), int(254), Image1.tif)
+        3.813
+    """
+    pix_per_cm = scalingline_length / depth
+    # Counts pixels with values != 0
+    pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
+    return pred_muscle_area
+
+def calc_area(calib_dist: float, img: np.ndarray):
+    """Calculates predicted muscle aread.
+
+    Arguments:
+        Distance between scaling bars in pixel,
+        thresholded binary model prediction.
+
+    Returns:
+        Predicted muscle area (cm²).
+
+    Example:
         >>>calc_area(int(54), Image1.tif)
         3.813
     """
     pix_per_cm = calib_dist
     # Counts pixels with values != 0
-    pred_muscle_area = cv2.countNonZero(img) / pix_per_cm**2
-    print(pred_muscle_area)
+    pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
     return pred_muscle_area
 
 
@@ -177,7 +195,7 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     >>>compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif,
                             dataframe)
     """
-    excelpath = rootpath + '/Results.xlsx'
+    excelpath = rootpath + '/Results_Single_L.xlsx'
     if os.path.exists(excelpath):
         with pd.ExcelWriter(excelpath, mode='a') as writer:
             data = dataframe
@@ -206,7 +224,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
     failed_files = []
 
-    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images_Single_L.pdf') as pdf:
 
         try:
 
@@ -237,7 +255,9 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                 if echo is None:
                     warnings.warn("Image fails with EchoIntensityError")
                     continue
-                area = calc_area(depth, scalingline_length, pred_apo_t)
+
+                # calculate area
+                area = calc_area_efov(depth, scalingline_length, pred_apo_t)
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
@@ -284,7 +304,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
     failed_files = []
 
-    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images_Single_L.pdf') as pdf:
 
         try:
 
@@ -326,7 +346,6 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                     warnings.warn("Image fails with EchoIntensityError")
                     continue
                 area = calc_area(calib_dist, pred_apo_t)
-                print(area)
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,

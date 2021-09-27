@@ -59,19 +59,24 @@ class DeepACSA:
         # Style
         style = ttk.Style()
         style.theme_use('clam')
-        style.configure('TFrame', background = 'cadet blue')
+        style.configure('TFrame', background = 'DarkSlateGray3')
         style.configure('TLabel', font=('Lucida Sans', 12),
-                        foreground = 'light cyan', background = 'cadet blue')
-        style.configure('TRadiobutton', background = 'cadet blue',
-                        foreground = 'light cyan', font = ('Lucida Sans', 12))
+                        foreground = 'black', background = 'DarkSlateGray3')
+        style.configure('TRadiobutton', background = 'DarkSlateGray3',
+                        foreground = 'black', font = ('Lucida Sans', 12))
         style.configure('TButton', background = 'linen',
-                        foreground = 'black', font = ('Verdana', 11))
+                        foreground = 'black', font = ('Lucida Sans', 11))
         style.configure('TEntry', font = ('Lucida Sans', 12), background = 'linen',
                         foregrund = 'black')
         style.configure('TCombobox', background = 'cadet blue', foreground = 'black')
 
         # Tooltips
         tip = Balloon(root)
+        tip.config(bg="HotPink3", bd=3)
+        tip.label.config(bg="linen", fg="black")
+        tip.message.config(bg="linen", fg="black", font=("Lucida Sans", 10))
+        for sub in tip.subwidgets_all():
+            sub.configure(bg='linen')
 
         # Paths
         # Input directory
@@ -83,7 +88,7 @@ class DeepACSA:
         self.model = StringVar()
         model_entry = ttk.Entry(main, width=30, textvariable=self.model)
         model_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-        self.model.set("C:/Users/Paul/Documents/Deep_Learning/DeepACSA/models/model-RF-256.h5")
+        self.model.set("C:/Users/Paul/Documents/Deep_Learning/DeepACSA/models/model-RF-512.h5")
 
         # Radiobuttons
         # Image Preparing
@@ -108,12 +113,12 @@ class DeepACSA:
                                  value="Manual")
         manual.grid(column=4, row=7, sticky=E)
         tip.bind_widget(efov,
-                        balloonmsg="Choose image type from dropdown list." +
+                        balloonmsg="Choose image type." +
                         " If image taken in panoramic mode, choose EFOV." +
                         " If image taken in static B-mode, choose Static." +
                         " If image taken in other modality, choose Manual" +
                         " in order to scale the image manually.")
-        self.scaling.set("Line")
+        self.scaling.set("Bar")
 
         # Comboboxes
         # Filetype
@@ -124,11 +129,11 @@ class DeepACSA:
         filetype_entry["values"] = filetype
         # filetype_entry["state"] = "readonly"
         filetype_entry.grid(column=2, row=6, sticky=E)
-        tip.bind_widget(efov,
+        tip.bind_widget(filetype_entry,
                         balloonmsg="Specifiy filetype of images in root" +
                         " that are taken as whole quadriceps images." +
                         " These images are being prepared for model prediction.")
-        self.filetype.set("/**/*.tif")
+        self.filetype.set("/**/*.tiff")
         # Muscles
         self.muscle = StringVar()
         muscle = ("VL", "RF", "GM", "GL")

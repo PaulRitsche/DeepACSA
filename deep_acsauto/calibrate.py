@@ -103,12 +103,13 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     # Transform BGR Image to RGB
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     height = image.shape[0]
+    width = image.shape[1]
     # Define ROI with scaling lines
     region_of_interest_vertices = [
-        (150, height),
-        (150, 80),
-        (1100, 80),
-        (1100, height)
+        (10, height),
+        (10, height*0.1),
+        (width, height*0.1),
+        (width, height)
     ]
     # Transform RGB to greyscale for edge detection
     gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -126,10 +127,10 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 theta=np.pi/180,
                                 threshold=50,
                                 lines=np.array([]),
-                                minLineLength=350,
-                                maxLineGap=1)
+                                minLineLength=325,
+                                maxLineGap=3)
         if lines is None:
-           return None, None
+            return None, None
         # draw lines on image
         image_with_lines = draw_the_lines(image, lines)
 
@@ -143,7 +144,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 minLineLength=200,
                                 maxLineGap=3)  # Gap between lines
         if lines is None:
-           return None, None
+            return None, None
         # draw lines on image
         image_with_lines = draw_the_lines(image, lines)
 
@@ -155,9 +156,9 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
                                 threshold=50,  # Only lines with higher vote
                                 lines=np.array([]),
                                 minLineLength=250,
-                                maxLineGap=3)
+                                maxLineGap=5)
         if lines is None:
-           return None, None
+            return None, None
         # draw scaling lines on image
         image_with_lines = draw_the_lines(image, lines)
 
@@ -171,7 +172,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     return scalingline_length, image_with_lines
 
 
-def calibrate_distance_static(nonflipped_img, spacing: int):
+def calibrate_distance_static(nonflipped_img, spacing: str):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
 
@@ -190,25 +191,25 @@ def calibrate_distance_static(nonflipped_img, spacing: int):
     img2 = np.uint8(nonflipped_img)
     height = img2.shape[0]
     width = img2.shape[1]
-    imgscale = img2[int(height*0.4):(height-int(height*0.3)), (width-int(width*0.15)):width]
+    imgscale = img2[int(height*0.4):(height), (width-int(width*0.15)):width]
 
     # search for rows with white pixels, calculate median of distance
-    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 200),
+    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 150),
                                 axis=0))
 
     if int(calib_dist) < 1:
         return None, None, None
 
     # calculate calib_dist for 10mm
-    if spacing == 5:
+    if spacing == "5":
         calib_dist = calib_dist * 2
-    if spacing == 15:
+    if spacing == "15":
         calib_dist = calib_dist * (2/3)
-    if spacing == 20:
+    if spacing == "20":
         calib_dist = calib_dist / 2
 
     #scalingline_length = depth * calib_dist
-    scale_statement = str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels'
+    scale_statement = '10 mm corresponds to ' + str(calib_dist) + ' pixels'
 
     return calib_dist, imgscale, scale_statement
 
@@ -251,4 +252,4 @@ def calibrate_distance_manually(nonflipped_img, spacing):
 
     # print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
 
-    return fl, str(calib_dist)
+    return calib_dist
