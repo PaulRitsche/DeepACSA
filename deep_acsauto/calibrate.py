@@ -240,8 +240,9 @@ def calibrate_distance_manually(nonflipped_img, spacing):
     if key == ord("q"):
         cv2.destroyAllWindows()
 
+    global mlocs
     calib_dist = np.abs(mlocs[0] - mlocs[1])
-
+    mlocs = []
     # calculate calib_dist for 10mm
     if spacing == 5:
         calib_dist = calib_dist * 2

@@ -299,7 +299,6 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
             scaling type.
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
-
     apo_model = ApoModel(modelpath)
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
     failed_files = []
@@ -309,7 +308,6 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
         try:
 
             for imagepath in list_of_files:
-
                 if gui.should_stop:
                     # there was an input to stop the calculations
                     break
