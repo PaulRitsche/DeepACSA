@@ -195,7 +195,7 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     >>>compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif,
                             dataframe)
     """
-    excelpath = rootpath + '/Results_Single_L.xlsx'
+    excelpath = rootpath + '/Results_256.xlsx'
     if os.path.exists(excelpath):
         with pd.ExcelWriter(excelpath, mode='a') as writer:
             data = dataframe
@@ -224,7 +224,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
     failed_files = []
 
-    with PdfPages(rootpath + '/Analyzed_images_Single_L.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images_256.pdf') as pdf:
 
         try:
 
@@ -303,7 +303,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
     failed_files = []
 
-    with PdfPages(rootpath + '/Analyzed_images_Single_L.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images_256.pdf') as pdf:
 
         try:
 

@@ -113,7 +113,7 @@ class ApoModel:
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
         # remove outlying pixel structures
-        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=5000,
+        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=2000,
                                                       connectivity=50).astype(int)
         # remove holes in predicted area
         pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.2, area_threshold=5000,
@@ -162,7 +162,7 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
-        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=5000,
+        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=2000,
                                                       connectivity=50).astype(int)
         # remove holes in predicted area
         pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.2, area_threshold=5000,
@@ -212,7 +212,7 @@ class ApoModel:
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
         # remove outlying pixel structures
-        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=5000,
+        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=2000,
                                                       connectivity=50).astype(int)
         # remove holes in predicted area
         pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.2, area_threshold=5000,

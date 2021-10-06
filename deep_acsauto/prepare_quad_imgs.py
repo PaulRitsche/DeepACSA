@@ -38,7 +38,7 @@ def prepare_quad_vl_imgs(rootpath: str, filetype: str, output: str):
         img_trans = cv2.warpAffine(img_rot, trans_m, (cols,rows))
         img_flip = cv2.flip(img_trans, 1)
         # Crop image
-        img_crop = img_flip[150:, 200:700]
+        img_crop = img_flip[150:, 350:700]
         #cv2.imshow("img_crop", img_crop)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()

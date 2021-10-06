@@ -55,6 +55,7 @@ def mclick(event, x_val, y_val, flags, param):
     # if the left mouse button was clicked, record the (x, y) coordinates
     if event == cv2.EVENT_LBUTTONDOWN:
         mlocs.append(y_val)
+        mlocs.append(x_val)
 
 
 def draw_the_lines(img, lines):
@@ -241,7 +242,10 @@ def calibrate_distance_manually(nonflipped_img, spacing):
         cv2.destroyAllWindows()
 
     global mlocs
-    calib_dist = np.abs(mlocs[0] - mlocs[1])
+
+    calib_dist = np.abs(math.sqrt((mlocs[3] - mlocs[1])**2 + (mlocs[2] - mlocs[0])**2))
+    print(mlocs)
+    print(calib_dist)
     mlocs = []
     # calculate calib_dist for 10mm
     if spacing == 5:
