@@ -1,7 +1,9 @@
+""" Python class to predict muscle area"""
+
 import numpy as np
-import os
+from cv2 import arcLength, findContours, RETR_LIST, CHAIN_APPROX_SIMPLE
 from skimage.transform import resize
-from skimage import morphology
+from skimage import morphology, measure
 from keras import backend as K
 from keras.models import load_model  # Model
 import tensorflow as tf
@@ -87,6 +89,43 @@ class ApoModel:
         pred_apo = self.model_apo.predict(img)
         return pred_apo
 
+    def postprocess_image(self, img):
+        """Deletes unnecessary areas, fills holes and calculates the length
+           of the detected largest contour.
+
+        Arguments:
+            Input image
+
+        Returns:
+            Image containing only largest area of pixels with holes removed.
+            Float containing circumference.
+        """
+        # find pixel regions and label them
+        label_img = measure.label(img)
+        regions = measure.regionprops(label_img)
+
+        # sort regions for area
+        regions.sort(key=lambda x: x.area, reverse=True)
+
+        # find label with larges area
+        if len(regions) > 1:
+            for rg in regions[1:]:
+                label_img[rg.coords[:,0], rg.coords[:,1]] = 0
+
+        label_img[label_img != 0] = 1
+        pred_apo_tf = label_img
+
+        # remove holes in predicted area
+        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.5, area_threshold=5000,
+                                                    connectivity=100).astype(int)
+        # calculate circumference
+        pred_apo_conts = pred_apo_th.astype(np.uint8)
+        conts, hirarchy = findContours(pred_apo_conts, RETR_LIST, CHAIN_APPROX_SIMPLE)
+        for cont in conts:
+            circum = arcLength(cont, True)
+
+        return circum, pred_apo_th
+
     def predict_e(self, img, img_lines, width: int,
                   height: int, return_fig: bool = True):
         """Runs a segmentation model on the input image and thresholds result.
@@ -112,12 +151,9 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
-        # remove outlying pixel structures
-        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=2000,
-                                                      connectivity=50).astype(int)
-        # remove holes in predicted area
-        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.2, area_threshold=5000,
-                                                    connectivity=50).astype(int)
+
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
 
         # create figure with images
         fig = plt.figure(figsize=(20, 20))
@@ -134,7 +170,7 @@ class ApoModel:
         ax3.grid(False)
         ax3.set_title('Predicted muscle area')
 
-        return pred_apo_th, fig
+        return circum, pred_apo_th, fig
 
     def predict_s(self, img, img_lines, dist: str, width: int,
                       height: int, return_fig: bool = True):
@@ -162,12 +198,9 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
-        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=2000,
-                                                      connectivity=50).astype(int)
-        # remove holes in predicted area
-        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.2, area_threshold=5000,
-                                                    connectivity=50).astype(int)
 
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
 
         # create figure with images
         fig = plt.figure(figsize=(20, 20))
@@ -184,7 +217,7 @@ class ApoModel:
         ax3.grid(False)
         ax3.set_title('Predicted muscle area')
 
-        return pred_apo_th, fig
+        return circum, pred_apo_th, fig
 
     def predict_m(self, img, width: int, height: int, return_fig: bool = True):
         """Runs a segmentation model on the input image and thresholds result.
@@ -211,12 +244,9 @@ class ApoModel:
 
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
-        # remove outlying pixel structures
-        pred_apo_tf = morphology.remove_small_objects(pred_apo_t > 0.2, min_size=2000,
-                                                      connectivity=50).astype(int)
-        # remove holes in predicted area
-        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.2, area_threshold=5000,
-                                                    connectivity=50).astype(int)
+
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
 
         # create figure with images
         fig = plt.figure(figsize=(20, 20))
@@ -229,4 +259,4 @@ class ApoModel:
         ax2.grid(False)
         ax2.set_title('Predicted muscle area')
 
-        return pred_apo_th, fig
+        return circum, pred_apo_th, fig

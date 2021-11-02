@@ -10,15 +10,6 @@ from PIL import Image
 from predict_muscle_area import calculate_batch, calculate_batch_efov
 from prepare_quad_imgs import prepare_quad_vl_imgs, prepare_quad_rf_imgs
 
-
-# Use to create xla-device and limit GPU memory growth
-#os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
-#gpus = tf.config.list_physical_devices('GPU')
-#tf.config.experimental.set_virtual_device_configuration(
-#        gpus[0],
-#        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=4096)])
-
-
 class DeepACSA:
     """Class which provides the utility of a graphical user interface.
 

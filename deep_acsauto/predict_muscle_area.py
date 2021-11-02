@@ -4,10 +4,12 @@
 import os
 import glob
 import warnings
+import time
 import cv2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 from apo_model import ApoModel
 from calibrate import calibrate_distance_efov
@@ -15,7 +17,6 @@ from calibrate import calibrate_distance_manually
 from calibrate import calibrate_distance_static
 from echo_int import calculate_echo_int
 from skimage.transform import resize
-from skimage import morphology
 from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
@@ -136,7 +137,7 @@ def plot_image(image):
     fig, (ax1) = plt.subplots(1, 1, figsize=(15, 15))
     ax1.imshow(img, cmap="gray")
     ax1.grid(False)
-    plt.savefig("Ridge_test_1.tif")
+    plt.savefig("Ridge.tif")
 
 
 def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
@@ -195,7 +196,7 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     >>>compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif,
                             dataframe)
     """
-    excelpath = rootpath + '/Results_256.xlsx'
+    excelpath = rootpath + '/Results.xlsx'
     if os.path.exists(excelpath):
         with pd.ExcelWriter(excelpath, mode='a') as writer:
             data = dataframe
@@ -221,12 +222,13 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     apo_model = ApoModel(modelpath)
-    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
+    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²", "Echo_intensity", "A_C_ratio", "Circumference"])
     failed_files = []
 
-    with PdfPages(rootpath + '/Analyzed_images_256.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
         try:
+           #start_time = time.time()
 
             for imagepath in list_of_files:
 
@@ -249,8 +251,8 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                     continue
 
                 # predict area
-                pred_apo_t, fig = apo_model.predict_e(img, img_lines,
-                                                          width, height)
+                circum, pred_apo_t, fig = apo_model.predict_e(img, img_lines,
+                                                             width, height)
                 echo = calculate_echo_int(img_copy, pred_apo_t)
                 if echo is None:
                     warnings.warn("Image fails with EchoIntensityError")
@@ -258,17 +260,23 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
                 # calculate area
                 area = calc_area_efov(depth, scalingline_length, pred_apo_t)
+                area_circum_ratio = (area / circum) * 100
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
                                               "Muscle": muscle,
                                               "Area_cm²": area,
-                                              "Echo_intensity": echo},
+                                              "Echo_intensity": echo,
+                                              "A_C_ratio": area_circum_ratio,
+                                              "Circumference": circum},
                                              ignore_index=True)
 
                 # save figures
                 pdf.savefig(fig)
                 plt.close(fig)
+                # time duration of analysis of single image
+                #duration = time.time() - start_time
+                #print(f"duration: {duration}")
 
         finally:
             # save predicted area values
@@ -300,12 +308,13 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
     apo_model = ApoModel(modelpath)
-    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
+    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²", "Echo_intensity", "A_C_ratio", "Circumference"])
     failed_files = []
 
-    with PdfPages(rootpath + '/Analyzed_images_256.pdf') as pdf:
+    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
         try:
+            #start_time = time.time()
 
             for imagepath in list_of_files:
                 if gui.should_stop:
@@ -328,15 +337,15 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                         continue
 
                     # predict area on image
-                    pred_apo_t, fig = apo_model.predict_s(img, imgscale, scale_statement,
-                                                          width, height)
+                    circum, pred_apo_t, fig = apo_model.predict_s(img, imgscale, scale_statement,
+                                                                  width, height)
 
                 else:
                     calibrate_fn = calibrate_distance_manually
                     calib_dist = calibrate_fn(nonflipped_img, spacing)
 
                     # predict area on image
-                    pred_apo_t, fig = apo_model.predict_m(img, width, height)
+                    circum, pred_apo_t, fig = apo_model.predict_m(img, width, height)
 
                 #calculate echo intensity and area
                 echo = calculate_echo_int(nonflipped_img, pred_apo_t)
@@ -344,17 +353,23 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                     warnings.warn("Image fails with EchoIntensityError")
                     continue
                 area = calc_area(calib_dist, pred_apo_t)
+                area_circum_ratio = (area / circum) * 100
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
                                               "Muscle": muscle,
                                               "Area_cm²": area,
-                                              "Echo_intensity": echo},
+                                              "Echo_intensity": echo,
+                                              "A_C_ratio": area_circum_ratio,
+                                              "Circumference": circum},
                                               ignore_index=True)
 
                 # save figures
                 pdf.savefig(fig)
                 plt.close(fig)
+                # time duration of analysis of single image
+                #duration = time.time() - start_time
+                #print(f"duration: {duration}")
 
         finally:
             # save predicted area results
