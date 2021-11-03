@@ -5,7 +5,12 @@ All following commands should be entered in your command prompt / terminal.
 
 ## Installation 
 
-1. Clone the Github repository:
+1. Git setup (Optional): 
+
+This step is redundant if you download the repository as a .zip file and not use Git functionalities. Git is not required to run DeepACSA.
+If you want to use Git, install it https://git-scm.com/download/win and set it up according to the instructions. 
+
+2. Clone the Github repository:
 
 Create and navigate to the folder where you want to save the project. For example:
 
@@ -22,7 +27,9 @@ When you have navigated to your preferred folder, clone the git repository.
 git clone https://github.com/PaulRitsche/DeepACSA
 ```
 
-2. Anaconda setup (only before first usage)
+You can also download the .zip file of the repository and save it to a specific folder. Navigate to the folder and continue with the Anaconda setup.
+
+3. Anaconda setup (only before first usage)
 
 Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
 Open an Anaconda prompt window and create a virtual environment (This may take some time):
@@ -39,7 +46,7 @@ conda activate DeepACSA
 
 ...And you are ready to go!
 
-3. GPU-Setup (Optional): 
+4. GPU-Setup (Optional): 
 
 If you are using a GPU and want to train your own models, make sure your CUDA version complies with our tensorflow version (which is 2.4.0). 
 
