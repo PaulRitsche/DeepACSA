@@ -1,44 +1,47 @@
-# Deep-ACSAuto
+# DeepACSA
 
-Deep-ACSAuto is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
+DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
+All following commands should be entered in your command prompt / terminal.
 
 ## Installation 
 
-1. Clone the Github repository. Type the following code in your command window:
+1. Clone the Github repository. 
+
+Create and navigate to the folder where you want to save the project. For example:
 
 ```sh
-git clone https://github.com/PaulRitsche/DeepACSA.git
+mkdir DeepACSA
+```
+```sh
+cd DeepACSA
+```
+
+When you have navigated to your preferred folder, clone the git repository.
+
+```sh
+git clone https://github.com/PaulRitsche/DeepACSA
 ```
 
 2. Anaconda setup (only before first usage)
 
 Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
-Open an Anaconda prompt window and create a virtual environment using the following as an example (you can choose the name of the environment freely): 
+Open an Anaconda prompt window and create a virtual environment (This may take some time):
 
 ```sh
-conda create --name DeepACSA python=3.8
+conda env create -f environment.yml 
 ```
 
 Activate the virtual environment by typing:
 
 ```sh
-conda activate DeepACSA 
-```
-Change the directory to where you have saved the project folder, e.g. by typing:
-
-```sh
-cd c:/Users/Paul/Desktop/DeepACSA
+conda activate DeepACSA
 ```
 
-Then, type the following command to install all requirements for the code (takes some time): 
+...And you are ready to go!
 
-```sh
-pip install -r requirements.txt
-```
+3. GPU-Setup (Optional): 
 
-3. GPU setup
-
-When you use a GPU or want to train your own models, remember to check whether your CUDA setup matches the tensorflow version of this project.
+If you are using a GPU and want to train your own models, make sure your CUDA version complies with our tensorflow version (which is 2.4.0). 
 
 ## Usage
 
@@ -59,7 +62,7 @@ python deep_asca_gui.py
 Type the here presented command into the prompt window, while entering the required parameters. 
 
 ```sh
-deep_acsa [-h] -rp ROOTPATH [-fp FLIP_FLAG_PATH] -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
+deep_acsa [-h] -rp ROOTPATH -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
 
 ```
 
