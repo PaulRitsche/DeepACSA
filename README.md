@@ -1,6 +1,6 @@
-# Deep-ACSAuto
+# DeepACSA
 
-Deep-ACSAuto is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
+DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 
 ## Installation 
 
@@ -10,25 +10,25 @@ Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Down
 Open an Anaconda prompt window and create a virtual environment using the following as an example (you can choose the name of the environment freely): 
 
 ```sh
-conda create --name Deep_ACSAuto python=3.8
+conda create --name DeepACSA python=3.8
 ```
 
 Activate the virtual environment by typing:
 
 ```sh
-conda activate Deep_ACSAuto 
+conda activate DeepACSA
 ```
 Change the directory to where you want to saved the project folder, e.g. by typing:
 
 ```sh
-cd c:/Users/Paul/Desktop/Deep_ACSAuto
+cd c:/Users/Paul/Desktop/DeepACSA
 ```
 
 2. Clone the Github repository. Type the following code in your command window:
 When you have completed setting up conda and navigated to the your preferred folder, clone the git repository.
 
 ```sh
-git clone https://github.com/PaulRitsche/ACSAuto_DeepLearning
+git clone https://github.com/PaulRitsche/DeepACSA
 ```
 
 Then, type the following command to install all requirements for the code (takes some time): 
