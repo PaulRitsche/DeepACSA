@@ -5,7 +5,7 @@ All following commands should be entered in your command prompt / terminal.
 
 ## Installation 
 
-1. Clone the Github repository. 
+1. Clone the Github repository:
 
 Create and navigate to the folder where you want to save the project. For example:
 
