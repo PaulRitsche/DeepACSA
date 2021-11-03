@@ -4,13 +4,7 @@ Deep-ACSAuto is an open-source tool to evaluate the anatomical cross-sectional a
 
 ## Installation 
 
-1. Clone the Github repository. Type the following code in your command window:
-
-```sh
-git clone https://github.com/PaulRitsche/ACSAuto_DeepLearning
-```
-
-2. Anaconda setup (only before first usage)
+1. Anaconda setup (only before first usage)
 
 Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
 Open an Anaconda prompt window and create a virtual environment using the following as an example (you can choose the name of the environment freely): 
@@ -24,10 +18,17 @@ Activate the virtual environment by typing:
 ```sh
 conda activate Deep_ACSAuto 
 ```
-Change the directory to where you have saved the project folder, e.g. by typing:
+Change the directory to where you want to saved the project folder, e.g. by typing:
 
 ```sh
 cd c:/Users/Paul/Desktop/Deep_ACSAuto
+```
+
+2. Clone the Github repository. Type the following code in your command window:
+When you have completed setting up conda and navigated to the your preferred folder, clone the git repository.
+
+```sh
+git clone https://github.com/PaulRitsche/ACSAuto_DeepLearning
 ```
 
 Then, type the following command to install all requirements for the code (takes some time): 
