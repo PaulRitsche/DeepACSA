@@ -2,8 +2,8 @@
 
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 All following commands should be entered in your command prompt / terminal.
-More information about DeepACSA can be found in our publication (LINK) and the instructional video (LINK). 
-If you find this project helpful, please remember to cite us. 
+More information about the usage of DeepACSA can be found in the instructional video (LINK). 
+If you find this work useful, please remember to cite the corresponding paper (LINK), where more information about the model architecture and perfrmance can be found as well. 
 
 ## Installation 
 
@@ -112,10 +112,10 @@ python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\De
 
 This is an example command for an extended-field-of-view ultrasound image containing scaling bars:
 ```sh
-python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -sp 5 -m "RF" -s "Static"
+python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Static"
 ```
 This is an example command for an extended-field-of-view ultrasound image where manual scaling is used:
 ```sh
-python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -sp 5 -m "RF" -s "Manual"
+python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Manual"
 ```
 Please note that optional parameters can be used for "Static" and "Manual" scaling options. 
