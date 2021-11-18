@@ -2,6 +2,8 @@
 
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 All following commands should be entered in your command prompt / terminal.
+More information about DeepACSA can be found in our publication (LINK) and the instructional video (LINK). 
+If you find this project helpful, please remember to cite us. 
 
 ## Installation 
 
