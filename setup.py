@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-from deep_acsauto import __version__
+from __init__.py import __version__
 
 # Read long description from file
 with open("README.md", "r") as fh:
@@ -34,7 +34,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'deep_acsauto = deep_acsa:main',
+            'deep_acsa = deep_acsa_gui:main',
         ],
     },
     keywords=[
@@ -44,7 +44,7 @@ setup(
         'muscle',
     ],
     project_urls={
-        "Github": "https://github.com/PaulRitsche/ACSAuto_DeepLearning.git",
+        "Github": "https://github.com/PaulRitsche/DeepACSA.git",
     },
     packages=find_packages(),
     include_package_data=True,

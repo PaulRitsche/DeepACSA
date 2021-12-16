@@ -21,13 +21,17 @@ def calculate_echo_int(img_copy, mask):
         65.728
     """
     img = img_copy
+    img = img.astype(np.uint8)
     mask = mask.astype(np.uint8)
 
     # Find contours in binary mask image
     conts = cv2.findContours(mask, cv2.RETR_TREE,
                              cv2.CHAIN_APPROX_NONE)
 
-    # Grab countours
+    # Check for contours
+    if len(conts[0]) < 1:
+        return None
+    # Grab contours
     conts = conts[0][0]
 
     cv2.fillPoly(mask, conts, (255))

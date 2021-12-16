@@ -1,22 +1,41 @@
 # DeepACSA
 
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
+All following commands should be entered in your command prompt / terminal.
+More information about the usage of DeepACSA can be found in the instructional video (LINK). 
+If you find this work useful, please remember to cite the corresponding paper (LINK), where more information about the model architecture and perfrmance can be found as well. 
 
 ## Installation 
 
-1. Anaconda setup (only before first usage)
+1. Git setup (Optional): 
 
-Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
-Open an Anaconda prompt window and create a virtual environment using the following as an example (you can choose the name of the environment freely): 
+This step is redundant if you download the repository as a .zip file and not use Git functionalities. Git is not required to run DeepACSA.
+If you want to use Git, install it https://git-scm.com/download/win and set it up according to the instructions. 
+
+2. Clone the Github repository:
+
+Create and navigate to the folder where you want to save the project. For example:
 
 ```sh
-conda create --name DeepACSA python=3.8
+mkdir DeepACSA
+```
+```sh
+cd DeepACSA
 ```
 
-Activate the virtual environment by typing:
+When you have navigated to your preferred folder, clone the git repository.
 
 ```sh
-conda activate DeepACSA
+git clone https://github.com/PaulRitsche/DeepACSA
+```
+
+3. Anaconda setup (only before first usage)
+
+Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
+Open an Anaconda prompt window and create a virtual environment (This may take some time):
+
+```sh
+conda env create -f environment.yml 
 ```
 Change the directory to where you want to saved the project folder, e.g. by typing:
 
@@ -24,29 +43,41 @@ Change the directory to where you want to saved the project folder, e.g. by typi
 cd c:/Users/Paul/Desktop/DeepACSA
 ```
 
-2. Clone the Github repository. Type the following code in your command window:
-When you have completed setting up conda and navigated to the your preferred folder, clone the git repository.
+Activate the virtual environment by typing:
 
 ```sh
-git clone https://github.com/PaulRitsche/DeepACSA
+conda activate DeepACSA
 ```
 
-Then, type the following command to install all requirements for the code (takes some time): 
+...And you are ready to go!
 
-```sh
-pip install -r requirements.txt
-```
+4. GPU-Setup (Optional): 
+
+If you are using a GPU and want to train your own models, make sure your CUDA version complies with our tensorflow version (which is 2.4.0). 
 
 ## Usage
 
 Open an Anaconda prompt window.
-Activate your virtual environment and change to the directory containing the code, as done above.
+Activate your virtual environment and change to the directory containing the code, as done above. So far, we have implemented two ways to use DeepACSA. 
+
+1. Make use of the implemented GUI:
+
+Type the here presented command into the prompt window and enter the required parameters in the GUI. 
+
+```sh
+python deep_asca_gui.py
+
+```
+
+2. Run DeepACSA from the command promt entirely:
+
 Type the here presented command into the prompt window, while entering the required parameters. 
 
 ```sh
-deep_acsauto [-h] -rp ROOTPATH [-fp FLIP_FLAG_PATH] -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
+deep_acsa [-h] -rp ROOTPATH -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
 
 ```
+
 ## Parameters
 
 ```console
@@ -63,8 +94,6 @@ required arguments:
   	  scaling type present in ultrasound image
 
 optional arguments:
-  -fp, --flip_flag_path 
-  	  file path to txt file containing flipping info
   -sp, --spacing
   	  distance (mm) between detetec vertical scaling lines
   -h, --help
@@ -73,19 +102,23 @@ optional arguments:
 
 ## Examples
 
+This is an example command making use of the implemented GUI:
+```sh
+python deep_acsa_gui.py 
+```
+
 This is an example command for an extended-field-of-view ultrasound image containing a continuous scaling line (see Image):
 ```sh
-python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -m "RF" -s "EFOV"
+python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -m "RF" -s "EFOV"
 ```
 ![RF_EFOV_CONT](https://user-images.githubusercontent.com/71383228/110342363-9a8fda80-802b-11eb-93ec-c643c499449a.jpg)
 
-
 This is an example command for an extended-field-of-view ultrasound image containing scaling bars:
 ```sh
-python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" - fp"C:\Users\Paul\Desktop\Test_image\Flip.txt" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -sp 5 -m "RF" -s "Static"
+python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Static"
 ```
 This is an example command for an extended-field-of-view ultrasound image where manual scaling is used:
 ```sh
-python deep_acsauto.py -rp "C:\Users\Paul\Desktop\Test_image" - fp"C:\Users\Paul\Desktop\Test_image\Flip.txt" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -sp 5 -m "RF" -s "Manual"
+python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Manual"
 ```
 Please note that optional parameters can be used for "Static" and "Manual" scaling options. 

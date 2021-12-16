@@ -4,9 +4,20 @@ import math
 import numpy as np
 import cv2
 
+class ScalinglineError(Exception):
+    """Raises error when scaling line is not
+       detected appropraitely.
+    """
+    pass
+
+class StaticScalingError(Exception):
+    """Raises error when scaling bars are not
+       detected appropraitely.
+    """
+    pass
+
 
 mlocs = []
-
 
 def region_of_interest(img, vertices):
     """Defines region of interest where ridges are searched.
@@ -39,13 +50,15 @@ def mclick(event, x_val, y_val, flags, param):
         List of y coordinates of clicked points.
     """
     global mlocs
+
     # if the left mouse button was clicked, record the (x, y) coordinates
     if event == cv2.EVENT_LBUTTONDOWN:
         mlocs.append(y_val)
+        mlocs.append(x_val)
 
 
 def draw_the_lines(img, lines):
-    """Draws lines along the detected ridges.
+    """Draws lines along the detected ridges
 
     Arguments:
         Original image,
@@ -72,7 +85,7 @@ def draw_the_lines(img, lines):
     return img
 
 
-def calibrate_distance_efov(path_to_image, arg_muscle):
+def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     """Calculates scalingline length of image based computed
         length of detected rigdes.
 
@@ -90,12 +103,13 @@ def calibrate_distance_efov(path_to_image, arg_muscle):
     # Transform BGR Image to RGB
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     height = image.shape[0]
+    width = image.shape[1]
     # Define ROI with scaling lines
     region_of_interest_vertices = [
-        (150, height),
-        (150, 80),
-        (1100, 80),
-        (1100, height)
+        (10, height),
+        (10, height*0.1),
+        (width, height*0.1),
+        (width, height)
     ]
     # Transform RGB to greyscale for edge detection
     gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -113,9 +127,12 @@ def calibrate_distance_efov(path_to_image, arg_muscle):
                                 theta=np.pi/180,
                                 threshold=50,
                                 lines=np.array([]),
-                                minLineLength=400,
-                                maxLineGap=1)
-        # image_with_lines = draw_the_lines(image, lines)
+                                minLineLength=325,
+                                maxLineGap=3)
+        if lines is None:
+            return None, None
+        # draw lines on image
+        image_with_lines = draw_the_lines(image, lines)
 
     # For VL
     if muscle == "VL":
@@ -126,7 +143,24 @@ def calibrate_distance_efov(path_to_image, arg_muscle):
                                 lines=np.array([]),
                                 minLineLength=200,
                                 maxLineGap=3)  # Gap between lines
-        # image_with_lines = draw_the_lines(image, lines)
+        if lines is None:
+            return None, None
+        # draw lines on image
+        image_with_lines = draw_the_lines(image, lines)
+
+    # For GM / GL
+    if muscle == "GL" or "GM":
+        lines = cv2.HoughLinesP(cropped_image,
+                                rho=1,  # Distance of pixels in accumulator
+                                theta=np.pi / 180,  # Angle resolution
+                                threshold=50,  # Only lines with higher vote
+                                lines=np.array([]),
+                                minLineLength=250,
+                                maxLineGap=5)
+        if lines is None:
+            return None, None
+        # draw scaling lines on image
+        image_with_lines = draw_the_lines(image, lines)
 
     # Calculate length of the scaling line
     scalingline = lines[0][0]
@@ -134,53 +168,65 @@ def calibrate_distance_efov(path_to_image, arg_muscle):
     point2 = [scalingline[2], scalingline[3]]
     scalingline_length = math.sqrt(((point1[0] - point2[0])**2)
                                    + ((point1[1] - point2[1])**2))
-    # plot_image(image_with_lines)
-    return scalingline_length
+
+    return scalingline_length, image_with_lines
 
 
-def calibrate_distance_static(nonflipped_img, spacing, depth):
+def calibrate_distance_static(nonflipped_img, spacing: str):
     """Calculates scalingline length of image based computed
         distance between two points on image and image depth.
 
     Arguments:
-        Original(nonflipped) image,
-        distance between scaling points (mm),
-        US scanning depth (cm).
+        Original(nonflipped) image with scaling lines on right border,
+        distance between scaling points (mm).
 
     Returns:
         Length of scaling line (pixel).
 
     Example:
-        >>>calibrate_distance_manually(Image, 5, 4.5)
+        >>>calibrate_distance_manually(Image, 5, 4.5, 0)
         5 mm corresponds to 95 pixels
     """
     # calibrate according to scale at the right border of image
     img2 = np.uint8(nonflipped_img)
-    imgscale = img2[70:, 1100:1115]
+    height = img2.shape[0]
+    width = img2.shape[1]
+    imgscale = img2[int(height*0.4):(height), (width-int(width*0.15)):width]
+
     # search for rows with white pixels, calculate median of distance
-    calib_dist = np.median(np.diff(np.argwhere(imgscale.sum(axis=1) > 200),
-                                   axis=0))
-    scalingline_length = depth * calib_dist
+    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 150),
+                                axis=0))
 
-    print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
+    if int(calib_dist) < 1:
+        return None, None, None
 
-    return scalingline_length
+    # calculate calib_dist for 10mm
+    if spacing == "5":
+        calib_dist = calib_dist * 2
+    if spacing == "15":
+        calib_dist = calib_dist * (2/3)
+    if spacing == "20":
+        calib_dist = calib_dist / 2
+
+    #scalingline_length = depth * calib_dist
+    scale_statement = '10 mm corresponds to ' + str(calib_dist) + ' pixels'
+
+    return calib_dist, imgscale, scale_statement
 
 
-def calibrate_distance_manually(nonflipped_img, spacing, depth):
+def calibrate_distance_manually(nonflipped_img, spacing):
     """Calculates scalingline length of image based on manual specified
         distance between two points on image and image depth.
 
     Arguments:
         Original(nonflipped) image,
-        distance between scaling points (mm),
-        US scanning depth (cm).
+        distance between scaling points (mm).
 
     Returns:
         Length of scaling line (pixel).
 
     Example:
-        >>>calibrate_distance_manually(Image, 5, 4.5)
+        >>>calibrate_distance_manually(Image, 5)
         5 mm corresponds to 99 pixels
     """
     img2 = np.uint8(nonflipped_img)
@@ -194,9 +240,20 @@ def calibrate_distance_manually(nonflipped_img, spacing, depth):
     if key == ord("q"):
         cv2.destroyAllWindows()
 
-    calib_dist = np.abs(mlocs[0] - mlocs[1])
-    scalingline_length = depth * calib_dist
+    global mlocs
 
-    print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
+    calib_dist = np.abs(math.sqrt((mlocs[3] - mlocs[1])**2 + (mlocs[2] - mlocs[0])**2))
+    print(mlocs)
+    print(calib_dist)
+    mlocs = []
+    # calculate calib_dist for 10mm
+    if spacing == 5:
+        calib_dist = calib_dist * 2
+    if spacing == 15:
+        calib_dist = calib_dist * (2/3)
+    if spacing == 20:
+        calib_dist = calib_dist / 2
 
-    return scalingline_length
+    # print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
+
+    return calib_dist

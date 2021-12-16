@@ -1,31 +1,26 @@
 """Python module to automatically calcuate muscle area in US images"""
 
 # Import necessary packages
+import os
+import glob
+import warnings
+import time
+import cv2
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 from apo_model import ApoModel
 from calibrate import calibrate_distance_efov
 from calibrate import calibrate_distance_manually
 from calibrate import calibrate_distance_static
 from echo_int import calculate_echo_int
-
-import os
-import glob
-import pandas as pd
-import numpy as np
-# import openpyxl
 from skimage.transform import resize
-# from skimage.morphology import skeletonize
-# from scipy.signal import resample, savgol_filter, butter, filtfilt
-# from PIL import Image, ImageDraw
-import cv2
-# from cv2 import EVENT_LBUTTONDOWN
-# import tensorflow as tf
-import matplotlib.pyplot as plt
 from keras.preprocessing.image import img_to_array
-# from keras.preprocessing.image import load_img
-# from keras.preprocessing.image import array_to_img
-# from keras.preprocessing.image import ImageDataGenerator
 from matplotlib.backends.backend_pdf import PdfPages
 plt.style.use("ggplot")
+plt.switch_backend("agg")
 
 
 def get_list_of_files(pathname: str):
@@ -61,7 +56,10 @@ def import_image_efov(path_to_image: str, muscle: str):
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
     img = cv2.imread(path_to_image, 0)
+    rows,cols = img.shape
+    img = img[75:rows,20:cols-10]
     img_copy = img.copy()
+
 
     # print("Loaded image at " + path_to_image)
     if muscle == "RF":
@@ -69,6 +67,8 @@ def import_image_efov(path_to_image: str, muscle: str):
     if muscle == "VL":
         clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
     if muscle == "GM":
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
+    if muscle == "GL":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
@@ -110,6 +110,8 @@ def import_image(path_to_image: str, muscle: str):
         clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(20, 20))
     if muscle == "GM":
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
+    if muscle == "GL":
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20, 20))
     img = clahe.apply(img)
     img = img_to_array(img)
     height = img.shape[0]
@@ -119,28 +121,6 @@ def import_image(path_to_image: str, muscle: str):
     img = img/255.0
 
     return filename, img, nonflipped_img, height, weight
-
-
-def get_flip_flags_list(pathname: str):
-    """Define the path to text file including flipping flags.
-
-    Arguments:
-        Path to Flip.txt file.
-
-    Returns:
-        List of flipping flags.
-
-    Example:
-        >>>get(C:/Desktop/Test)
-        ["0", "1"]
-    """
-    flip_flags = []
-    file = open(pathname, 'r')
-    for line in file:
-        for digit in line:
-            if digit.isdigit():
-                flip_flags.append(digit)
-    return flip_flags
 
 
 # Optional, just for plotting
@@ -157,10 +137,10 @@ def plot_image(image):
     fig, (ax1) = plt.subplots(1, 1, figsize=(15, 15))
     ax1.imshow(img, cmap="gray")
     ax1.grid(False)
-    plt.savefig("Ridge_test_1.tif")
+    plt.savefig("Ridge.tif")
 
 
-def calc_area(depth: int, scalingline_length: int, img: np.ndarray):
+def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
     """Calculates predicted muscle aread.
 
     Arguments:
@@ -172,13 +152,31 @@ def calc_area(depth: int, scalingline_length: int, img: np.ndarray):
         Predicted muscle area (cm²).
 
     Example:
-        >>>calc_area(float(4.5), int(571), Image1.tif)
+        >>>calc_area(float(5), int(254), Image1.tif)
         3.813
     """
     pix_per_cm = scalingline_length / depth
     # Counts pixels with values != 0
-    pred_muscle_area = cv2.countNonZero(img) / pix_per_cm**2
-    # print(pred_muscle_area)
+    pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
+    return pred_muscle_area
+
+def calc_area(calib_dist: float, img: np.ndarray):
+    """Calculates predicted muscle aread.
+
+    Arguments:
+        Distance between scaling bars in pixel,
+        thresholded binary model prediction.
+
+    Returns:
+        Predicted muscle area (cm²).
+
+    Example:
+        >>>calc_area(int(54), Image1.tif)
+        3.813
+    """
+    pix_per_cm = calib_dist
+    # Counts pixels with values != 0
+    pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
     return pred_muscle_area
 
 
@@ -209,112 +207,179 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
             data.to_excel(writer, sheet_name="Results")
 
 
-def calculate_batch_efov(rootpath: str, modelpath: str, depth: int,
-                         muscle: str):
+def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
+                         depth: float, muscle: str, gui):
     """Calculates area predictions for batches of EFOV US images
         containing continous scaling line.
 
     Arguments:
         Path to root directory of images,
+        type of image files,
         path to model used for predictions,
         ultrasound scanning depth,
         analyzed muscle.
     """
-    list_of_files = glob.glob(rootpath + '/**/*.tif', recursive=True)
+    list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     apo_model = ApoModel(modelpath)
+    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²", "Echo_intensity", "A_C_ratio", "Circumference"])
+    failed_files = []
 
     with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
 
-        dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
-        for imagepath in list_of_files:
-
-            # load image
-            imported = import_image_efov(imagepath, muscle)
-            filename, img_copy, img, height, width = imported
-
-            # find length of the scalingline
-            scalingline_length = calibrate_distance_efov(imagepath, muscle)
-
-            # predict area
-            pred_apo_t, fig = apo_model.predict_t(img, width, height)
-            echo = calculate_echo_int(img_copy, pred_apo_t)
-            area = calc_area(depth, scalingline_length, pred_apo_t)
-
-            # append results to dataframe
-            dataframe = dataframe.append({"File": filename,
-                                          "Muscle": muscle,
-                                          "Area_cm²": area,
-                                          "Echo_intensity": echo},
-                                         ignore_index=True)
-
-            # save figures
-            pdf.savefig(fig)
-            plt.close(fig)
-
-        # save predicted area values
-        compile_save_results(rootpath, dataframe)
-
-
-def calculate_batch(rootpath: str, flip_file_path: str, modelpath: str,
-                    depth: int, spacing: int, muscle: str, scaling: str):
-    """Calculates area predictions for batches of (EFOV) US images
-        not containing a continous scaling line.
-
-        Arguments:
-            Path to root directory of images,
-            path to txt file containing flipping information for images,
-            path to model used for predictions,
-            ultrasound scanning depth,
-            distance between (vertical) scaling lines (mm),
-            analyzed muscle,
-            scaling type.
-    """
-    list_of_files = glob.glob(rootpath + '/**/*.tif', recursive=True)
-    flip_flags = get_flip_flags_list(flip_file_path)
-
-    apo_model = ApoModel(modelpath)
-    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²"])
-
-    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
-
-        if len(list_of_files) == len(flip_flags):
+        try:
+           #start_time = time.time()
 
             for imagepath in list_of_files:
 
-                # load image
-                # flip = flip_flags.pop(0)
-                imported = import_image(imagepath, muscle)
-                filename, img, nonflipped_img, height, width = imported
+                if gui.should_stop:
+                    # there was an input to stop the calculations
+                    break
 
-                if scaling == "Static":
-                    calibrate_fn = calibrate_distance_static
-                else:
-                    calibrate_fn = calibrate_distance_manually
-                # find length of the scaling line
-                scalingline_length = calibrate_fn(
-                    nonflipped_img, spacing, depth
-                )
+                # load image
+                imported = import_image_efov(imagepath, muscle)
+                filename, img_copy, img, height, width = imported
+
+                calibrate_efov = calibrate_distance_efov
+                # find length of the scalingline
+                scalingline_length, img_lines = calibrate_efov(imagepath, muscle)
+                # check for ScalinglineError
+                if scalingline_length is None:
+                    fail = f"Scalingline not found in {imagepath}"
+                    failed_files.append(fail)
+                    warnings.warn("Image fails with ScalinglineError")
+                    continue
 
                 # predict area
-                pred_apo_t, fig = apo_model.predict_t(img, width, height)
-                echo = calculate_echo_int(nonflipped_img, pred_apo_t)
-                area = calc_area(depth, scalingline_length, pred_apo_t)
+                circum, pred_apo_t, fig = apo_model.predict_e(img, img_lines,
+                                                             width, height)
+                echo = calculate_echo_int(img_copy, pred_apo_t)
+                if echo is None:
+                    warnings.warn("Image fails with EchoIntensityError")
+                    continue
+
+                # calculate area
+                area = calc_area_efov(depth, scalingline_length, pred_apo_t)
+                area_circum_ratio = (area / circum) * 100
 
                 # append results to dataframe
                 dataframe = dataframe.append({"File": filename,
                                               "Muscle": muscle,
                                               "Area_cm²": area,
-                                              "Echo_intensity": echo},
+                                              "Echo_intensity": echo,
+                                              "A_C_ratio": area_circum_ratio,
+                                              "Circumference": circum},
                                              ignore_index=True)
 
                 # save figures
                 pdf.savefig(fig)
                 plt.close(fig)
+                # time duration of analysis of single image
+                #duration = time.time() - start_time
+                #print(f"duration: {duration}")
 
+        finally:
+            # save predicted area values
+            compile_save_results(rootpath, dataframe)
+            # write failed images in file
+            if len(failed_files) >= 1:
+                file = open(rootpath + "/failed_images.txt", "w")
+                for fail in failed_files:
+                    file.write(fail + "\n")
+                file.close()
+            # clean up
+            gui.should_stop = False
+            gui.is_running = False
+
+
+def calculate_batch(rootpath: str, filetype: str, modelpath: str,
+                    spacing: int, muscle: str, scaling: str, gui):
+    """Calculates area predictions for batches of (EFOV) US images
+        not containing a continous scaling line.
+
+        Arguments:
+            Path to root directory of images,
+            type of image files,
+            path to txt file containing flipping information for images,
+            path to model used for predictions,
+            distance between (vertical) scaling lines (mm),
+            analyzed muscle,
+            scaling type.
+    """
+    list_of_files = glob.glob(rootpath + filetype, recursive=True)
+    apo_model = ApoModel(modelpath)
+    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm²", "Echo_intensity", "A_C_ratio", "Circumference"])
+    failed_files = []
+
+    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+
+        try:
+            #start_time = time.time()
+
+            for imagepath in list_of_files:
+                if gui.should_stop:
+                    # there was an input to stop the calculations
+                    break
+
+                # load image
+                imported = import_image(imagepath, muscle)
+                filename, img, nonflipped_img, height, width = imported
+
+                if scaling == "Bar":
+                    calibrate_fn = calibrate_distance_static
+                    # find length of the scaling line
+                    calib_dist, imgscale, scale_statement = calibrate_fn(nonflipped_img, spacing)
+                    # check for StaticScalingError
+                    if calib_dist is None:
+                        fail = f"Scalingbars not found in {imagepath}"
+                        failed_files.append(fail)
+                        warnings.warn("Image fails with StaticScalingError")
+                        continue
+
+                    # predict area on image
+                    circum, pred_apo_t, fig = apo_model.predict_s(img, imgscale, scale_statement,
+                                                                  width, height)
+
+                else:
+                    calibrate_fn = calibrate_distance_manually
+                    calib_dist = calibrate_fn(nonflipped_img, spacing)
+
+                    # predict area on image
+                    circum, pred_apo_t, fig = apo_model.predict_m(img, width, height)
+
+                #calculate echo intensity and area
+                echo = calculate_echo_int(nonflipped_img, pred_apo_t)
+                if echo is None:
+                    warnings.warn("Image fails with EchoIntensityError")
+                    continue
+                area = calc_area(calib_dist, pred_apo_t)
+                area_circum_ratio = (area / circum) * 100
+
+                # append results to dataframe
+                dataframe = dataframe.append({"File": filename,
+                                              "Muscle": muscle,
+                                              "Area_cm²": area,
+                                              "Echo_intensity": echo,
+                                              "A_C_ratio": area_circum_ratio,
+                                              "Circumference": circum},
+                                              ignore_index=True)
+
+                # save figures
+                pdf.savefig(fig)
+                plt.close(fig)
+                # time duration of analysis of single image
+                #duration = time.time() - start_time
+                #print(f"duration: {duration}")
+
+        finally:
             # save predicted area results
             compile_save_results(rootpath, dataframe)
-
-        else:
-            print("Warning: number of flipFlags and images doesn\'t match! " +
-                  "Calculations aborted.")
+            # write failed images in file
+            if len(failed_files) >= 1:
+                file = open(rootpath + "/failed_images.txt", "w")
+                for fail in failed_files:
+                    file.write(fail + "\n")
+                file.close()
+            # clean up
+            gui.should_stop = False
+            gui.is_running = False

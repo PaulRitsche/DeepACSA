@@ -1,7 +1,12 @@
+""" Python class to predict muscle area"""
+
 import numpy as np
+from cv2 import arcLength, findContours, RETR_LIST, CHAIN_APPROX_SIMPLE
 from skimage.transform import resize
+from skimage import morphology, measure
 from keras import backend as K
 from keras.models import load_model  # Model
+import tensorflow as tf
 
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
@@ -84,18 +89,57 @@ class ApoModel:
         pred_apo = self.model_apo.predict(img)
         return pred_apo
 
-    def predict_t(self, img, width: int, 
+    def postprocess_image(self, img):
+        """Deletes unnecessary areas, fills holes and calculates the length
+           of the detected largest contour.
+
+        Arguments:
+            Input image
+
+        Returns:
+            Image containing only largest area of pixels with holes removed.
+            Float containing circumference.
+        """
+        # find pixel regions and label them
+        label_img = measure.label(img)
+        regions = measure.regionprops(label_img)
+
+        # sort regions for area
+        regions.sort(key=lambda x: x.area, reverse=True)
+
+        # find label with larges area
+        if len(regions) > 1:
+            for rg in regions[1:]:
+                label_img[rg.coords[:,0], rg.coords[:,1]] = 0
+
+        label_img[label_img != 0] = 1
+        pred_apo_tf = label_img
+
+        # remove holes in predicted area
+        pred_apo_th = morphology.remove_small_holes(pred_apo_tf > 0.5, area_threshold=5000,
+                                                    connectivity=100).astype(int)
+        # calculate circumference
+        pred_apo_conts = pred_apo_th.astype(np.uint8)
+        conts, hirarchy = findContours(pred_apo_conts, RETR_LIST, CHAIN_APPROX_SIMPLE)
+        for cont in conts:
+            circum = arcLength(cont, True)
+
+        return circum, pred_apo_th
+
+    def predict_e(self, img, img_lines, width: int,
                   height: int, return_fig: bool = True):
         """Runs a segmentation model on the input image and thresholds result.
 
         Arguments:
             Input image
+            Image with scaling lines
             Width of the original image
             Height of the original image
             Whether or not to plot the input/output and return the figure
 
         Returns:
-            The thresholded bit-mask and (optionally) a figure of input/output.
+            The thresholded bit-mask and (optionally) a figure of
+            input/scaling/output.
 
         """
         pred_apo = self.predict(img)
@@ -108,14 +152,111 @@ class ApoModel:
         img = _resize(img, width, height)
         pred_apo_t = _resize(pred_apo_t, width, height)
 
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
+
+        # create figure with images
         fig = plt.figure(figsize=(20, 20))
-        ax1 = fig.add_subplot(1, 2, 1)
+        ax1 = fig.add_subplot(3, 1, 1)
+        ax1.imshow(img_lines.squeeze(), cmap="gray")
+        ax1.grid(False)
+        ax1.set_title('Original Image with scaling line')
+        ax2 = fig.add_subplot(3, 1, 2)
+        ax2.imshow(img.squeeze(), cmap='gray')
+        ax2.grid(False)
+        ax2.set_title('Original image with CLAHE')
+        ax3 = fig.add_subplot(3, 1, 3)
+        ax3.imshow(pred_apo_th.squeeze(), cmap="gray")
+        ax3.grid(False)
+        ax3.set_title('Predicted muscle area')
+
+        return circum, pred_apo_th, fig
+
+    def predict_s(self, img, img_lines, dist: str, width: int,
+                      height: int, return_fig: bool = True):
+        """Runs a segmentation model on the input image and thresholds result.
+
+        Arguments:
+            Input image
+            Image with scaling lines
+            Distance between scaling bars
+            Width of the original image
+            Height of the original image
+            Whether or not to plot the input/output and return the figure
+
+        Returns:
+            The thresholded bit-mask and (optionally) a figure of
+            input/scaling/output.
+
+        """
+        pred_apo = self.predict(img)
+        pred_apo_t = (pred_apo > self.apo_threshold)
+
+        if not return_fig:
+            # don't plot the input/output, simply return mask
+            return pred_apo_t
+
+        img = _resize(img, width, height)
+        pred_apo_t = _resize(pred_apo_t, width, height)
+
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
+
+        # create figure with images
+        fig = plt.figure(figsize=(20, 20))
+        ax1 = fig.add_subplot(3, 1, 1)
+        ax1.imshow(img_lines.squeeze(), cmap="gray")
+        ax1.grid(False)
+        ax1.set_title(str(dist))
+        ax2 = fig.add_subplot(3, 1, 2)
+        ax2.imshow(img.squeeze(), cmap='gray')
+        ax2.grid(False)
+        ax2.set_title('Original image with CLAHE')
+        ax3 = fig.add_subplot(3, 1, 3)
+        ax3.imshow(pred_apo_th.squeeze(), cmap="gray")
+        ax3.grid(False)
+        ax3.set_title('Predicted muscle area')
+
+        return circum, pred_apo_th, fig
+
+    def predict_m(self, img, width: int, height: int, return_fig: bool = True):
+        """Runs a segmentation model on the input image and thresholds result.
+
+        Arguments:
+            Input image
+            Image with scaling lines
+            Distance between scaling bars
+            Width of the original image
+            Height of the original image
+            Whether or not to plot the input/output and return the figure
+
+        Returns:
+            The thresholded bit-mask and (optionally) a figure of
+            input/scaling/output.
+
+        """
+        pred_apo = self.predict(img)
+        pred_apo_t = (pred_apo > self.apo_threshold)
+
+        if not return_fig:
+            # don't plot the input/output, simply return mask
+            return pred_apo_t
+
+        img = _resize(img, width, height)
+        pred_apo_t = _resize(pred_apo_t, width, height)
+
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
+
+        # create figure with images
+        fig = plt.figure(figsize=(20, 20))
+        ax1 = fig.add_subplot(2, 1, 1)
         ax1.imshow(img.squeeze(), cmap='gray')
         ax1.grid(False)
-        ax1.set_title('Original image')
-        ax2 = fig.add_subplot(1, 2, 2)
-        ax2.imshow(pred_apo_t.squeeze(), cmap="gray")
+        ax1.set_title('Original image with CLAHE')
+        ax2 = fig.add_subplot(2, 1, 2)
+        ax2.imshow(pred_apo_th.squeeze(), cmap="gray")
         ax2.grid(False)
-        ax2.set_title('Aponeuroses')
+        ax2.set_title('Predicted muscle area')
 
-        return pred_apo_t, fig
+        return circum, pred_apo_th, fig

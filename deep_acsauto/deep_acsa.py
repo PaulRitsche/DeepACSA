@@ -20,17 +20,18 @@ if __name__ == "__main__":
         help="path to root directory of images",
     )
     parser.add_argument(
-        '-fp', '--flip_flag_path',
-        type=str,
-        default=None,
-        help="file path to txt file containing flipping info",
-    )
-    parser.add_argument(
         '-mp', '--modelpath',
         type=str,
         required=True,
         default=None,
         help="file path to .h5 file containing model used for prediction"
+    )
+    parser.add_argument(
+        '-ft', "--filetype",
+        type=str,
+        required=True,
+        default="/**/*.tif",
+        help="specify image type as: /**/*.tif, /**/*.tiff, /**/*.png, /**/*.bmp, /**/*.jpeg, /**/*.jpg"
     )
     parser.add_argument(
         '-d', "--depth",
@@ -67,6 +68,7 @@ if __name__ == "__main__":
     if args.scaling == "EFOV":
         calculate_batch_efov(
             args.rootpath,
+            args.filetype,
             args.modelpath,
             args.depth,
             args.muscle
@@ -74,9 +76,8 @@ if __name__ == "__main__":
     else:
         calculate_batch(
             args.rootpath,
-            args.flip_flag_path,
+            args.filetype,
             args.modelpath,
-            args.depth,
             args.spacing,
             args.muscle,
             args.scaling
