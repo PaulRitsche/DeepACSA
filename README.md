@@ -29,8 +29,6 @@ When you have navigated to your preferred folder, clone the git repository.
 git clone https://github.com/PaulRitsche/DeepACSA
 ```
 
-You can also download the .zip file of the repository and save it to a specific folder. Navigate to the folder and continue with the Anaconda setup.
-
 3. Anaconda setup (only before first usage)
 
 Install Python / Anaconda: https://www.anaconda.com/distribution/ (click ‘Download’ and be sure to choose ‘Python 3.X Version’ (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the ‘Add Anaconda to my PATH environment variable’ box).
@@ -38,6 +36,11 @@ Open an Anaconda prompt window and create a virtual environment (This may take s
 
 ```sh
 conda env create -f environment.yml 
+```
+Change the directory to where you want to saved the project folder, e.g. by typing:
+
+```sh
+cd c:/Users/Paul/Desktop/DeepACSA
 ```
 
 Activate the virtual environment by typing:
