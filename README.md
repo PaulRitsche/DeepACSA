@@ -136,4 +136,5 @@ Please note that optional parameters can be used for "Static" and "Manual" scali
 
 ## Literature
 Ronneberger, O., Fischer, P. & Brox, T. U-Net: Convolutional Networks for Biomedical Image Segmentation. ArXiv150504597 Cs (2015).
+
 Cronin, N. J., Finni, T. & Seynnes, O. Fully automated analysis of muscle architecture from B-mode ultrasound images with deep learning. ArXiv200904790 Cs Eess (2020).
