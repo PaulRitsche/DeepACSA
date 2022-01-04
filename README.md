@@ -1,9 +1,12 @@
+![Title_Image](https://user-images.githubusercontent.com/71383228/148084248-5e169761-a075-4c86-836a-e9b2cec56ef6.jpg)
+
 # DeepACSA
 
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 All following commands should be entered in your command prompt / terminal.
-More information about the usage of DeepACSA can be found in the instructional video (LINK). 
-If you find this work useful, please remember to cite the corresponding paper (LINK), where more information about the model architecture and perfrmance can be found as well. 
+More information about the usage of DeepACSA can be found in the instructional video (https://youtu.be/It9CqVSNc9M). 
+Our trained models can be accessed at https://doi.org/10.5281/zenodo.5799068. Anonymized panoramic ultrasound images are available at https://doi.org/10.5281/zenodo.5799204. 
+If you find this work useful, please remember to cite the corresponding paper (https://medrxiv.org/cgi/content/short/2021.12.27.21268258v1), where more information about the model architecture and performance can be found as well. 
 
 ## Installation 
 
@@ -100,19 +103,27 @@ optional arguments:
       show this help message and exit
 ```
 
+## Descrptive figure of the model used
+
+![Unet_Graphic](https://user-images.githubusercontent.com/71383228/148084251-8b467364-566b-415b-ac38-ad1131e88e56.jpg)
+DeepACSA workflow. a) Original ultrasound image of the m. rectus femoris (RF) at 50% of femur length with automatic scaling (green line). b) The original image is then preprocessed with contrast-limited adaptive histogram equalization and inputted to the model. c) Detailed U-net CNN architecture (modified from Ronneberger et al. (2015) and Cronin et al. (2020). Multi-channel feature maps are represented by the blue boxes with number of channels displayed on top of the respective box. Copied feature maps from the convolutional (left) side that are concatenated with the ones from the expanding (right) side are represented by the white boxes. The different operations are marked by the arrows. d) Model prediction of muscle area following post-processing (shown as a binary image). 
+
+
+## Results of comparing DeepACSA analysis to manual analysis
+
+![BA_plots](https://user-images.githubusercontent.com/71383228/148084254-81cc4b04-16b4-4bf3-9774-c823682057e2.jpg)
+Bland-Altman plots of all muscles plotting the difference between manual and DeepACSA with incorrect predictions removed (rm), manual and DeepACSA as well as manual and ACSAuto area segmentation measurements against the mean of both measures. Dotted and solid lines illustrate 95% limits of agreement and bias. M. rectus femoris (RF) and m. vastus lateralis (VL), mm. gastrocnemius medialis (GM), and lateralis (GL).
+
 ## Examples
 
 This is an example command making use of the implemented GUI:
 ```sh
 python deep_acsa_gui.py 
 ```
-
 This is an example command for an extended-field-of-view ultrasound image containing a continuous scaling line (see Image):
 ```sh
 python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -m "RF" -s "EFOV"
 ```
-![RF_EFOV_CONT](https://user-images.githubusercontent.com/71383228/110342363-9a8fda80-802b-11eb-93ec-c643c499449a.jpg)
-
 This is an example command for an extended-field-of-view ultrasound image containing scaling bars:
 ```sh
 python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Static"
@@ -122,3 +133,7 @@ This is an example command for an extended-field-of-view ultrasound image where 
 python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Manual"
 ```
 Please note that optional parameters can be used for "Static" and "Manual" scaling options. 
+
+## Literature
+Ronneberger, O., Fischer, P. & Brox, T. U-Net: Convolutional Networks for Biomedical Image Segmentation. ArXiv150504597 Cs (2015).
+Cronin, N. J., Finni, T. & Seynnes, O. Fully automated analysis of muscle architecture from B-mode ultrasound images with deep learning. ArXiv200904790 Cs Eess (2020).
