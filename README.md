@@ -27,7 +27,6 @@ cd DeepACSA
 ```
 
 When you have navigated to your preferred folder, clone the git repository.
-
 ```sh
 git clone https://github.com/PaulRitsche/DeepACSA
 ```
@@ -103,7 +102,7 @@ optional arguments:
       show this help message and exit
 ```
 
-## Descrptive figure of the model used
+## Descriptive figure of the model used
 
 ![Unet_Graphic](https://user-images.githubusercontent.com/71383228/148084251-8b467364-566b-415b-ac38-ad1131e88e56.jpg)
 DeepACSA workflow. a) Original ultrasound image of the m. rectus femoris (RF) at 50% of femur length with automatic scaling (green line). b) The original image is then preprocessed with contrast-limited adaptive histogram equalization and inputted to the model. c) Detailed U-net CNN architecture (modified from Ronneberger et al. (2015) and Cronin et al. (2020). Multi-channel feature maps are represented by the blue boxes with number of channels displayed on top of the respective box. Copied feature maps from the convolutional (left) side that are concatenated with the ones from the expanding (right) side are represented by the white boxes. The different operations are marked by the arrows. d) Model prediction of muscle area following post-processing (shown as a binary image). 
