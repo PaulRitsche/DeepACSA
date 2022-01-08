@@ -67,7 +67,7 @@ Activate your virtual environment and change to the directory containing the cod
 Type the here presented command into the prompt window and enter the required parameters in the GUI. 
 
 ```sh
-python deep_asca_gui.py
+python deep_acsa_gui.py
 
 ```
 
