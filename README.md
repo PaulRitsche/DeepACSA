@@ -5,7 +5,7 @@
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 All following commands should be entered in your command prompt / terminal.
 More information about the usage of DeepACSA can be found in the instructional video (https://youtu.be/It9CqVSNc9M). 
-Our trained models can be accessed at https://doi.org/10.5281/zenodo.5799068. Anonymized panoramic ultrasound images are available at https://doi.org/10.5281/zenodo.5799204. 
+Our trained models can be accessed at https://doi.org/10.5281/zenodo.6953924. Anonymized panoramic ultrasound images are available at https://doi.org/10.5281/zenodo.5799204. 
 If you find this work useful, please remember to cite the corresponding paper (https://medrxiv.org/cgi/content/short/2021.12.27.21268258v1), where more information about the model architecture and performance can be found as well. 
 
 ## Installation 
@@ -60,9 +60,7 @@ If you are using a GPU and want to train your own models, make sure your CUDA ve
 ## Usage
 
 Open an Anaconda prompt window.
-Activate your virtual environment and change to the directory containing the code, as done above. So far, we have implemented two ways to use DeepACSA. 
-
-1. Make use of the implemented GUI:
+Activate your virtual environment and change to the directory containing the code, as done above. 
 
 Type the here presented command into the prompt window and enter the required parameters in the GUI. 
 
@@ -71,46 +69,15 @@ python deep_acsa_gui.py
 
 ```
 
-2. Run DeepACSA from the command promt entirely:
-
-Type the here presented command into the prompt window, while entering the required parameters. 
-
-```sh
-deep_acsa [-h] -rp ROOTPATH -mp MODELPATH -d DEPTH [-sp SPACING] -m MUSCLE -s SCALING
-
-```
-
-## Parameters
-
-```console
-required arguments:
-  -rp, --rootpath 
-      path to root directory of images
-  -mp, modelpath
-  	  file path to .h5 file containing model used for prediction
-  -d, --depth
-  	  Ultrasound scanning depth (cm)
-  -m, --muscle
-  	  muscle that is analyzed
-  -s, --scaling
-  	  scaling type present in ultrasound image
-
-optional arguments:
-  -sp, --spacing
-  	  distance (mm) between detetec vertical scaling lines
-  -h, --help
-      show this help message and exit
-```
-
 ## Descriptive figure of the model used
 
-![Unet_Graphic](https://user-images.githubusercontent.com/71383228/148084251-8b467364-566b-415b-ac38-ad1131e88e56.jpg)
+![Unet_Graphic]
 DeepACSA workflow. a) Original ultrasound image of the m. rectus femoris (RF) at 50% of femur length with automatic scaling (green line). b) The original image is then preprocessed with contrast-limited adaptive histogram equalization and inputted to the model. c) Detailed U-net CNN architecture (modified from Ronneberger et al. (2015) and Cronin et al. (2020). Multi-channel feature maps are represented by the blue boxes with number of channels displayed on top of the respective box. Copied feature maps from the convolutional (left) side that are concatenated with the ones from the expanding (right) side are represented by the white boxes. The different operations are marked by the arrows. d) Model prediction of muscle area following post-processing (shown as a binary image). 
 
 
 ## Results of comparing DeepACSA analysis to manual analysis
 
-![BA_plots](https://user-images.githubusercontent.com/71383228/148084254-81cc4b04-16b4-4bf3-9774-c823682057e2.jpg)
+![BA_plots]
 Bland-Altman plots of all muscles plotting the difference between manual and DeepACSA with incorrect predictions removed (rm), manual and DeepACSA as well as manual and ACSAuto area segmentation measurements against the mean of both measures. Dotted and solid lines illustrate 95% limits of agreement and bias. M. rectus femoris (RF) and m. vastus lateralis (VL), mm. gastrocnemius medialis (GM), and lateralis (GL).
 
 ## Examples
@@ -119,19 +86,6 @@ This is an example command making use of the implemented GUI:
 ```sh
 python deep_acsa_gui.py 
 ```
-This is an example command for an extended-field-of-view ultrasound image containing a continuous scaling line (see Image):
-```sh
-python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -d 6 -m "RF" -s "EFOV"
-```
-This is an example command for an extended-field-of-view ultrasound image containing scaling bars:
-```sh
-python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Static"
-```
-This is an example command for an extended-field-of-view ultrasound image where manual scaling is used:
-```sh
-python deep_acsa.py -rp "C:\Users\Paul\Desktop\Test_image" -mp "C:\Users\Paul\Desktop\Test_image\model\model.h5" -sp 5 -m "RF" -s "Manual"
-```
-Please note that optional parameters can be used for "Static" and "Manual" scaling options. 
 
 ## Literature
 Ronneberger, O., Fischer, P. & Brox, T. U-Net: Convolutional Networks for Biomedical Image Segmentation. ArXiv150504597 Cs (2015).
