@@ -5,7 +5,8 @@
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 All following commands should be entered in your command prompt / terminal.
 More information about the usage of DeepACSA can be found in the instructional video (https://youtu.be/It9CqVSNc9M). 
-Our trained models can be accessed at https://doi.org/10.5281/zenodo.6953924. Anonymized panoramic ultrasound images are available at https://doi.org/10.5281/zenodo.5799204. 
+Our trained models can be accessed at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6953924.svg)](https://doi.org/10.5281/zenodo.6953924).
+Anonymized panoramic ultrasound images are available at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5799204.svg)](https://doi.org/10.5281/zenodo.5799204).
 If you find this work useful, please remember to cite the corresponding paper (https://medrxiv.org/cgi/content/short/2021.12.27.21268258v1), where more information about the model architecture and performance can be found as well. 
 
 ## Installation 
