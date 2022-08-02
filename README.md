@@ -72,13 +72,13 @@ python deep_acsa_gui.py
 
 ## Descriptive figure of the model used
 
-![Unet_Graphic]
+![VGG16Unet](https://user-images.githubusercontent.com/71383228/182459260-704e58ef-9973-4ebb-b8f0-4161a5782f8d.jpeg)
 DeepACSA workflow. a) Original ultrasound image of the m. rectus femoris (RF) at 50% of femur length with automatic scaling (green line). b) The original image is then preprocessed with contrast-limited adaptive histogram equalization and inputted to the model. c) Detailed U-net CNN architecture (modified from Ronneberger et al. (2015) and Cronin et al. (2020). Multi-channel feature maps are represented by the blue boxes with number of channels displayed on top of the respective box. Copied feature maps from the convolutional (left) side that are concatenated with the ones from the expanding (right) side are represented by the white boxes. The different operations are marked by the arrows. d) Model prediction of muscle area following post-processing (shown as a binary image). 
 
 
 ## Results of comparing DeepACSA analysis to manual analysis
 
-![BA_plots]
+![BA_Plots](https://user-images.githubusercontent.com/71383228/182459314-32a1f758-cb29-427b-a1b1-472a13c5ee7d.jpeg)
 Bland-Altman plots of all muscles plotting the difference between manual and DeepACSA with incorrect predictions removed (rm), manual and DeepACSA as well as manual and ACSAuto area segmentation measurements against the mean of both measures. Dotted and solid lines illustrate 95% limits of agreement and bias. M. rectus femoris (RF) and m. vastus lateralis (VL), mm. gastrocnemius medialis (GM), and lateralis (GL).
 
 ## Examples
