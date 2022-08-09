@@ -1,6 +1,7 @@
 """Python module to create GUI for DeepACSA"""
 
 import os
+import tkinter as tk
 from tkinter import StringVar, Tk, N, S, W, E
 from tkinter import ttk, filedialog
 from tkinter.tix import *
@@ -34,15 +35,15 @@ class DeepACSA:
         root.title("DeepACSA")
         root.iconbitmap("icon.ico")
 
-        main = ttk.Frame(root, padding="10 10 12 12")
-        main.grid(column=0, row=0, sticky=(N, S, W, E))
+        self.main = ttk.Frame(root, padding="10 10 12 12")
+        self.main.grid(column=0, row=0, sticky=(N, S, W, E))
         # Configure resizing of user interface
-        main.columnconfigure(0, weight=1)
-        main.columnconfigure(1, weight=1)
-        main.columnconfigure(2, weight=1)
-        main.columnconfigure(3, weight=1)
-        main.columnconfigure(4, weight=1)
-        main.columnconfigure(5, weight=1)
+        self.main.columnconfigure(0, weight=1)
+        self.main.columnconfigure(1, weight=1)
+        self.main.columnconfigure(2, weight=1)
+        self.main.columnconfigure(3, weight=1)
+        self.main.columnconfigure(4, weight=1)
+        self.main.columnconfigure(5, weight=1)
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
 
@@ -71,25 +72,25 @@ class DeepACSA:
         # Paths
         # Input directory
         self.input = StringVar()
-        input_entry = ttk.Entry(main, width=30, textvariable=self.input)
+        input_entry = ttk.Entry(self.main, width=30, textvariable=self.input)
         input_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
-        self.input.set("Desktop/DeepACSA/")
+        #self.input.set("Desktop/DeepACSA/")
         # Model path
         self.model = StringVar()
-        model_entry = ttk.Entry(main, width=30, textvariable=self.model)
+        model_entry = ttk.Entry(self.main, width=30, textvariable=self.model)
         model_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-        self.model.set("C:/Users/admin/Documents/DeepACSA/notebooks/VGG16pre-VL-256.h5")
+        #self.model.set("C:/Users/admin/Documents/DeepACSA/notebooks/VGG16pre-VL-256.h5")
 
         # Radiobuttons
         # Image Type
         self.scaling = StringVar()
-        efov = ttk.Radiobutton(main, text="Line", variable=self.scaling,
+        efov = ttk.Radiobutton(self.main, text="Line", variable=self.scaling,
                                value="Line")
         efov.grid(column=2, row=7, sticky=W)
-        static = ttk.Radiobutton(main, text="Bar", variable=self.scaling,
+        static = ttk.Radiobutton(self.main, text="Bar", variable=self.scaling,
                                  value="Bar")
         static.grid(column=3, row=7, sticky=(W, E))
-        manual = ttk.Radiobutton(main, text="Manual", variable=self.scaling,
+        manual = ttk.Radiobutton(self.main, text="Manual", variable=self.scaling,
                                  value="Manual")
         manual.grid(column=4, row=7, sticky=E)
         tip.bind_widget(efov,
@@ -102,10 +103,10 @@ class DeepACSA:
 
         # Volume Calculation
         self.muscle_volume_calculation_wanted = StringVar()
-        yes_volume = ttk.Radiobutton(main, text="Yes", variable=self.muscle_volume_calculation_wanted,
+        yes_volume = ttk.Radiobutton(self.main, text="Yes", variable=self.muscle_volume_calculation_wanted,
                                      value="Yes")
         yes_volume.grid(column=2, row=14, sticky=W)
-        no_volume = ttk.Radiobutton(main, text="No", variable=self.muscle_volume_calculation_wanted,
+        no_volume = ttk.Radiobutton(self.main, text="No", variable=self.muscle_volume_calculation_wanted,
                                       value="No")
         no_volume.grid(column=3, row=14, sticky=(W,E))
         tip.bind_widget(yes_volume,
@@ -119,7 +120,7 @@ class DeepACSA:
         self.filetype = StringVar()
         filetype = ("/**/*.tif", "/**/*.tiff", "/**/*.png", "/**/*.bmp",
                     "/**/*.jpeg", "/**/*.jpg")
-        filetype_entry = ttk.Combobox(main, width=10, textvariable=self.filetype)
+        filetype_entry = ttk.Combobox(self.main, width=10, textvariable=self.filetype)
         filetype_entry["values"] = filetype
         # filetype_entry["state"] = "readonly"
         filetype_entry.grid(column=2, row=6, sticky=E)
@@ -131,7 +132,7 @@ class DeepACSA:
         # Muscles
         self.muscle = StringVar()
         muscle = ("VL", "RF", "GM", "GL")
-        muscle_entry = ttk.Combobox(main, width=10, textvariable=self.muscle)
+        muscle_entry = ttk.Combobox(self.main, width=10, textvariable=self.muscle)
         muscle_entry["values"] = muscle
         muscle_entry["state"] = "readonly"
         muscle_entry.grid(column=2, row=8, sticky=(W, E))
@@ -142,7 +143,7 @@ class DeepACSA:
         # Image Depth
         self.depth = StringVar()
         depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
-        depth_entry = ttk.Combobox(main, width=10, textvariable=self.depth)
+        depth_entry = ttk.Combobox(self.main, width=10, textvariable=self.depth)
         depth_entry["values"] = depth
         # depth_entry["state"] = "readonly"
         depth_entry.grid(column=2, row=9, sticky=(W, E))
@@ -154,7 +155,7 @@ class DeepACSA:
         # Spacing
         self.spacing = StringVar()
         spacing = (5, 10, 15, 20)
-        spacing_entry = ttk.Combobox(main, width=10, textvariable=self.spacing)
+        spacing_entry = ttk.Combobox(self.main, width=10, textvariable=self.spacing)
         spacing_entry["values"] = spacing
         spacing_entry["state"] = "readonly"
         spacing_entry.grid(column=2, row=10, sticky=(W, E))
@@ -166,7 +167,7 @@ class DeepACSA:
         self.spacing.set(10)
         # Distance between ACSA for Volume Calculation
         self.distance = StringVar()
-        distance_entry = ttk.Entry(main, width=10, textvariable=self.distance)
+        distance_entry = ttk.Entry(self.main, width=10, textvariable=self.distance)
         distance_entry.grid(column=2, row=15, sticky=(W, E))
         tip.bind_widget(distance_entry,
                         balloonmsg="Choose distance between image slices" +
@@ -176,42 +177,42 @@ class DeepACSA:
 
         # Buttons
         # Input directory
-        input_button = ttk.Button(main, text="Input",
+        input_button = ttk.Button(self.main, text="Input",
                                   command=self.get_root_dir)
         input_button.grid(column=5, row=2, sticky=E)
         tip.bind_widget(input_button,
                         balloonmsg="Choose root directory." +
                         " This is the folder containing all images.")
         # Model path
-        model_button = ttk.Button(main, text="Model",
+        model_button = ttk.Button(self.main, text="Model",
                                   command=self.get_model_path)
         model_button.grid(column=5, row=3, sticky=E)
         tip.bind_widget(model_button,
                         balloonmsg="Choose model path." +
                         " This is the path to the respective model.")
         # Break Button
-        break_button = ttk.Button(main, text="Break", command=self.do_break)
+        break_button = ttk.Button(self.main, text="Break", command=self.do_break)
         break_button.grid(column=1, row=16, sticky=W)
         # Run Button
-        run_button = ttk.Button(main, text="Run", command=self.run_code)
+        run_button = ttk.Button(self.main, text="Run", command=self.run_code)
         run_button.grid(column=2, row=16, sticky=(W, E))
 
         # Labels
-        ttk.Label(main, text="Directories",font=('Verdana', 14)).grid(column=1, row=1, sticky=W)
-        ttk.Label(main, text="Root Directory").grid(column=1, row=2)
-        ttk.Label(main, text="Model Path").grid(column=1, row=3)
-        ttk.Label(main, text="Image Properties", font=('Verdana', 14)).grid(column=1, row=5,
+        ttk.Label(self.main, text="Directories",font=('Verdana', 14)).grid(column=1, row=1, sticky=W)
+        ttk.Label(self.main, text="Root Directory").grid(column=1, row=2)
+        ttk.Label(self.main, text="Model Path").grid(column=1, row=3)
+        ttk.Label(self.main, text="Image Properties", font=('Verdana', 14)).grid(column=1, row=5,
                   sticky=W)
-        ttk.Label(main, text="Image Type").grid(column=1, row=6)
-        ttk.Label(main, text="Scaling Type").grid(column=1, row=7)
-        ttk.Label(main, text="Muscle").grid(column=1, row=8)
-        ttk.Label(main, text="Depth (cm)").grid(column=1, row=9)
-        ttk.Label(main, text="Spacing (mm)").grid(column=1, row=10)
-        ttk.Label(main, text="Muscle Volume", font=('Verdana', 14)).grid(column=1, row=13, sticky=W)
-        ttk.Label(main, text="Volume Calculation").grid(column=1, row=14)
-        ttk.Label(main, text="Distance").grid(column=1, row=15)
+        ttk.Label(self.main, text="Image Type").grid(column=1, row=6)
+        ttk.Label(self.main, text="Scaling Type").grid(column=1, row=7)
+        ttk.Label(self.main, text="Muscle").grid(column=1, row=8)
+        ttk.Label(self.main, text="Depth (cm)").grid(column=1, row=9)
+        ttk.Label(self.main, text="Spacing (mm)").grid(column=1, row=10)
+        ttk.Label(self.main, text="Muscle Volume", font=('Verdana', 14)).grid(column=1, row=13, sticky=W)
+        ttk.Label(self.main, text="Volume Calculation").grid(column=1, row=14)
+        ttk.Label(self.main, text="Distance (cm)").grid(column=1, row=15)
 
-        for child in main.winfo_children():
+        for child in self.main.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
         root.bind("<Return>", self.run_code)  # execute by pressing return
@@ -235,81 +236,84 @@ class DeepACSA:
         self.model.set(model_dir)
         return model_dir
 
-    def prepare_imgs(self):
-        """ Asks the user whether to prepare to quadriceps images.
-            Output folders are automatically created containing images.
-            Location of imgages to be cropped must be specified.
-        """
-        selected_image_preparation = self.image_preparation.get()
-        selected_filetype = self.filetype.get()
-        selected_input_dir = self.input.get()
-
-        if selected_image_preparation == "Yes":
-            # Create directory for prepared imgs
-            dirname = selected_input_dir + "/prepared_imgs"
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-            # Prepare imgs
-            gui_helpers.prepare_quad_rf_imgs(selected_input_dir,
-                                 selected_filetype,
-                                 dirname)
-            gui_helpers.prepare_quad_vl_imgs(selected_input_dir,
-                                 selected_filetype,
-                                 dirname)
-
-        else:
-            pass
-
     def run_code(self):
         """ The code is run upon clicking.
         """
+        try:
+            if self.is_running:
+                # don't run again if it is already running
+                return
+            self.is_running = True
 
-        if self.is_running:
-            # don't run again if it is already running
-            return
-        self.is_running = True
+            selected_input_dir = self.input.get()
+            selected_model_path = self.model.get()
+            selected_filetype = self.filetype.get()
+            selected_muscle = self.muscle.get()
+            selected_depth = float(self.depth.get())
+            selected_spacing = self.spacing.get()
+            selected_scaling = self.scaling.get()
+            selected_volume_calculation = self.muscle_volume_calculation_wanted.get()
+            distance_acsa = float(self.distance.get())
 
-        selected_muscle = self.muscle.get()
-        selected_depth = float(self.depth.get())
-        selected_spacing = self.spacing.get()
-        selected_scaling = self.scaling.get()
-        selected_input_dir = self.input.get()
-        selected_model_path = self.model.get()
-        selected_filetype = self.filetype.get()
-        selected_volume_calculation = self.muscle_volume_calculation_wanted.get()
-        distance_acsa = float(self.distance.get())
+            if len(selected_input_dir) == 0:
+                tk.messagebox.showerror("Information", "Check input parameters." +
+                "\nPotential error source:  Invalid specified input directory")
+                self.do_break()
+                self.should_stop = False
+                self.is_running = False
 
-        if selected_scaling == "Line":
-            thread = Thread(
-                target=gui_helpers.calculate_batch_efov,
-                args=(
-                    selected_input_dir,
-                    selected_filetype,
-                    selected_model_path,
-                    selected_depth,
-                    selected_muscle,
-                    selected_volume_calculation,
-                    distance_acsa,
-                    self,
+            elif len(selected_model_path) == 0:
+                tk.messagebox.showerror("Information", "Check input parameters." +
+                "\nPotential error source:  Invalid specified model path")
+                self.do_break()
+                self.should_stop = False
+                self.is_running = False
+
+            elif len(selected_filetype) == 0:
+                tk.messagebox.showerror("Information", "Check input parameters." +
+                "\nPotential error source:  Invalid specified filetype")
+                self.do_break()
+                self.should_stop = False
+                self.is_running = False
+
+            if selected_scaling == "Line":
+                thread = Thread(
+                    target=gui_helpers.calculate_batch_efov,
+                    args=(
+                        selected_input_dir,
+                        selected_filetype,
+                        selected_model_path,
+                        selected_depth,
+                        selected_muscle,
+                        selected_volume_calculation,
+                        distance_acsa,
+                        self,
+                    )
                 )
-            )
-        else:
-            thread = Thread(
-                target=gui_helpers.calculate_batch,
-                args=(
-                    selected_input_dir,
-                    selected_filetype,
-                    selected_model_path,
-                    selected_spacing,
-                    selected_muscle,
-                    selected_scaling,
-                    selected_volume_calculation,
-                    distance_acsa,
-                    self,
+            else:
+                thread = Thread(
+                    target=gui_helpers.calculate_batch,
+                    args=(
+                        selected_input_dir,
+                        selected_filetype,
+                        selected_model_path,
+                        selected_spacing,
+                        selected_muscle,
+                        selected_scaling,
+                        selected_volume_calculation,
+                        distance_acsa,
+                        self,
+                    )
                 )
-            )
 
-        thread.start()
+            thread.start()
+
+        except ValueError:
+            tk.messagebox.showerror("Information", "Check input parameters." +
+            "\nPotential error source:  Invalid specified depth or distance")
+            self.do_break()
+            self.should_stop = False
+            self.is_running = False
 
     @property
     def should_stop(self):
