@@ -8,6 +8,7 @@ import cv2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import tkinter as tk
 
 from gui_helpers.apo_model import ApoModel
 from gui_helpers.calibrate import calibrate_distance_efov
@@ -177,6 +178,14 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
+    if len(list_of_files) == 0:
+        tk.messagebox.showerror("Information", "No video files found." +
+                "\nPotential error source: Unmatched filetype")
+        gui.do_break()
+        gui.should_stop = False
+        gui.is_running = False
+
+
     apo_model = ApoModel(modelpath)
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm2", "Echo_intensity", "A_C_ratio", "Circumference", "Volume_cm3"])
     failed_files = []
@@ -244,7 +253,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             if volume_wanted == "Yes":
 
                 muscle_volume = muscle_volume_calculation(calculated_areas, distance_acsa)
-       
+
                 # append musclevolume result to dataframe
                 dataframe = dataframe.append({"File": "",
                                               "Muscle": "",
@@ -256,6 +265,13 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                                               ignore_index=True)
             else:
                 pass
+
+        except ValueError:
+            tk.messagebox.showerror("Information", "Scaling Type Error." +
+                    "\nPotential error source: Select scaling type does not fit image")
+            gui.do_break()
+            gui.should_stop = False
+            gui.is_running = False
 
         finally:
             # save predicted area values
@@ -285,6 +301,14 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
             scaling type.
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
+
+    if len(list_of_files) == 0:
+        tk.messagebox.showerror("Information", "No video files found." +
+                "\nPotential error source: Unmatched filetype")
+        gui.do_break()
+        gui.should_stop = False
+        gui.is_running = False
+
     apo_model = ApoModel(modelpath)
     dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm2", "Echo_intensity", "A_C_ratio", "Circumference", "Volume_cm3"])
     failed_files = []
@@ -302,7 +326,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                     break
 
                 # load image
-                imported = import_image(imagepath, muscle)
+                imported = import_image(imagepath)
                 filename, img, nonflipped_img, height, width = imported
 
                 if scaling == "Bar":
@@ -371,6 +395,13 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                                               ignore_index=True)
             else:
                 pass
+
+        except ValueError:
+            tk.messagebox.showerror("Information", "Scaling Type Error." +
+                    "\nPotential error source: Select scaling type does not fit image")
+            gui.do_break()
+            gui.should_stop = False
+            gui.is_running = False
 
         finally:
             # save predicted area results
