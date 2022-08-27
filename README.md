@@ -7,9 +7,9 @@ All following commands should be entered in your command prompt / terminal.
 More information about the usage of DeepACSA can be found in the instructional video (https://youtu.be/It9CqVSNc9M). 
 Our trained models can be accessed at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6953924.svg)](https://doi.org/10.5281/zenodo.6953924).
 Anonymized panoramic ultrasound images are available at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5799204.svg)](https://doi.org/10.5281/zenodo.5799204).
-If you find this work useful, please remember to cite the corresponding paper (https://medrxiv.org/cgi/content/short/2021.12.27.21268258v1), where more information about the model architecture and performance can be found as well. 
+If you find this work useful, please remember to cite the corresponding paper (https://journals.lww.com/acsm-msse/Abstract/9900/DeepACSA__Automatic_Segmentation_of.87.aspx), where more information about the model architecture and performance can be found as well. 
 
-## Installation 
+## Installation Windows
 
 1. Git setup (Optional): 
 
@@ -69,6 +69,10 @@ Type the here presented command into the prompt window and enter the required pa
 python deep_acsa_gui.py
 
 ```
+
+## Installation MacOS
+
+Please be aware that the installation using the supplied environment.yml and requirements.txt are not functional for the new Apple M1/M2 chips. There are some support issues for older versions of tensorflow. At the moment, we do not provide any installation guidelines for the latest versions of MacOS with the M1/M2 chips. Sorry for any inconveniences, we aim to provide this in the near future.
 
 ## Descriptive figure of the model used
 
