@@ -179,7 +179,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     if len(list_of_files) == 0:
-        tk.messagebox.showerror("Information", "No video files found." +
+        tk.messagebox.showerror("Information", "No image files found." +
                 "\nPotential error source: Unmatched filetype")
         gui.do_break()
         gui.should_stop = False
@@ -268,7 +268,7 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
 
         except ValueError:
             tk.messagebox.showerror("Information", "Scaling Type Error." +
-                    "\nPotential error source: Select scaling type does not fit image")
+                    "\nPotential error source: Selected scaling type does not fit image")
             gui.do_break()
             gui.should_stop = False
             gui.is_running = False
@@ -303,7 +303,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     if len(list_of_files) == 0:
-        tk.messagebox.showerror("Information", "No video files found." +
+        tk.messagebox.showerror("Information", "No image files found." +
                 "\nPotential error source: Unmatched filetype")
         gui.do_break()
         gui.should_stop = False
@@ -398,7 +398,7 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
 
         except ValueError:
             tk.messagebox.showerror("Information", "Scaling Type Error." +
-                    "\nPotential error source: Select scaling type does not fit image")
+                    "\nPotential error source: Selected scaling type does not fit image")
             gui.do_break()
             gui.should_stop = False
             gui.is_running = False
