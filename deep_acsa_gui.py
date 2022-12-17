@@ -196,6 +196,9 @@ class DeepACSA:
         # Run Button
         run_button = ttk.Button(self.main, text="Run", command=self.run_code)
         run_button.grid(column=2, row=16, sticky=(W, E))
+        # Train Button
+        train_button=ttk.Button(self.main, text="Train Model", command=self.train_model_window)
+        train_button.grid(column=5, row=16, sticky=(W, E))
 
         # Labels
         ttk.Label(self.main, text="Directories",font=('Verdana', 14)).grid(column=1, row=1, sticky=W)
@@ -344,6 +347,10 @@ class DeepACSA:
     def do_break(self):
         if self.is_running:
             self.should_stop = True
+
+    def train_model_window(self):
+        pass
+        
 
 
 if __name__ == "__main__":
