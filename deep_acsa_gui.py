@@ -348,9 +348,256 @@ class DeepACSA:
         if self.is_running:
             self.should_stop = True
 
+    # ---------------------------------------------------------------------------------------------------
+    # Open new toplevel instance for model training
+
     def train_model_window(self):
-        pass
-        
+        """
+        Instance method to open new window for model training.
+        The window is opened upon pressing of the "analysis parameters"
+        button.
+
+        Several parameters are displayed.
+        - Image Directory:
+        The user must select or input the image directory. This
+        path must to the directory containing the training images.
+        Images must be in RGB format.
+        - Mask Directory:
+        The user must select or input the mask directory. This
+        path must to the directory containing the training images.
+        Masks must be binary.
+        - Output Directory:
+        The user must select or input the mask directory. This
+        path must lead to the directory where the trained model
+        and the model weights should be saved.
+        - Batch Size:
+        The user must input the batch size used during model training by
+        selecting from the dropdown list or entering a value.
+        Although a larger batch size has advantages during model trainig,
+        the images used here are large. Thus, the larger the batch size,
+        the more compute power is needed or the longer the training duration.
+        Integer, must be non-negative and non-zero.
+        - Learning Rate:
+        The user must enter the learning rate used for model training by
+        selecting from the dropdown list or entering a value.
+        Float, must be non-negative and non-zero.
+        - Epochs:
+        The user must enter the number of Epochs used during model training by
+        selecting from the dropdown list or entering a value.
+        The total amount of epochs will only be used if early stopping does not happen.
+        Integer, must be non-negative and non-zero.
+        - Loss Function:
+        The user must enter the loss function used for model training by
+        selecting from the dropdown list. These can be "BCE" (binary
+        cross-entropy), "Dice" (Dice coefficient) or "FL"(Focal loss).
+
+        Model training is started by pressing the "start training" button. Although
+        all parameters relevant for model training can be adapted, we advise users with
+        limited experience to keep the pre-defined settings. These settings are best
+        practice and devised from the original papers that proposed the models used
+        here. Singularly the batch size should be adapted to 1 if comupte power is limited
+        (no GPU or GPU with RAM lower than 8 gigabyte).
+        """
+        # Open Window
+        window = tk.Toplevel(bg="SkyBlue4")
+        window.title("Model Training Window")
+        window.iconbitmap("icon.ico")
+        window.grab_set()
+
+        # Labels
+        ttk.Label(window, text="Training Parameters", font=("Verdana", 14)).grid(
+            column=1, row=0, padx=10
+        )
+        ttk.Label(window, text="Image Directory").grid(column=1, row=2)
+        ttk.Label(window, text="Mask Directory").grid(column=1, row=3)
+        ttk.Label(window, text="Output Directory").grid(column=1, row=4)
+        ttk.Label(window, text="Batch Size").grid(column=1, row=5)
+        ttk.Label(window, text="Learning Rate").grid(column=1, row=6)
+        ttk.Label(window, text="Epochs").grid(column=1, row=7)
+        ttk.Label(window, text="Loss Function").grid(column=1, row=8)
+
+        # Entryboxes
+        # Train image directory
+        self.train_image_dir = StringVar()
+        train_image_entry = ttk.Entry(
+            window, width=30, textvariable=self.train_image_dir
+        )
+        train_image_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
+        self.train_image_dir.set(
+            "C:/Users/admin/Documents/DL_Track/Train_Data_DL_Track/apo_test"
+        )
+
+        # Mask directory
+        self.mask_dir = StringVar()
+        mask_entry = ttk.Entry(window, width=30, textvariable=self.mask_dir)
+        mask_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
+        self.mask_dir.set(
+            "C:/Users/admin/Documents/DL_Track/Train_Data_DL_Track/apo_mask_test"
+        )
+
+        # Output path
+        self.out_dir = StringVar()
+        out_entry = ttk.Entry(window, width=30, textvariable=self.out_dir)
+        out_entry.grid(column=2, row=4, columnspan=3, sticky=(W, E))
+        self.out_dir.set("C:/Users/admin/Documents")
+
+        # Buttons
+        # Train image button
+        train_img_button = ttk.Button(window, text="Images", command=self.get_train_dir)
+        train_img_button.grid(column=5, row=2, sticky=E)
+
+        # Mask button
+        mask_button = ttk.Button(window, text="Masks", command=self.get_mask_dir)
+        mask_button.grid(column=5, row=3, sticky=E)
+
+        # Input directory
+        out_button = ttk.Button(window, text="Output", command=self.get_output_dir)
+        out_button.grid(column=5, row=4, sticky=E)
+
+        # Model train button
+        model_button = ttk.Button(
+            window, text="Start Training", command=self.train_model
+        )
+        model_button.grid(column=5, row=10, sticky=E)
+
+        # Comboboxes
+        # Batch size
+        self.batch_size = StringVar()
+        size = ("1", "2", "3", "4", "5", "6")
+        size_entry = ttk.Combobox(window, width=10, textvariable=self.batch_size)
+        size_entry["values"] = size
+        size_entry.grid(column=2, row=5, sticky=(W, E))
+        self.batch_size.set("1")
+
+        # Learning rate
+        self.learn_rate = StringVar()
+        learn = ("0.005", "0.001", "0.0005", "0.0001", "0.00005", "0.00001")
+        learn_entry = ttk.Combobox(window, width=10, textvariable=self.learn_rate)
+        learn_entry["values"] = learn
+        learn_entry.grid(column=2, row=6, sticky=(W, E))
+        self.learn_rate.set("0.00001")
+
+        # Number of training epochs
+        self.epochs = StringVar()
+        epoch = ("30", "40", "50", "60", "70", "80")
+        epoch_entry = ttk.Combobox(window, width=10, textvariable=self.epochs)
+        epoch_entry["values"] = epoch
+        epoch_entry.grid(column=2, row=7, sticky=(W, E))
+        self.epochs.set("3")
+
+        # Loss function
+        self.loss_function = StringVar()
+        loss = ("BCE", "Dice", "FL")
+        loss_entry = ttk.Combobox(window, width=10, textvariable=self.loss_function)
+        loss_entry["values"] = loss
+        loss_entry["state"] = "readonly"
+        loss_entry.grid(column=2, row=8, sticky=(W, E))
+        self.loss_function.set("BCE")
+
+        # Add padding
+        for child in window.winfo_children():
+            child.grid_configure(padx=5, pady=5)
+
+    ## Methods used for model training
+
+    def get_train_dir(self):
+        """
+        Instance method to ask the user to select the training image
+        directory path. All image files (of the same specified filetype) in
+        the directory are analysed. This must be an absolute path.
+        """
+        train_image_dir = filedialog.askdirectory()
+        self.train_image_dir.set(train_image_dir)
+
+    def get_mask_dir(self):
+        """
+        Instance method to ask the user to select the training mask
+        directory path. All mask files (of the same specified filetype) in
+        the directory are analysed.The mask files and the corresponding
+        image must have the exact same name. This must be an absolute path.
+        """
+        mask_dir = filedialog.askdirectory()
+        self.mask_dir.set(mask_dir)
+
+    def get_output_dir(self):
+        """
+        Instance method to ask the user to select the output
+        directory path. Here, all file created during model
+        training (model file, weight file, graphs) are saved.
+        This must be an absolute path.
+        """
+        out_dir = filedialog.askdirectory()
+        self.out_dir.set(out_dir)
+
+    def train_model(self):
+        """
+        Instance method to execute the model training when the
+        "start training" button is pressed.
+
+        By pressing the button, a seperate thread is started
+        in which the model training is run. This allows the user to break any
+        training process at certain stages. When the analysis can be
+        interrupted, a tk.messagebox opens asking the user to either
+        continue or terminate the analysis. Moreover, the threading allows interaction
+        with the GUI during ongoing analysis process.
+        """
+        try:
+            # See if GUI is already running
+            if self.is_running:
+                # don't run again if it is already running
+                return
+            self.is_running = True
+
+            # Get input paremeter
+            selected_images = self.train_image_dir.get()
+            selected_masks = self.mask_dir.get()
+            selected_outpath = self.out_dir.get()
+
+            # Make sure some kind of filetype is specified.
+            if (
+                len(selected_images) < 3
+                or len(selected_masks) < 3
+                or len(selected_outpath) < 3
+            ):
+                tk.messagebox.showerror("Information", "Specified directories invalid.")
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
+            selected_batch_size = int(self.batch_size.get())
+            selected_learning_rate = float(self.learn_rate.get())
+            selected_epochs = int(self.epochs.get())
+            selected_loss_function = self.loss_function.get()
+
+            # Start thread
+            thread = Thread(
+                target=gui_helpers.trainModel,
+                args=(
+                    selected_images,
+                    selected_masks,
+                    selected_outpath,
+                    selected_batch_size,
+                    selected_learning_rate,
+                    selected_epochs,
+                    selected_loss_function,
+                    self,
+                ),
+            )
+
+            thread.start()
+
+        # Error handling
+        except ValueError:
+            tk.messagebox.showerror(
+                "Information", "Analysis parameter entry fields" + " must not be empty."
+            )
+            self.do_break()
+            self.should_stop = False
+            self.is_running = False
+
+    # ---------------------------------------------------------------------------------------------------
+
 
 
 if __name__ == "__main__":
