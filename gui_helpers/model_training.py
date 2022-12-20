@@ -412,8 +412,8 @@ def loadImages(img_path: str, mask_path: str):
     mask_imgs([[[[0.] ... [0.]]])
     """
     # Images will be re-scaled accordingly
-    im_width = 512
-    im_height = 512
+    im_width = 256
+    im_height = 256
 
     # list of all images in the path
     ids = os.listdir(img_path)
@@ -531,8 +531,8 @@ def trainModel(
         return
 
     # Images will be re-scaled accordingly
-    im_width = 512
-    im_height = 512
+    im_width = 256
+    im_height = 256
 
     # Adapt folder paths
     # This is necessary to concattenate id to path
