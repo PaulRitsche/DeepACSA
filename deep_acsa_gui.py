@@ -487,7 +487,7 @@ class DeepACSA:
 
         # Loss function
         self.loss_function = StringVar()
-        loss = ("BCE", "Dice", "FL")
+        loss = ("BCE") # "Dice", "FL")
         loss_entry = ttk.Combobox(window, width=10, textvariable=self.loss_function)
         loss_entry["values"] = loss
         loss_entry["state"] = "readonly"
