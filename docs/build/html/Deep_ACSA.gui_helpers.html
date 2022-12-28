@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deep_ACSA.gui_helpers package &mdash; DeepACSA 0.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Deep_ACSA package" href="Deep_ACSA.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> DeepACSA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#usage-guidelines">Usage Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#test-guidelines">Test Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#contributing-guidelines">Contributing Guidelines</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html#documentation">Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="Deep_ACSA.html">Deep_ACSA package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="Deep_ACSA.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Deep_ACSA.gui_helpers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Deep_ACSA.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepACSA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Installation</a></li>
+          <li class="breadcrumb-item"><a href="Deep_ACSA.html">Deep_ACSA package</a></li>
+      <li class="breadcrumb-item active">Deep_ACSA.gui_helpers package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Deep_ACSA.gui_helpers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deep-acsa-gui-helpers-package">
+<h1>Deep_ACSA.gui_helpers package<a class="headerlink" href="#deep-acsa-gui-helpers-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-Deep_ACSA.gui_helpers.apo_model">
+<span id="deep-acsa-gui-helpers-apo-model-module"></span><h2>Deep_ACSA.gui_helpers.apo_model module<a class="headerlink" href="#module-Deep_ACSA.gui_helpers.apo_model" title="Permalink to this heading"></a></h2>
+<p>Python class to predict muscle area</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.ApoModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.apo_model.</span></span><span class="sig-name descname"><span class="pre">ApoModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apo_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.ApoModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class which provides utility to predict aponeurosis on US-images.</p>
+<dl>
+<dt>Attributes:</dt><dd><p>model_path: Path to the Keras segmentation model.
+apo_threshold: Pixels above this threshold are assumed to be apo.</p>
+</dd>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">apo_model</span> <span class="o">=</span> <span class="n">ApoModel</span><span class="p">(</span><span class="s1">&#39;path/to/model.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get predictions only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_apo</span> <span class="o">=</span> <span class="n">apo_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_apo_t</span> <span class="o">=</span> <span class="n">apo_model</span><span class="o">.</span><span class="n">predict_t</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get predictions and plot (the following two are identical)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_apo_t</span><span class="p">,</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">apo_model</span><span class="o">.</span><span class="n">predict_t</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_apo_t</span><span class="p">,</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">apo_model</span><span class="o">.</span><span class="n">predict_t</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.ApoModel.postprocess_image">
+<span class="sig-name descname"><span class="pre">postprocess_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.ApoModel.postprocess_image" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Deletes unnecessary areas, fills holes and calculates the length</dt><dd><p>of the detected largest contour.</p>
+</dd>
+<dt>Arguments:</dt><dd><p>Input image</p>
+</dd>
+<dt>Returns:</dt><dd><p>Image containing only largest area of pixels with holes removed.
+Float containing circumference.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.ApoModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.ApoModel.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a segmentation model on the input image.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Input image</p>
+</dd>
+<dt>Returns:</dt><dd><p>The probability for each pixel, that it belongs to the foreground.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.ApoModel.predict_e">
+<span class="sig-name descname"><span class="pre">predict_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.ApoModel.predict_e" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a segmentation model on the input image and thresholds result.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Input image
+Image with scaling lines
+Name of image
+Width of the original image
+Height of the original image
+Whether or not to plot the input/output and return the figure</p>
+</dd>
+<dt>Returns:</dt><dd><p>The thresholded bit-mask and (optionally) a figure of
+input/scaling/output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.ApoModel.predict_m">
+<span class="sig-name descname"><span class="pre">predict_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.ApoModel.predict_m" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a segmentation model on the input image and thresholds result.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Input image
+Image with scaling lines
+Name of the image
+Distance between scaling bars
+Width of the original image
+Height of the original image
+Whether or not to plot the input/output and return the figure</p>
+</dd>
+<dt>Returns:</dt><dd><p>The thresholded bit-mask and (optionally) a figure of
+input/scaling/output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.ApoModel.predict_s">
+<span class="sig-name descname"><span class="pre">predict_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.ApoModel.predict_s" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a segmentation model on the input image and thresholds result.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Input image
+Image with scaling lines
+Name of file
+Distance between scaling bars
+Width of the original image
+Height of the original image
+Whether or not to plot the input/output and return the figure</p>
+</dd>
+<dt>Returns:</dt><dd><p>The thresholded bit-mask and (optionally) a figure of
+input/scaling/output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.IoU">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.apo_model.</span></span><span class="sig-name descname"><span class="pre">IoU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.IoU" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute the intersection over union score (IoU),
+a measure of prediction accuracy. This is sometimes also called Jaccard score.</p>
+<p>The IoU can be used as a loss metric during binary segmentation when
+convolutional neural networks are applied. The IoU is calculated for both the
+training and validation set.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>y_true<span class="classifier">tf.Tensor</span></dt><dd><p>True positive image segmentation label predefined by the user.
+This is the mask that is provided prior to model training.</p>
+</dd>
+<dt>y_pred<span class="classifier">tf.Tensor</span></dt><dd><p>Predicted image segmentation by the network.</p>
+</dd>
+<dt>smooth<span class="classifier">int, default = 1</span></dt><dd><p>Smoothing operator applied during final calculation of
+IoU. Must be non-negative and non-zero.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>iou<span class="classifier">tf.Tensor</span></dt><dd><p>IoU representation in the same shape as y_true, y_pred.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this heading"></a></h3>
+<p>The IoU is usually calculated as IoU = intersection / union.
+The intersection is calculated as the overlap of y_true and
+y_pred, whereas the union is the sum of y_true and y_pred.</p>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">IoU</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">Tensor</span><span class="p">(</span><span class="s2">&quot;IteratorGetNext:1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">),</span>
+<span class="go">        y_pred=Tensor(&quot;VGG16_U-Net/conv2d_8/Sigmoid:0&quot;, shape=(1, 512, 512, 1), dtype=float32),</span>
+<span class="go">        smooth=1)</span>
+<span class="go">Tensor(&quot;truediv:0&quot;, shape=(1, 512, 512), dtype=float32)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.arcLength">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.apo_model.</span></span><span class="sig-name descname"><span class="pre">arcLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">retval</span></span></span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.arcLength" title="Permalink to this definition"></a></dt>
+<dd><p>.   &#64;brief Calculates a contour perimeter or a curve length.
+.   
+.   The function computes a curve length or a closed contour perimeter.
+.   
+.   &#64;param curve Input vector of 2D points, stored in std::vector or Mat.
+.   &#64;param closed Flag indicating whether the curve is closed or not.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.apo_model.findContours">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.apo_model.</span></span><span class="sig-name descname"><span class="pre">findContours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">contours</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">hierarchy</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">contours</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">hierarchy</span></span></span><a class="headerlink" href="#Deep_ACSA.gui_helpers.apo_model.findContours" title="Permalink to this definition"></a></dt>
+<dd><p>.   &#64;brief Finds contours in a binary image.
+.   
+.   The function retrieves contours from the binary image using the algorithm &#64;cite Suzuki85 . The contours
+.   are a useful tool for shape analysis and object detection and recognition. See squares.cpp in the
+.   OpenCV sample directory.
+.   &#64;note Since opencv 3.2 source image is not modified by this function.
+.   
+.   &#64;param image Source, an 8-bit single-channel image. Non-zero pixels are treated as 1’s. Zero
+.   pixels remain 0’s, so the image is treated as binary . You can use #compare, #inRange, #threshold ,
+.   #adaptiveThreshold, #Canny, and others to create a binary image out of a grayscale or color one.
+.   If mode equals to #RETR_CCOMP or #RETR_FLOODFILL, the input can also be a 32-bit integer image of labels (CV_32SC1).
+.   &#64;param contours Detected contours. Each contour is stored as a vector of points (e.g.
+.   std::vector&lt;std::vector&lt;cv::Point&gt; &gt;).
+.   &#64;param hierarchy Optional output vector (e.g. std::vector&lt;cv::Vec4i&gt;), containing information about the image topology. It has
+.   as many elements as the number of contours. For each i-th contour contours[i], the elements
+.   hierarchy[i][0] , hierarchy[i][1] , hierarchy[i][2] , and hierarchy[i][3] are set to 0-based indices
+.   in contours of the next and previous contours at the same hierarchical level, the first child
+.   contour and the parent contour, respectively. If for the contour i there are no next, previous,
+.   parent, or nested contours, the corresponding elements of hierarchy[i] will be negative.
+.   &#64;param mode Contour retrieval mode, see #RetrievalModes
+.   &#64;param method Contour approximation method, see #ContourApproximationModes
+.   &#64;param offset Optional offset by which every contour point is shifted. This is useful if the
+.   contours are extracted from the image ROI and then they should be analyzed in the whole image
+.   context.</p>
+</dd></dl>
+
+</section>
+<section id="module-Deep_ACSA.gui_helpers.calculate_muscle_volume">
+<span id="deep-acsa-gui-helpers-calculate-muscle-volume-module"></span><h2>Deep_ACSA.gui_helpers.calculate_muscle_volume module<a class="headerlink" href="#module-Deep_ACSA.gui_helpers.calculate_muscle_volume" title="Permalink to this heading"></a></h2>
+<section id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h3>
+<p>This module contains a function to automatically calculate the volume
+of the analyzed muscle. Note that this can only be done across several
+images of the same muscle, at least 3. The truncated cone formula is used,
+modelling the muscle as a cone. The higher the number of images per muscle,
+the higher the accuracy of the volume calculation, as distances between images
+are extrapolated. Thus, the distance must be known and must be equal.</p>
+</section>
+<section id="functions-scope">
+<h3>Functions scope<a class="headerlink" href="#functions-scope" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>muscle_volume_calculation</dt><dd><p>Function to calcualte the echo intensity of muscle area.</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calculate_muscle_volume.muscle_volume_calculation">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calculate_muscle_volume.</span></span><span class="sig-name descname"><span class="pre">muscle_volume_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calculate_muscle_volume.muscle_volume_calculation" title="Permalink to this definition"></a></dt>
+<dd><p>Fuction to calculate muscle volume on the basis of the predicted
+muscle areas. Several images of the same muscle are needed to
+calculate the muscle muscle volume with known distances between
+the images.</p>
+<p>The truncated cone formula is used to calculate the volume,
+where the muscle is modelled as a cone.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>scan_area<span class="classifier">list</span></dt><dd><p>List variable containing the predicted muscle areas.
+Should be at least 3 predicted areas.</p>
+</dd>
+<dt>dist<span class="classifier">float</span></dt><dd><p>Float variable contianing the distance between the images
+in cm. Needs to be constant.</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>total_volume<span class="classifier">float</span></dt><dd><p>Float variable containing the total predicted muscle
+volume in cm^3.</p>
+</dd>
+</dl>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
+<p>&gt;&gt;&gt;muscle_volume = muscle_volume_calculation([2, 3, 5, 4, 2, 2], 3.75)
+11.3276276145058</p>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-Deep_ACSA.gui_helpers.calibrate">
+<span id="deep-acsa-gui-helpers-calibrate-module"></span><h2>Deep_ACSA.gui_helpers.calibrate module<a class="headerlink" href="#module-Deep_ACSA.gui_helpers.calibrate" title="Permalink to this heading"></a></h2>
+<section id="id3">
+<h3>Description<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>This module contains functions to automatically or manually
+scale images.
+The scope of the automatic method is limited to scaling bars being
+present in the right side of the image. The scope of the manual method
+is not limited to specific scaling types in images. However, the distance
+between two selected points in the image required for the scaling must be known.</p>
+</section>
+<section id="id4">
+<h3>Functions scope<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>region_of_interest</dt><dd><p>Function to crop the images according to a specified
+region of interest.</p>
+</dd>
+<dt>mclick</dt><dd><p>Function to detect mouse click coordinates in image.</p>
+</dd>
+<dt>draw_the_lines</dt><dd><p>Function to mark the detected lines.</p>
+</dd>
+<dt>calibrate_distance_efov</dt><dd><p>Function to calibrate EFOV ultrasonography images automatically.</p>
+</dd>
+<dt>calibrate_distance_manually</dt><dd><p>Function to manually calibrate an image to convert measurements
+in pixel units to centimeters.</p>
+</dd>
+<dt>calibrate_distance_static</dt><dd><p>Function to calibrate an image to convert measurements
+in pixel units to centimeters.</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calibrate.calibrate_distance_efov">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calibrate.</span></span><span class="sig-name descname"><span class="pre">calibrate_distance_efov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg_muscle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calibrate.calibrate_distance_efov" title="Permalink to this definition"></a></dt>
+<dd><p>Function to calibrate EFOV ultrasonography images automatically.
+This is done by determining the length of the previously detected
+scalining lines present in the image.</p>
+<p>This function is highly specific and limited to EFOV images containing
+lines with scaling bars. Simple scaling bars will not work. For each muscle
+included in DeepACSA, different parameters are used for the Hugh algorithm.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>path_to_image<span class="classifier">str</span></dt><dd><p>String variable containing the to image that should be analyzed.</p>
+</dd>
+<dt>arg_muscle<span class="classifier">str</span></dt><dd><p>String variable containing the muscle present in the analyzed image.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>Returns<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>scalingline_lenght<span class="classifier">int</span></dt><dd><p>Integer variable containing the length of the detected scaling line in
+pixel units.</p>
+</dd>
+<dt>image_with_lines<span class="classifier">np.ndarray</span></dt><dd><p>Cropped image containing the drawn lines.</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h3>Example<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calibrate_distance_efov</span><span class="p">(</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">Test</span><span class="o">/</span><span class="n">Img1</span><span class="o">.</span><span class="n">tif</span><span class="p">,</span> <span class="s2">&quot;RF&quot;</span><span class="p">)</span>
+<span class="go">571</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calibrate.calibrate_distance_manually">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calibrate.</span></span><span class="sig-name descname"><span class="pre">calibrate_distance_manually</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nonflipped_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calibrate.calibrate_distance_manually" title="Permalink to this definition"></a></dt>
+<dd><p>Function to manually calibrate an image to convert measurements
+in pixel units to centimeters.</p>
+<p>The function calculates the distance in pixel units between two
+points on the input image. The points are determined by clicks of
+the user. The distance (in milimeters) is determined by the value
+contained in the spacing variable. Then the ratio of pixel / centimeter
+is calculated. To get the distance, the euclidean distance between the
+two points is calculated.</p>
+<section id="id8">
+<h3>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>nonflipped_img<span class="classifier">np.ndarray</span></dt><dd><p>Input image to be analysed as a numpy array. The image must
+be loaded prior to calibration, specifying a path
+is not valid.</p>
+</dd>
+<dt>spacing<span class="classifier">int</span></dt><dd><p>Integer variable containing the known distance in milimeter
+between the two placed points by the user. This can be 5, 10,
+15 or 20 milimeter.</p>
+</dd>
+</dl>
+</section>
+<section id="id9">
+<h3>Returns<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>calib_dist<span class="classifier">int</span></dt><dd><p>Integer variable containing the distance between the two
+specified point in pixel units.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="id10">
+<h3>Examples<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calibrateDistanceManually</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="p">([[[[</span><span class="mf">0.22414216</span> <span class="mf">0.19730392</span> <span class="mf">0.22414216</span><span class="p">]</span> <span class="o">...</span> <span class="p">[</span><span class="mf">0.2509804</span>  <span class="mf">0.2509804</span>  <span class="mf">0.2509804</span> <span class="p">]]]),</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">99, 5 mm corresponds to 99 pixels</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calibrate.calibrate_distance_static">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calibrate.</span></span><span class="sig-name descname"><span class="pre">calibrate_distance_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nonflipped_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calibrate.calibrate_distance_static" title="Permalink to this definition"></a></dt>
+<dd><p>Function to calibrate an image to convert measurements
+in pixel units to centimeter.</p>
+<p>The function calculates the distance in pixel units between two
+scaling bars on the input image. The bars should be positioned on the
+right side of image. The distance (in milimeter) between two bars must
+be specified by the spacing variable. It is the known distance between two
+bars in milimeter. Then the ratio of pixel / centimeter is calculated.
+To get the distance, the median distance between two detected bars
+is calculated.</p>
+<section id="id11">
+<h3>Parameters<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>nonflipped_img<span class="classifier">np.ndarray</span></dt><dd><p>Input image to be analysed as a numpy array. The image must
+be loaded prior to calibration, specifying a path
+is not valid.</p>
+</dd>
+<dt>spacing<span class="classifier">int</span></dt><dd><p>Integer variable containing the known distance in milimeter
+between the two scaling bars. This can be 5, 10,
+15 or 20 milimeter.</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h3>Returns<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>calib_dist<span class="classifier">int</span></dt><dd><p>Integer variable containing the distance between the two
+specified point in pixel units.</p>
+</dd>
+<dt>imgscale<span class="classifier">np.ndarray</span></dt><dd><p>Cropped region of the input area containing only the
+scaling bars.</p>
+</dd>
+<dt>scale_statement<span class="classifier">str</span></dt><dd><p>String variable containing a statement how many milimeter
+correspond to how many pixels.</p>
+</dd>
+</dl>
+</section>
+<section id="id13">
+<h3>Examples<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calibrateDistanceStatic</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="p">([[[[</span><span class="mf">0.22414216</span> <span class="mf">0.19730392</span> <span class="mf">0.22414216</span><span class="p">]</span> <span class="o">...</span> <span class="p">[</span><span class="mf">0.2509804</span>  <span class="mf">0.2509804</span>  <span class="mf">0.2509804</span> <span class="p">]]]),</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">99, 5 mm corresponds to 99 pixels</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calibrate.draw_the_lines">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calibrate.</span></span><span class="sig-name descname"><span class="pre">draw_the_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calibrate.draw_the_lines" title="Permalink to this definition"></a></dt>
+<dd><p>Function to highlight lines on the input images.
+This is used to visualize the lines on the input image.</p>
+<section id="id14">
+<h3>Parameters<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>img<span class="classifier">np.ndarray</span></dt><dd><p>Input image where the lines are to be drawn upon.</p>
+</dd>
+<dt>line<span class="classifier">np.ndarray</span></dt><dd><p>An array of lines wished to be drawn upon the image.</p>
+</dd>
+</dl>
+</section>
+<section id="id15">
+<h3>Returns<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>img<span class="classifier">np.ndarray</span></dt><dd><p>Input image now with lines drawn upon.</p>
+</dd>
+</dl>
+<p>Example:
+&gt;&gt;&gt; draw_the_lines(Image1.tif, ([[0 738 200 539]))</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calibrate.mclick">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calibrate.</span></span><span class="sig-name descname"><span class="pre">mclick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calibrate.mclick" title="Permalink to this definition"></a></dt>
+<dd><p>Instance method to detect mouse click coordinates in image.</p>
+<p>This instance is used when the image to be analyzed should be
+cropped. Upon clicking the mouse button, the coordinates
+of the cursor position are stored in the instance attribute
+self.mlocs.</p>
+<section id="id16">
+<h3>Parameters<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>event</dt><dd><p>Event flag specified as Cv2 mouse event left mouse button down.</p>
+</dd>
+<dt>x_val</dt><dd><p>Value of x-coordinate of mouse event to be recorded.</p>
+</dd>
+<dt>y_val</dt><dd><p>Value of y-coordinate of mouse event to be recorded.</p>
+</dd>
+<dt>flags</dt><dd><p>Specific condition whenever a mouse event occurs. This
+is not used here but needs to be specified as input
+parameter.</p>
+</dd>
+<dt>param</dt><dd><p>User input data. This is not required here but needs to
+be specified as input parameter.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.calibrate.region_of_interest">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.calibrate.</span></span><span class="sig-name descname"><span class="pre">region_of_interest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.calibrate.region_of_interest" title="Permalink to this definition"></a></dt>
+<dd><p>Function to crop the images according to a specified
+region of interest. The input image is cropped and
+the region of interest is returned.</p>
+<section id="id17">
+<h3>Parameters<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>img<span class="classifier">np.ndarray</span></dt><dd><p>Input image likely to be already processed and
+solely containing edges.</p>
+</dd>
+<dt>vertices<span class="classifier">np.ndarray</span></dt><dd><p>Numpy array containing the vertices that translate
+to the region / coordinates for image cropping.</p>
+</dd>
+</dl>
+</section>
+<section id="id18">
+<h3>Returns<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>masked_img<span class="classifier">np.ndarray</span></dt><dd><p>Image cropped to the pre-specified region of interest.</p>
+</dd>
+</dl>
+</section>
+<section id="id19">
+<h3>Example<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">region_of_interest</span><span class="p">(</span><span class="n">preprocessed_image</span><span class="p">,</span>
+<span class="go">                    ([(0,1), (0,2), (4,2), (4,7)], np.int32),)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-Deep_ACSA.gui_helpers.echo_int">
+<span id="deep-acsa-gui-helpers-echo-int-module"></span><h2>Deep_ACSA.gui_helpers.echo_int module<a class="headerlink" href="#module-Deep_ACSA.gui_helpers.echo_int" title="Permalink to this heading"></a></h2>
+<section id="id20">
+<h3>Description<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
+<p>This module contains a function to automatically calculate the echo intensity
+(mean grayscale value) of the predicted mask. The correctness of the calculated
+echo intensity depends on the correctess of the predicton.</p>
+</section>
+<section id="id21">
+<h3>Functions scope<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>calculate_echo_int</dt><dd><p>Function to calcualte the echo intensity of muscle area.</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.echo_int.calculate_echo_int">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.echo_int.</span></span><span class="sig-name descname"><span class="pre">calculate_echo_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.echo_int.calculate_echo_int" title="Permalink to this definition"></a></dt>
+<dd><p>Function to calculatae the echo intensity (mean grey value) of pixels within
+given region.</p>
+<p>The function calculates the echo intensity based on the previously segmented/
+predicted mask. The mask is overlayd and the for the section of the predicted
+muscle area, the echo intensity is calculated on the copy of the original
+image.</p>
+<section id="id22">
+<h3>Parameters<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>img_copy<span class="classifier">np.ndarray</span></dt><dd><p>Copy of original US image input image.</p>
+</dd>
+<dt>mask<span class="classifier">np.ndarray</span></dt><dd><p>Predicted ACSA of the respective image as binary np.array.</p>
+</dd>
+</dl>
+</section>
+<section id="id23">
+<h3>Returns<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>echo_int<span class="classifier">float</span></dt><dd><p>Float variable containint the mean grey scale value of
+the predicted muscle area.</p>
+</dd>
+</dl>
+</section>
+<section id="id24">
+<h3>Examples<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
+<p>&gt;&gt;&gt;calculate_echo_int(C:/Desktop/Test, C:/Desktop/Test/Img1.tif, pred_apo_t)
+65.728</p>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-Deep_ACSA.gui_helpers.model_training">
+<span id="deep-acsa-gui-helpers-model-training-module"></span><h2>Deep_ACSA.gui_helpers.model_training module<a class="headerlink" href="#module-Deep_ACSA.gui_helpers.model_training" title="Permalink to this heading"></a></h2>
+<section id="id25">
+<h3>Description<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h3>
+<p>This module contains functions to train a VGG16 encoder U-net decoder CNN.
+The module was specifically designed to be executed from a GUI.
+When used from the GUI, the module saves the trained model and weights to
+a given directory. The user needs to provide paths to the image and label/
+mask directories. Instructions for correct image labelling can be found
+in the Labelling directory.</p>
+</section>
+<section id="id26">
+<h3>Functions scope<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>conv_block</dt><dd><p>Function to build a convolutional block for the U-net decoder path of the network.
+The block is built using several keras.layers functionalities.</p>
+</dd>
+<dt>decoder_block</dt><dd><p>Function to build a decoder block for the U-net decoder path of the network.
+The block is built using several keras.layers functionalities.</p>
+</dd>
+<dt>build_vgg16_model</dt><dd><p>Function that builds a convolutional network consisting of an VGG16 encoder path
+and a U-net decoder path.</p>
+</dd>
+<dt>IoU</dt><dd><p>Function to compute the intersection over union score (IoU),
+a measure of prediction accuracy. This is sometimes also called Jaccard score.</p>
+</dd>
+<dt>dice_score</dt><dd><p>Function to compute the Dice score, a measure of prediction accuracy.</p>
+</dd>
+<dt>focal_loss</dt><dd><p>Function to compute the focal loss, a measure of prediction accuracy.</p>
+</dd>
+<dt>load_images</dt><dd><p>Function to load images and manually labeled masks from a specified
+directory.</p>
+</dd>
+<dt>train_model</dt><dd><p>Function to train a convolutional neural network with VGG16 encoder and
+U-net decoder. All the steps necessary to properly train a neural
+network are included in this function.</p>
+</dd>
+</dl>
+</section>
+<section id="id27">
+<h3>Notes<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
+<p>Additional information and usage examples can be found at the respective
+functions documentations.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.IoU">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">IoU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.IoU" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute the intersection over union score (IoU),
+a measure of prediction accuracy. This is sometimes also called Jaccard score.</p>
+<p>The IoU can be used as a loss metric during binary segmentation when
+convolutional neural networks are applied. The IoU is calculated for both the
+training and validation set.</p>
+<section id="id28">
+<h3>Parameters<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>y_true<span class="classifier">tf.Tensor</span></dt><dd><p>True positive image segmentation label predefined by the user.
+This is the mask that is provided prior to model training.</p>
+</dd>
+<dt>y_pred<span class="classifier">tf.Tensor</span></dt><dd><p>Predicted image segmentation by the network.</p>
+</dd>
+<dt>smooth<span class="classifier">int, default = 1</span></dt><dd><p>Smoothing operator applied during final calculation of
+IoU. Must be non-negative and non-zero.</p>
+</dd>
+</dl>
+</section>
+<section id="id29">
+<h3>Returns<a class="headerlink" href="#id29" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>iou<span class="classifier">tf.Tensor</span></dt><dd><p>IoU representation in the same shape as y_true, y_pred.</p>
+</dd>
+</dl>
+</section>
+<section id="id30">
+<h3>Notes<a class="headerlink" href="#id30" title="Permalink to this heading"></a></h3>
+<p>The IoU is usually calculated as IoU = intersection / union.
+The intersection is calculated as the overlap of y_true and
+y_pred, whereas the union is the sum of y_true and y_pred.</p>
+</section>
+<section id="id31">
+<h3>Examples<a class="headerlink" href="#id31" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">IoU</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">Tensor</span><span class="p">(</span><span class="s2">&quot;IteratorGetNext:1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">),</span>
+<span class="go">        y_pred=Tensor(&quot;VGG16_U-Net/conv2d_8/Sigmoid:0&quot;, shape=(1, 512, 512, 1), dtype=float32),</span>
+<span class="go">        smooth=1)</span>
+<span class="go">Tensor(&quot;truediv:0&quot;, shape=(1, 512, 512), dtype=float32)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.build_vgg16_unet">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">build_vgg16_unet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.build_vgg16_unet" title="Permalink to this definition"></a></dt>
+<dd><p>Function that builds a convolutional network consisting of an VGG16 encoder path
+and a U-net decoder path.</p>
+<p>The model is built using several Tensorflow.Keras functions. First, the whole VGG16
+model is imported and built using pretrained imagenet weights and the input shape.
+Then, the encoder layers are pulled from the model as well as the bridge part.
+Subsequently the decoder path from the U-net is built based on the VGG16 inputs.
+Lastly, a 1x1 convolution is applied with sigmoid activation to perform binary
+segmentation on the input.</p>
+<section id="id32">
+<h3>Parameters<a class="headerlink" href="#id32" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>input_shape<span class="classifier">tuple</span></dt><dd><p>Tuple describing the input shape. Must be of shape (…,…,…).
+Here we used (512,512,3) as input shape. The image size (512,512,)
+can be easily adapted. The channel numer (,,3) is given by the
+model and the pretrained weights. We advide the user not to change
+the image size segmentation results were best with the predefined
+size.</p>
+</dd>
+</dl>
+</section>
+<section id="id33">
+<h3>Returns<a class="headerlink" href="#id33" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>model</dt><dd><p>The built VGG16 encoder U-net decoder convolutional network
+for binary segmentation on the input.
+The model can subsequently be used for training.</p>
+</dd>
+</dl>
+</section>
+<section id="id34">
+<h3>Notes<a class="headerlink" href="#id34" title="Permalink to this heading"></a></h3>
+<p>See our paper () and references for more detailed model description</p>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h3>
+<p>VGG16: Simonyan, Karen, and Andrew Zisserman. “Very deep convolutional networks for large-scale image recognition.” arXiv preprint arXiv:1409.1556 (2014)
+U-net: Ronneberger, O., Fischer, P. and Brox, T. “U-Net: Convolutional Networks for Biomedical Image Segmentation.” arXiv preprint arXiv:1505.04597 (2015)</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.conv_block">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">conv_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.conv_block" title="Permalink to this definition"></a></dt>
+<dd><p>Function to build a convolutional block for the U-net decoder path of the network to be build.
+The block is built using several keras.layers functionalities.</p>
+<p>Here, we decided to use ‘padding = same’ and and a convolutional kernel of 3.
+This is adaptable in the code but will influence the model outcome.
+The convolutional block consists of two convolutional layers. Each creates a convolution kernel
+that is convolved with the layer input to produce a tensor of outputs.</p>
+<section id="id35">
+<h3>Parameters<a class="headerlink" href="#id35" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>inputs<span class="classifier">KerasTensor</span></dt><dd><p>Concattenated Tensorflow.Keras Tensor outputted from previous layer. The Tensor can be
+altered by adapting, i.e. the filter numbers but this will change the model training output.
+The input is then convolved using the built kernel.</p>
+</dd>
+<dt>num_filters<span class="classifier">int</span></dt><dd><p>Integer variable determining the number of filters used during model training.
+Here, we started with ‘num_filers = 512’. The filter number is halfed each
+layer. The number of filters can be adapted in the code.
+Must be non-negative and non-zero.</p>
+</dd>
+</dl>
+</section>
+<section id="id36">
+<h3>Returns<a class="headerlink" href="#id36" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>x<span class="classifier">KerasTensor</span></dt><dd><p>Tensorflow.Keras Tensor used during model Training.
+The Tensor can be altered by adapting the input paramenters to the function or
+the upsampling but this will change the model training. The number of filters
+is halfed.</p>
+</dd>
+</dl>
+</section>
+<section id="id37">
+<h3>Example<a class="headerlink" href="#id37" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">conv_block</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">KerasTensor</span><span class="p">(</span><span class="n">type_spec</span><span class="o">=</span><span class="n">TensorSpec</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+<span class="go">               dtype=tf.float32, name=None),</span>
+<span class="go">               num_filters=128)</span>
+<span class="go">KerasTensor(type_spec=TensorSpec(shape=(None, 256, 256, 64), dtype=tf.float32, name=None)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.decoder_block">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">decoder_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_filters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.decoder_block" title="Permalink to this definition"></a></dt>
+<dd><p>Function to build a decoder block for the U-net decoder path of the network to be build.
+The block is build using several keras.layers functionalities.</p>
+<p>The block is built by applying a deconvolution (Keras.Conv2DTranspose) to upsample to input
+by a factor of 2. A concatenation with the skipped features from the mirrored
+vgg16 convolutional layer follows. Subsequently a convolutional block (see conv_block
+function) is applied to convolve the input with the built kernel.</p>
+<section id="id38">
+<h3>Parameters<a class="headerlink" href="#id38" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>inputs<span class="classifier">KerasTensor</span></dt><dd><p>Concattenated Tensorflow.Keras Tensor outputted from previous layer. The Tensor can be
+altered by adapting, i.e. the filter numbers but this will change the model training output.</p>
+</dd>
+<dt>skip_features<span class="classifier">Keras Tensor</span></dt><dd><p>Skip connections to the encoder path of the vgg16 encoder.</p>
+</dd>
+<dt>num_filters<span class="classifier">int</span></dt><dd><p>Integer variable determining the number of filters used during model training.
+Here, we started with ‘num_filers = 512’. The filter number is halfed each
+layer. The number of filters can be adapted in the code. Must be non-neagtive and non-zero.</p>
+</dd>
+</dl>
+</section>
+<section id="id39">
+<h3>Returns<a class="headerlink" href="#id39" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>x<span class="classifier">KerasTensor</span></dt><dd><p>Tensorflow.Keras Tensor used during model Training. The tensor is upsampled using
+Keras.Conv2DTranspose with a kernel of (2,2), ‘stride=2’ and ‘padding=same’.
+The upsampling increases image size by a factor of 2. The number of filters is halfed.
+The Tensor can be altered by adapting the input paramenters to the function or
+the upsampling but this will change the model training.</p>
+</dd>
+</dl>
+</section>
+<section id="id40">
+<h3>Example<a class="headerlink" href="#id40" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">decoder_block</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">KerasTensor</span><span class="p">(</span><span class="n">type_spec</span><span class="o">=</span><span class="n">TensorSpec</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
+<span class="go">                  skip_features=KerasTensor(type_spec=TensorSpec(shape=(None, 64, 64, 512),</span>
+<span class="go">                  dtype=tf.float32, name=None)),</span>
+<span class="go">                  num_filters=256)</span>
+<span class="go">KerasTensor(type_spec=TensorSpec(shape=(None, 128, 128, 256), dtype=tf.float32, name=None)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.dice_score">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">dice_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.dice_score" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute the Dice score, a measure of prediction accuracy.</p>
+<p>The Dice score can be used as a loss metric during binary segmentation when
+convolutional neural networks are applied. The Dice score is calculated for both the
+training and validation set.</p>
+<section id="id41">
+<h3>Parameters<a class="headerlink" href="#id41" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>y_true<span class="classifier">tf.Tensor</span></dt><dd><p>True positive image segmentation label predefined by the user.
+This is the mask that is provided prior to model training.</p>
+</dd>
+<dt>y_pred<span class="classifier">tf.Tensor</span></dt><dd><p>Predicted image segmentation by the network.</p>
+</dd>
+</dl>
+</section>
+<section id="id42">
+<h3>Returns<a class="headerlink" href="#id42" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>score<span class="classifier">tf.Tensor</span></dt><dd><p>Dice score representation in the same shape as y_true, y_pred.</p>
+</dd>
+</dl>
+</section>
+<section id="id43">
+<h3>Notes<a class="headerlink" href="#id43" title="Permalink to this heading"></a></h3>
+<p>The IoU is usually calculated as Dice = 2 * intersection / union.
+The intersection is calculated as the overlap of y_true and
+y_pred, whereas the union is the sum of y_true and y_pred.</p>
+</section>
+<section id="id44">
+<h3>Examples<a class="headerlink" href="#id44" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">IoU</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">Tensor</span><span class="p">(</span><span class="s2">&quot;IteratorGetNext:1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">),</span>
+<span class="go">        y_pred=Tensor(&quot;VGG16_U-Net/conv2d_8/Sigmoid:0&quot;, shape=(1, 512, 512, 1), dtype=float32),</span>
+<span class="go">        smooth=1)</span>
+<span class="go">Tensor(&quot;dice_score/truediv:0&quot;, shape=(1, 512, 512), dtype=float32)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.focal_loss">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">focal_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.focal_loss" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute the focal loss, a measure of prediction accuracy.</p>
+<p>The focal loss can be used as a loss metric during binary segmentation when
+convolutional neural networks are applied. The focal loss score is calculated for both,
+the training and validation set. The focal loss is specifically applicable when
+class imbalances, i.e. between foregroung (muscle aponeurosis) and background (not
+muscle aponeurosis), are existent.</p>
+<section id="id45">
+<h3>Parameters<a class="headerlink" href="#id45" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>y_true<span class="classifier">tf.Tensor</span></dt><dd><p>True positive image segmentation label predefined by the user.
+This is the mask that is provided prior to model training.</p>
+</dd>
+<dt>y_pred<span class="classifier">tf.Tensor</span></dt><dd><p>Predicted image segmentation by the network.</p>
+</dd>
+<dt>alpha<span class="classifier">float, default = 0.8</span></dt><dd><p>Coefficient used on positive exaples, must be non-negative and non-zero.</p>
+</dd>
+<dt>gamma<span class="classifier">float, default = 2</span></dt><dd><p>Focussing parameter, must be non-negative and non-zero.</p>
+</dd>
+</dl>
+</section>
+<section id="id46">
+<h3>Returns<a class="headerlink" href="#id46" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>f_loss<span class="classifier">tf.Tensor</span></dt><dd><p>Tensor containing the calculated focal loss score.</p>
+</dd>
+</dl>
+</section>
+<section id="id47">
+<h3>Examples<a class="headerlink" href="#id47" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">IoU</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">Tensor</span><span class="p">(</span><span class="s2">&quot;IteratorGetNext:1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">),</span>
+<span class="go">        y_pred=Tensor(&quot;VGG16_U-Net/conv2d_8/Sigmoid:0&quot;, shape=(1, 512, 512, 1), dtype=float32),</span>
+<span class="go">        smooth=1)</span>
+<span class="go">Tensor(&quot;focal_loss/Mean:0&quot;, shape=(), dtype=float32)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.loadImages">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">loadImages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.loadImages" title="Permalink to this definition"></a></dt>
+<dd><p>Function to load images and manually labeled masks from a specified
+directory.</p>
+<p>The images and masks are loaded, resized and normalized in order
+to be suitable and usable for model training. The specified directories
+must lead to the images and masks. The number of images and masks must be
+equal. The images and masks can be in any common image format.
+The names of the images and masks must match. The image and corresponding
+mask must have the same name.</p>
+<section id="id48">
+<h3>Parameters<a class="headerlink" href="#id48" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>img_path<span class="classifier">str</span></dt><dd><p>Path that leads to the directory containing the training images.
+Image must be in RGB format.</p>
+</dd>
+<dt>mask_path<span class="classifier">str</span></dt><dd><p>Path that leads to the directory containing the mask images.
+Masks must be binary.</p>
+</dd>
+</dl>
+</section>
+<section id="id49">
+<h3>Returns<a class="headerlink" href="#id49" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>train_imgs<span class="classifier">np.ndarray</span></dt><dd><p>Resized, normalized training images stored in a numpy array.</p>
+</dd>
+<dt>mask_imgs<span class="classifier">np.ndarray</span></dt><dd><p>Resized, normalized training masks stored in a numpy array.</p>
+</dd>
+</dl>
+</section>
+<section id="id50">
+<h3>Notes<a class="headerlink" href="#id50" title="Permalink to this heading"></a></h3>
+<p>See labelling instruction for correct masks creation and use,
+if needed, the supplied ImageJ script to label your images.</p>
+</section>
+<section id="id51">
+<h3>Example<a class="headerlink" href="#id51" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">loadImages</span><span class="p">(</span><span class="n">img_path</span> <span class="o">=</span> <span class="s2">&quot;C:/Users/admin/Dokuments/images&quot;</span><span class="p">,</span>
+<span class="go">               mask_path = &quot;C:/Users/admin/Dokuments/masks&quot;)</span>
+<span class="go">train_imgs([[[[0.22414216 0.19730392 0.22414216] ... [0.22414216 0.19730392 0.22414216]]])</span>
+<span class="go">mask_imgs([[[[0.] ... [0.]]])</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.model_training.trainModel">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.model_training.</span></span><span class="sig-name descname"><span class="pre">trainModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gui</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#Deep_ACSA.gui_helpers.model_training.trainModel" title="Permalink to this definition"></a></dt>
+<dd><p>Function to train a convolutional neural network with VGG16 encoder and
+U-net decoder. All the steps necessary to properly train an neural
+network are included in this function.</p>
+<p>This functions build upon all the other functions included in this module.
+Given that all input parameters are correctly specified, the images and
+masks are loaded, splittet into test and training sets, the model is
+compiled according to user specification and the model is trained.</p>
+<section id="id52">
+<h3>Parameters<a class="headerlink" href="#id52" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>img_path<span class="classifier">str</span></dt><dd><p>Path that leads to the directory containing the training images.
+Image must be in RGB format.</p>
+</dd>
+<dt>mask_path<span class="classifier">str</span></dt><dd><p>Path that leads to the directory containing the mask images.
+Masks must be binary.</p>
+</dd>
+<dt>out_path:</dt><dd><p>Path that leads to the directory where the trained model should be saved.</p>
+</dd>
+<dt>batch_size<span class="classifier">int</span></dt><dd><p>Integer value that determines the batch size per iteration through the
+network during model training. Although a larger batch size has
+advantages during model trainig, the images used here are large. Thus,
+the larger the batch size, the more compute power is needed or the
+longer the training duration. Must be non-negative and non-zero.</p>
+</dd>
+<dt>learning_rate<span class="classifier">float</span></dt><dd><p>Float value determining the learning rate used during model training.
+Must be non-negative and non-zero.</p>
+</dd>
+<dt>epochs<span class="classifier">int</span></dt><dd><p>Integer value that determines the amount of epochs that the model
+is trained befor training is aborted. The total amount of epochs
+will only be used if early stopping does not happen.
+Must be non-negative and non-zero.</p>
+</dd>
+<dt>loss<span class="classifier">str</span></dt><dd><p>String variable that determines the loss function that is used during training.
+Three different types are supported here:
+- Binary cross-entropy. loss == “BCE”
+- Dice score. loss == “Dice”
+- Focal loss. loss == “FL”
+Each loss will yield a different result during model training.</p>
+</dd>
+<dt>gui<span class="classifier">tk.TK</span></dt><dd><p>A tkinter.TK class instance that represents a GUI. By passing this
+argument, interaction with the GUI is possible i.e., stopping
+the model training model process.</p>
+</dd>
+</dl>
+</section>
+<section id="id53">
+<h3>Notes<a class="headerlink" href="#id53" title="Permalink to this heading"></a></h3>
+<p>For specific explanations for the included functions see the respective
+function docstrings in this module.
+This function can either be run from the command prompt or is called
+by the GUI. Note that the functioned was specifically designed to be
+called from the GUI. Thus, tk.messagebox will pop up when errors are
+raised even if the GUI is not started.</p>
+</section>
+<section id="id54">
+<h3>Examples<a class="headerlink" href="#id54" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">trainModel</span><span class="p">(</span><span class="n">img_path</span><span class="o">=</span> <span class="s2">&quot;C:/Users/admin/Dokuments/images&quot;</span><span class="p">,</span>
+<span class="go">               mask_path=&quot;C:/Users/admin/Dokuments/masks&quot;,</span>
+<span class="go">               out_path=&quot;C:/Users/admin/Dokuments/results&quot;,</span>
+<span class="go">               batch_size=1, learning_rate=0.005,</span>
+<span class="go">               epochs=3, loss=&quot;BCE&quot;, gui)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-Deep_ACSA.gui_helpers.predict_muscle_area">
+<span id="deep-acsa-gui-helpers-predict-muscle-area-module"></span><h2>Deep_ACSA.gui_helpers.predict_muscle_area module<a class="headerlink" href="#module-Deep_ACSA.gui_helpers.predict_muscle_area" title="Permalink to this heading"></a></h2>
+<p>Python module to automatically calcuate muscle area in US images</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.calc_area">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">calc_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calib_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.calc_area" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates predicted muscle aread.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Distance between scaling bars in pixel,
+thresholded binary model prediction.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Predicted muscle area (cm²).</p>
+</dd>
+</dl>
+<p>Example:
+&gt;&gt;&gt;calc_area(int(54), Image1.tif)
+3.813</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.calc_area_efov">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">calc_area_efov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalingline_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.calc_area_efov" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates predicted muscle aread.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Scanning depth (cm),
+Scalingline length (pixel),
+thresholded binary model prediction.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Predicted muscle area (cm²).</p>
+</dd>
+<dt>Example:</dt><dd><p>&gt;&gt;&gt;calc_area(float(5), int(254), Image1.tif)
+3.813</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.calculate_batch">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">calculate_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rootpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">muscle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume_wanted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_acsa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gui</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.calculate_batch" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates area predictions for batches of (EFOV) US images
+not containing a continous scaling line.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Path to root directory of images,
+type of image files,
+path to txt file containing flipping information for images,
+path to model used for predictions,
+distance between (vertical) scaling lines (mm),
+analyzed muscle,
+scaling type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.calculate_batch_efov">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">calculate_batch_efov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rootpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">muscle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume_wanted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_acsa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gui</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.calculate_batch_efov" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Calculates area predictions for batches of EFOV US images</dt><dd><p>containing continous scaling line.</p>
+</dd>
+<dt>Arguments:</dt><dd><p>Path to root directory of images,
+type of image files,
+path to model used for predictions,
+ultrasound scanning depth,
+analyzed muscle.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.compile_save_results">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">compile_save_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rootpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.compile_save_results" title="Permalink to this definition"></a></dt>
+<dd><p>Saves analysis results to excel and pdf files.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Path to root directory of files,
+filename (str),
+dataframe (pd.DataFrame) containing filename, muscle
+and predicted area</p>
+</dd>
+<dt>Returns:</dt><dd><p>Excel file containing filename, muscle and predicted area.</p>
+</dd>
+</dl>
+<p>Example:
+&gt;&gt;&gt;compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif, dataframe)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.get_list_of_files">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">get_list_of_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.get_list_of_files" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all files in the directory.</p>
+<dl>
+<dt>Arguments:</dt><dd><p>One path to root directory.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List of all files in root directory.</p>
+</dd>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_list_of_files</span><span class="p">(</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">Test</span><span class="p">)</span>
+<span class="go">[&quot;C:/Desktop/Test/Img1.tif&quot;, &quot;C:/Desktop/Test/Img2.tif&quot;,</span>
+<span class="go">&quot;C:/Desktop/Test/Flip.txt&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.import_image">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">import_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.import_image" title="Permalink to this definition"></a></dt>
+<dd><p>Define the image to analyse, import and reshape the image.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Path to image that should be analyzed.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Filename, image, copy of image, image not flipped,
+image height, image width</p>
+</dd>
+<dt>Example:</dt><dd><p>&gt;&gt;&gt;import_image(C:/Desktop/Test/Img1.tif)
+(Img1.tif, array[[[[…]]]],
+&lt;PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550&gt;,
+&lt;PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550&gt;,
+864, 1152)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Deep_ACSA.gui_helpers.predict_muscle_area.import_image_efov">
+<span class="sig-prename descclassname"><span class="pre">Deep_ACSA.gui_helpers.predict_muscle_area.</span></span><span class="sig-name descname"><span class="pre">import_image_efov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Deep_ACSA.gui_helpers.predict_muscle_area.import_image_efov" title="Permalink to this definition"></a></dt>
+<dd><p>Define the image to analyse, import and reshape the image.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>Path to image that should be analyzed.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Filename, image, image height, image width</p>
+</dd>
+<dt>Example:</dt><dd><p>&gt;&gt;&gt;import_image(C:/Desktop/Test/Img1.tif)
+(Img1.tif, array[[[[…]]]], 864, 1152)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Deep_ACSA.gui_helpers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Deep_ACSA.gui_helpers" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Deep_ACSA.html" class="btn btn-neutral float-left" title="Deep_ACSA package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Paul Ritsche.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
