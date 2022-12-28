@@ -18,14 +18,6 @@ Here you can find all relevant information concerning the usage of DeepACSA.
 
    usage
 
-Test Guidelines
-===============
-Here you can find all relevant information concerning the testing of DeepACSA.
-
-.. toctree::
-   :maxdepth: 1
-
-
 Contributing Guidelines
 =======================
 Here you can find all relevant information concerning contributing to DeepACSA.
