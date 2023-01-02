@@ -11,7 +11,7 @@ Pull Request Process for contributing own material
 
 1. Describe the changes you made as detailled as possible in the pull request.
 2. Add a changelog to the changelog.d folder describing exactly what you changed in the project and the environment.
-3. When adding new functions, please follow the code and docstring styles used throughout the code. FYI, we used the `Numpy styleguide <https://numpydoc.readthedocs.io/en/latest/format.html>`_.
+3. When adding new functions, please follow the code and docstring styles used throughout the code. FYI, we used the `Numpy styleguide <https://numpydoc.readthedocs.io/en/latest/format.html>`_. (However, code documentation is not completed for all our functions yet.)
 4. Create a new branch (named yourchange_yourinitials) and a Pull Request to merge your work on the **main** branch of the project.
 
 Report a bug
@@ -30,7 +30,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 Getting Support
 ---------------
 
-If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DL_Track not related to bugs, don't hesitate to report this in the Q&A section in the `DeepACSA discussion forum <https://github.com/PaulRitsche/DeepACSA/discussions>`_. This is the space to have conversations, ask questions and post answers without opening issues.
+If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DL_Track not related to bugs, don't hesitate to report this in the `Q&A section in the <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_. This is the space to have conversations, ask questions and post answers without opening issues.
 
 Code of Conduct
 ===============
