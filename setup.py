@@ -19,7 +19,7 @@ setuptools.setup(
                       "Pillow==8.1.0",
                       "scikit-image==0.18.1",
                       "scikit-learn==0.24.1",
-                      "tensorflow==2.4.0",
+                      "tensorflow==2.9.3",
                       "tqdm==4.56.2",
                       "openpyxl==3.0.6",
                       "h5py==2.10.0",
