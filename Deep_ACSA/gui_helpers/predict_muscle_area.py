@@ -1,24 +1,28 @@
 """Python module to automatically calcuate muscle area in US images"""
 
-import os
 import glob
-import warnings
+import os
 import time
-import cv2
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import tkinter as tk
+import warnings
 
-from Deep_ACSA.gui_helpers.apo_model import ApoModel
-from Deep_ACSA.gui_helpers.calibrate import calibrate_distance_efov
-from Deep_ACSA.gui_helpers.calibrate import calibrate_distance_manually
-from Deep_ACSA.gui_helpers.calibrate import calibrate_distance_static
-from Deep_ACSA.gui_helpers.echo_int import calculate_echo_int
-from Deep_ACSA.gui_helpers.calculate_muscle_volume import muscle_volume_calculation
-from skimage.transform import resize
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
+from skimage.transform import resize
+
+from Deep_ACSA.gui_helpers.apo_model import ApoModel
+from Deep_ACSA.gui_helpers.calculate_muscle_volume import muscle_volume_calculation
+from Deep_ACSA.gui_helpers.calibrate import (
+    calibrate_distance_efov,
+    calibrate_distance_manually,
+    calibrate_distance_static,
+)
+from Deep_ACSA.gui_helpers.echo_int import calculate_echo_int
+
 plt.style.use("ggplot")
 plt.switch_backend("agg")
 
@@ -39,6 +43,7 @@ def get_list_of_files(pathname: str):
     """
     return glob.glob(pathname)
 
+
 def import_image_efov(path_to_image: str):
     """Define the image to analyse, import and reshape the image.
 
@@ -55,18 +60,19 @@ def import_image_efov(path_to_image: str):
     image_add = path_to_image
     filename = os.path.splitext(os.path.basename(image_add))[0]
     img = cv2.imread(path_to_image, 1)
-    rows,cols,channels = img.shape
-    img = img[75:rows,20:cols-10]
+    rows, cols, channels = img.shape
+    img = img[75:rows, 20 : cols - 10]
     img_copy = img.copy()
 
     img = img_to_array(img)
     height = img.shape[0]
     weight = img.shape[1]
     img = np.reshape(img, [-1, height, weight, 3])
-    img = resize(img, (1, 256, 256, 3), mode='constant', preserve_range=True)
-    img = img/255.0
+    img = resize(img, (1, 256, 256, 3), mode="constant", preserve_range=True)
+    img = img / 255.0
 
-    return filename, img_copy, img,  height, weight
+    return filename, img_copy, img, height, weight
+
 
 def import_image(path_to_image: str):
     """Define the image to analyse, import and reshape the image.
@@ -94,10 +100,11 @@ def import_image(path_to_image: str):
     height = img.shape[0]
     weight = img.shape[1]
     img = np.reshape(img, [-1, height, weight, 3])
-    img = resize(img, (1, 256, 256, 3), mode='constant', preserve_range=True)
-    img = img/255.0
+    img = resize(img, (1, 256, 256, 3), mode="constant", preserve_range=True)
+    img = img / 255.0
 
     return filename, img, nonflipped_img, height, weight
+
 
 def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
     """Calculates predicted muscle aread.
@@ -119,6 +126,7 @@ def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
     pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
     return pred_muscle_area
 
+
 def calc_area(calib_dist: float, img: np.ndarray):
     """Calculates predicted muscle aread.
 
@@ -138,6 +146,7 @@ def calc_area(calib_dist: float, img: np.ndarray):
     pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
     return pred_muscle_area
 
+
 def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     """Saves analysis results to excel and pdf files.
 
@@ -153,18 +162,27 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     Example:
     >>>compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif, dataframe)
     """
-    excelpath = rootpath + '/Results.xlsx'
+    excelpath = rootpath + "/Results.xlsx"
     if os.path.exists(excelpath):
-        with pd.ExcelWriter(excelpath, mode='a') as writer:
+        with pd.ExcelWriter(excelpath, mode="a") as writer:
             data = dataframe
             data.to_excel(writer, sheet_name="Results")
     else:
-        with pd.ExcelWriter(excelpath, mode='w') as writer:
+        with pd.ExcelWriter(excelpath, mode="w") as writer:
             data = dataframe
             data.to_excel(writer, sheet_name="Results")
 
-def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
-                         depth: float, muscle: str, volume_wanted: str, distance_acsa: float, gui):
+
+def calculate_batch_efov(
+    rootpath: str,
+    filetype: str,
+    modelpath: str,
+    depth: float,
+    muscle: str,
+    volume_wanted: str,
+    distance_acsa: float,
+    gui,
+):
     """Calculates area predictions for batches of EFOV US images
         containing continous scaling line.
 
@@ -178,20 +196,32 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     if len(list_of_files) == 0:
-        tk.messagebox.showerror("Information", "No image files found." +
-                "\nPotential error source: Unmatched filetype")
-        gui.do_break()
+        tk.messagebox.showerror(
+            "Information",
+            "No image files found." + "\nPotential error source: Unmatched filetype",
+        )
         gui.should_stop = False
         gui.is_running = False
+        gui.do_break()
+        return
 
-
-    apo_model = ApoModel(modelpath)
-    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm2", "Echo_intensity", "A_C_ratio", "Circumference", "Volume_cm3"])
+    apo_model = ApoModel(gui, model_path=modelpath)
+    dataframe = pd.DataFrame(
+        columns=[
+            "File",
+            "Muscle",
+            "Area_cm2",
+            "Echo_intensity",
+            "A_C_ratio",
+            "Circumference",
+            "Volume_cm3",
+        ]
+    )
     failed_files = []
 
     calculated_areas = []
 
-    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    with PdfPages(rootpath + "/Analyzed_images.pdf") as pdf:
 
         try:
             start_time = time.time()
@@ -217,8 +247,9 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                     continue
 
                 # predict area
-                circum, pred_apo_t, fig = apo_model.predict_e(img, img_lines, filename,
-                                                             width, height)
+                circum, pred_apo_t, fig = apo_model.predict_e(
+                    gui, img, img_lines, filename, width, height
+                )
                 echo = calculate_echo_int(img_copy, pred_apo_t)
                 if echo is None:
                     warnings.warn("Image fails with EchoIntensityError")
@@ -232,14 +263,18 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
                 calculated_areas.append(area)
 
                 # append results to dataframe
-                dataframe = dataframe.append({"File": filename,
-                                              "Muscle": muscle,
-                                              "Area_cm2": area,
-                                              "Echo_intensity": echo,
-                                              "A_C_ratio": area_circum_ratio,
-                                              "Circumference": circum,
-                                              "Volume_cm3": ""},
-                                             ignore_index=True)
+                dataframe = dataframe.append(
+                    {
+                        "File": filename,
+                        "Muscle": muscle,
+                        "Area_cm2": area,
+                        "Echo_intensity": echo,
+                        "A_C_ratio": area_circum_ratio,
+                        "Circumference": circum,
+                        "Volume_cm3": "",
+                    },
+                    ignore_index=True,
+                )
 
                 # save figures
                 pdf.savefig(fig)
@@ -251,26 +286,35 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             # musclevolume calculation with the calculated areas
             if volume_wanted == "Yes":
 
-                muscle_volume = muscle_volume_calculation(calculated_areas, distance_acsa)
+                muscle_volume = muscle_volume_calculation(
+                    calculated_areas, distance_acsa
+                )
 
                 # append musclevolume result to dataframe
-                dataframe = dataframe.append({"File": "",
-                                              "Muscle": "",
-                                              "Area_cm2": "",
-                                              "Echo_intensity": "",
-                                              "A_C_ratio": "",
-                                              "Circumference": "",
-                                              "Volume_cm3": muscle_volume},
-                                              ignore_index=True)
+                dataframe = dataframe.append(
+                    {
+                        "File": "",
+                        "Muscle": "",
+                        "Area_cm2": "",
+                        "Echo_intensity": "",
+                        "A_C_ratio": "",
+                        "Circumference": "",
+                        "Volume_cm3": muscle_volume,
+                    },
+                    ignore_index=True,
+                )
             else:
                 pass
 
         except ValueError:
-            tk.messagebox.showerror("Information", "Scaling Type Error." +
-                    "\nPotential error source: Selected scaling type does not fit image")
-            gui.do_break()
+            tk.messagebox.showerror(
+                "Information",
+                "Scaling Type Error."
+                + "\nPotential error source: Selected scaling type does not fit image",
+            )
             gui.should_stop = False
             gui.is_running = False
+            gui.do_break()
 
         finally:
             # save predicted area values
@@ -285,36 +329,59 @@ def calculate_batch_efov(rootpath: str, filetype: str, modelpath: str,
             gui.should_stop = False
             gui.is_running = False
 
-def calculate_batch(rootpath: str, filetype: str, modelpath: str,
-                    spacing: int, muscle: str, scaling: str, volume_wanted: str, distance_acsa: float, gui):
-    """Calculates area predictions for batches of (EFOV) US images
-        not containing a continous scaling line.
 
-        Arguments:
-            Path to root directory of images,
-            type of image files,
-            path to txt file containing flipping information for images,
-            path to model used for predictions,
-            distance between (vertical) scaling lines (mm),
-            analyzed muscle,
-            scaling type.
+def calculate_batch(
+    rootpath: str,
+    filetype: str,
+    modelpath: str,
+    spacing: int,
+    muscle: str,
+    scaling: str,
+    volume_wanted: str,
+    distance_acsa: float,
+    gui,
+):
+    """Calculates area predictions for batches of (EFOV) US images
+    not containing a continous scaling line.
+
+    Arguments:
+        Path to root directory of images,
+        type of image files,
+        path to txt file containing flipping information for images,
+        path to model used for predictions,
+        distance between (vertical) scaling lines (mm),
+        analyzed muscle,
+        scaling type.
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
     if len(list_of_files) == 0:
-        tk.messagebox.showerror("Information", "No image files found." +
-                "\nPotential error source: Unmatched filetype")
-        gui.do_break()
+        tk.messagebox.showerror(
+            "Information",
+            "No image files found." + "\nPotential error source: Unmatched filetype",
+        )
         gui.should_stop = False
         gui.is_running = False
+        gui.do_break()
+        return
 
-    apo_model = ApoModel(modelpath)
-    dataframe = pd.DataFrame(columns=["File", "Muscle", "Area_cm2", "Echo_intensity", "A_C_ratio", "Circumference", "Volume_cm3"])
+    apo_model = ApoModel(gui, model_path=modelpath)
+    dataframe = pd.DataFrame(
+        columns=[
+            "File",
+            "Muscle",
+            "Area_cm2",
+            "Echo_intensity",
+            "A_C_ratio",
+            "Circumference",
+            "Volume_cm3",
+        ]
+    )
     failed_files = []
 
     calculated_areas = []
 
-    with PdfPages(rootpath + '/Analyzed_images.pdf') as pdf:
+    with PdfPages(rootpath + "/Analyzed_images.pdf") as pdf:
 
         try:
             start_time = time.time()
@@ -331,7 +398,9 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                 if scaling == "Bar":
                     calibrate_fn = calibrate_distance_static
                     # find length of the scaling line
-                    calib_dist, imgscale, scale_statement = calibrate_fn(nonflipped_img, spacing)
+                    calib_dist, imgscale, scale_statement = calibrate_fn(
+                        nonflipped_img, spacing
+                    )
                     # check for StaticScalingError
                     if calib_dist is None:
                         fail = f"Scalingbars not found in {imagepath}"
@@ -340,17 +409,20 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                         continue
 
                     # predict area on image
-                    circum, pred_apo_t, fig = apo_model.predict_s(img, imgscale, filename,
-                                                                    scale_statement, width, height)
+                    circum, pred_apo_t, fig = apo_model.predict_s(
+                        gui, img, imgscale, filename, scale_statement, width, height
+                    )
 
                 else:
                     calibrate_fn = calibrate_distance_manually
                     calib_dist = calibrate_fn(nonflipped_img, spacing)
 
                     # predict area on image
-                    circum, pred_apo_t, fig = apo_model.predict_m(img, width, filename, height)
+                    circum, pred_apo_t, fig = apo_model.predict_m(
+                        gui, img, width, filename, height
+                    )
 
-                #calculate echo intensity and area
+                # calculate echo intensity and area
                 echo = calculate_echo_int(nonflipped_img, pred_apo_t)
                 if echo is None:
                     warnings.warn("Image fails with EchoIntensityError")
@@ -362,14 +434,18 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
                 calculated_areas.append(area)
 
                 # append results to dataframe
-                dataframe = dataframe.append({"File": filename,
-                                              "Muscle": muscle,
-                                              "Area_cm2": area,
-                                              "Echo_intensity": echo,
-                                              "A_C_ratio": area_circum_ratio,
-                                              "Circumference": circum,
-                                              "Volume_cm3": ""},
-                                              ignore_index=True)
+                dataframe = dataframe.append(
+                    {
+                        "File": filename,
+                        "Muscle": muscle,
+                        "Area_cm2": area,
+                        "Echo_intensity": echo,
+                        "A_C_ratio": area_circum_ratio,
+                        "Circumference": circum,
+                        "Volume_cm3": "",
+                    },
+                    ignore_index=True,
+                )
 
                 # save figures
                 pdf.savefig(fig)
@@ -381,23 +457,32 @@ def calculate_batch(rootpath: str, filetype: str, modelpath: str,
             if volume_wanted == "Yes":
 
                 # musclevolume calculation with the calculated areas
-                muscle_volume = muscle_volume_calculation(calculated_areas, distance_acsa)
+                muscle_volume = muscle_volume_calculation(
+                    calculated_areas, distance_acsa
+                )
 
                 # append musclevolume result to dataframe
-                dataframe = dataframe.append({"File": "",
-                                              "Muscle": "",
-                                              "Area_cm2": "",
-                                              "Echo_intensity": "",
-                                              "A_C_ratio": "",
-                                              "Circumference": "",
-                                              "Volume_cm3": muscle_volume},
-                                              ignore_index=True)
+                dataframe = dataframe.append(
+                    {
+                        "File": "",
+                        "Muscle": "",
+                        "Area_cm2": "",
+                        "Echo_intensity": "",
+                        "A_C_ratio": "",
+                        "Circumference": "",
+                        "Volume_cm3": muscle_volume,
+                    },
+                    ignore_index=True,
+                )
             else:
                 pass
 
         except ValueError:
-            tk.messagebox.showerror("Information", "Scaling Type Error." +
-                    "\nPotential error source: Selected scaling type does not fit image")
+            tk.messagebox.showerror(
+                "Information",
+                "Scaling Type Error."
+                + "\nPotential error source: Selected scaling type does not fit image",
+            )
             gui.do_break()
             gui.should_stop = False
             gui.is_running = False
