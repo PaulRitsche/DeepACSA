@@ -9,3 +9,4 @@ from Deep_ACSA.gui_helpers.calibrate import *
 from Deep_ACSA.gui_helpers.echo_int import *
 from Deep_ACSA.gui_helpers.predict_muscle_area import *
 from Deep_ACSA.gui_helpers.model_training import *
+from Deep_ACSA.gui_helpers.data_augmentation import *
