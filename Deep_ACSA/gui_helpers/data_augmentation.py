@@ -5,7 +5,7 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 
 img_aug_prefix = ""
 
-def data_augmentation(input_img_folder, input_mask_folder):
+def augment_images(input_img_folder, input_mask_folder):
 
     # Creating image augmentation function
     gen = ImageDataGenerator(featurewise_center=True,

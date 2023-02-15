@@ -687,7 +687,7 @@ class DeepACSA:
         mask_button.grid(column=5, row=3, sticky=E)
 
         # Data augmentation button
-        data_augmentation_button = ttk.Button(window, text="Data Augmentation", command=lambda: gui_helpers.data_augmentation(self.train_image_dir.get(), self.mask_dir.get()))
+        data_augmentation_button = ttk.Button(window, text="Augment Images", command=lambda: gui_helpers.augment_images(self.train_image_dir.get(), self.mask_dir.get()))
         data_augmentation_button.grid(column=6, row=3, sticky=E)
 
         # Input directory
