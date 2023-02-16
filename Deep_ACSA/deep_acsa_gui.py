@@ -154,8 +154,8 @@ class DeepACSA:
         Instance method to execute the model training when the
         "start training" button is pressed.
     augment_images
-        Instance method to augment input images, when the
-        "Augment Images" button is pressed.
+        Instance method to augment input images and masks,
+        when the "Augment Images" button is pressed.
 
     Notes
     -----
@@ -843,6 +843,9 @@ class DeepACSA:
             self.do_break()
             self.should_stop = False
             self.is_running = False
+
+
+    ## Method used for data augmentation
 
     def augment_images(self):
         """
