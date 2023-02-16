@@ -61,7 +61,8 @@ class DeepACSA:
     - Model training:
     By pressing the "train model" button, a new window opens and the
     user can train an own neural network based on existing/own
-    training data.
+    training data. Furthermore, the new window allows to augment input images through
+    data augmentation to generate new training images.
 
     Attributes
     ----------
@@ -152,6 +153,9 @@ class DeepACSA:
     train_model
         Instance method to execute the model training when the
         "start training" button is pressed.
+    augment_images
+        Instance method to augment input images, when the
+        "Augment Images" button is pressed.
 
     Notes
     -----
@@ -634,6 +638,10 @@ class DeepACSA:
         practice and devised from the original papers that proposed the models used
         here. Singularly the batch size should be adapted to 1 if comupte power is limited
         (no GPU or GPU with RAM lower than 8 gigabyte).
+
+        There is an "Augment Images" button, which allows to generate new training images.
+        The images and masks for the data augmentation are taken from the chosen image directory
+        and mask directory. The new images are saved under the same directories.
         """
         # Open Window
         window = tk.Toplevel(bg="SkyBlue4")
@@ -837,6 +845,12 @@ class DeepACSA:
             self.is_running = False
 
     def augment_images(self):
+        """
+        Instance method to augment input images, when the "Augment Images" button is pressed.
+        Input parameters for the gui_helpers.image_augmentation function are taken from the chosen
+        image and mask directories. The newly generated data will be saved under the same
+        directories.
+        """
         gui_helpers.image_augmentation(self.train_image_dir.get(), self.mask_dir.get())
 
 
