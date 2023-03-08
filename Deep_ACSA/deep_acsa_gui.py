@@ -285,7 +285,7 @@ class DeepACSA:
 
         # Muscles
         self.muscle = StringVar()
-        muscle = ("VL", "RF", "GM", "GL")
+        muscle = ("VL", "RF", "GM", "GL", "BF")
         muscle_entry = ttk.Combobox(self.main, width=10, textvariable=self.muscle)
         muscle_entry["values"] = muscle
         muscle_entry["state"] = "readonly"
@@ -696,7 +696,7 @@ class DeepACSA:
 
         # Data augmentation button
         data_augmentation_button = ttk.Button(window, text="Augment Images", command=self.augment_images)
-        data_augmentation_button.grid(column=6, row=3, sticky=E)
+        data_augmentation_button.grid(column=4, row=10, sticky=E)
 
         # Input directory
         out_button = ttk.Button(window, text="Output", command=self.get_output_dir)
