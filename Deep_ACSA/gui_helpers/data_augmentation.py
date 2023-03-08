@@ -42,7 +42,7 @@ def image_augmentation(input_img_folder, input_mask_folder):
     num_aug_images = 5 # Number of images added from augmented dataset. 
 
 
-    for i in range(int(len(ids) + 1)):
+    for i in range(int(len(ids))):
         
         # Choose image & mask that should be augmented 
         # Directory structur: "root/some_dorectory"
