@@ -28,8 +28,8 @@ def image_augmentation(input_img_folder, input_mask_folder):
     """
 
     # Creating image augmentation function
-    gen = ImageDataGenerator(featurewise_center=True,
-                            featurewise_std_normalization=True,
+    gen = ImageDataGenerator(featurewise_center=False,
+                            featurewise_std_normalization=False,
                             rotation_range=5, 
                             width_shift_range=0.075, 
                             height_shift_range=0.075,
