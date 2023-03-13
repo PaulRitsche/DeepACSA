@@ -222,6 +222,20 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
         # draw scaling lines on image
         image_with_lines = draw_the_lines(image, lines[0])
 
+    # For BF
+    if muscle == "BF":
+        lines = cv2.HoughLinesP(cropped_image,
+                                rho=1,
+                                theta=np.pi/180,
+                                threshold=50,
+                                lines=np.array([]),
+                                minLineLength=325,
+                                maxLineGap=3)
+        if lines is None:
+            return None, None
+        # draw lines on image
+        image_with_lines = draw_the_lines(image, lines[0])
+
     else:
         lines = cv2.HoughLinesP(cropped_image,
                                 rho=1,  # Distance of pixels in accumulator

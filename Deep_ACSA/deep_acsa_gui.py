@@ -61,7 +61,8 @@ class DeepACSA:
     - Model training:
     By pressing the "train model" button, a new window opens and the
     user can train an own neural network based on existing/own
-    training data.
+    training data. Furthermore, the new window allows to augment input images through
+    data augmentation to generate new training images.
 
     Attributes
     ----------
@@ -152,6 +153,9 @@ class DeepACSA:
     train_model
         Instance method to execute the model training when the
         "start training" button is pressed.
+    augment_images
+        Instance method to augment input images and masks,
+        when the "Augment Images" button is pressed.
 
     Notes
     -----
@@ -281,7 +285,7 @@ class DeepACSA:
 
         # Muscles
         self.muscle = StringVar()
-        muscle = ("VL", "RF", "GM", "GL")
+        muscle = ("VL", "RF", "GM", "GL", "BF")
         muscle_entry = ttk.Combobox(self.main, width=10, textvariable=self.muscle)
         muscle_entry["values"] = muscle
         muscle_entry["state"] = "readonly"
@@ -634,6 +638,10 @@ class DeepACSA:
         practice and devised from the original papers that proposed the models used
         here. Singularly the batch size should be adapted to 1 if comupte power is limited
         (no GPU or GPU with RAM lower than 8 gigabyte).
+
+        There is an "Augment Images" button, which allows to generate new training images.
+        The images and masks for the data augmentation are taken from the chosen image directory
+        and mask directory. The new images are saved under the same directories.
         """
         # Open Window
         window = tk.Toplevel(bg="SkyBlue4")
@@ -685,6 +693,10 @@ class DeepACSA:
         # Mask button
         mask_button = ttk.Button(window, text="Masks", command=self.get_mask_dir)
         mask_button.grid(column=5, row=3, sticky=E)
+
+        # Data augmentation button
+        data_augmentation_button = ttk.Button(window, text="Augment Images", command=self.augment_images)
+        data_augmentation_button.grid(column=4, row=10, sticky=E)
 
         # Input directory
         out_button = ttk.Button(window, text="Output", command=self.get_output_dir)
@@ -831,6 +843,18 @@ class DeepACSA:
             self.do_break()
             self.should_stop = False
             self.is_running = False
+
+
+    ## Method used for data augmentation
+
+    def augment_images(self):
+        """
+        Instance method to augment input images, when the "Augment Images" button is pressed.
+        Input parameters for the gui_helpers.image_augmentation function are taken from the chosen
+        image and mask directories. The newly generated data will be saved under the same
+        directories.
+        """
+        gui_helpers.image_augmentation(self.train_image_dir.get(), self.mask_dir.get())
 
 
 # ---------------------------------------------------------------------------------------------------

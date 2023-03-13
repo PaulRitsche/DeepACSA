@@ -4,7 +4,6 @@ channels:
 dependencies:
   - python=3.8
   - pip=20.3.3
-  - tk=8.6.10
   - pip:
     - jupyter==1.0.0
     - Keras==2.4.3
