@@ -854,7 +854,38 @@ class DeepACSA:
         image and mask directories. The newly generated data will be saved under the same
         directories.
         """
-        gui_helpers.image_augmentation(self.train_image_dir.get(), self.mask_dir.get())
+        try:
+            # See if GUI is already running
+            if self.is_running:
+                # don't run again if it is already running
+                return
+            self.is_running = True
+
+            # Get input paremeters
+            selected_images = self.train_image_dir.get()
+            selected_masks = self.mask_dir.get()
+
+            # Make sure some kind of filetype is specified.
+            if (
+                len(selected_images) < 3
+                or len(selected_masks) < 3
+            ):
+                tk.messagebox.showerror("Information", "Specified directories invalid.")
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
+            gui_helpers.image_augmentation(selected_images, selected_masks, self)
+
+        # Error handling
+        except ValueError:
+            tk.messagebox.showerror(
+                "Information", "Check input parameters" + "\nPotential error source: Invalid directories"
+            )
+            self.do_break()
+            self.should_stop = False
+            self.is_running = False
 
 
 # ---------------------------------------------------------------------------------------------------
