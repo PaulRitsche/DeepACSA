@@ -8,9 +8,9 @@ We offer two possible installation approaches for our DeepACSA software. The fir
 Download the DeepACSA executable
 ---------------------------------
 
-1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://zenodo.org/record/7318089#.Y3S2qKSZOUk>`_.
+1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://zenodo.org/record/7498688#.ZEu2L_xBybg>`_.
 2. Download the DeepACSA_example.zip
-3. Download the pre-trained `models <https://zenodo.org/record/6953924#.Y6zLmNWZOiM>`_.
+3. Download the pre-trained `models <https://zenodo.org/record/7498688#.ZEu2L_xBybg>`_.
 4. Find the DeepACSA.exe Executable in the DeepACSA_example/executable folder.
 5. Create a specified DeepACSA directory and put the DeepACSA.exe, the model files and the example file in seperate subfolders (for example "Executable", "Models" and "Example"). Moreover, unpack the DeepACSA_example.zip file.
 6. Open the DeepACSA GUI by double clicking the DeepACSA.exe file and start with the testing procedure to check that everything works properly.
@@ -18,7 +18,7 @@ Download the DeepACSA executable
 Install DeepACSA via Github
 ---------------------------
 
-In case you want to use this way to install and run DeepACSA, we advise you to setup conda (see step 1) and download the environment.yml file from the repo (see steps 5-8). If you want to actively contribute to the project or customize the code, it might be usefull to you to do all of the following steps (for more information see `Contributing Guidelines <https://dltrack.readthedocs.io/en/latest/contribute.html>`_).
+In case you want to use this way to install and run DeepACSA, we advise you to setup conda (see step 1) and download the environment.yml file from the repo (see steps 5-8). If you want to actively contribute to the project or customize the code, it might be usefull to you to do all of the following steps (for more information see `Contributing Guidelines <https://deepacsa.readthedocs.io/en/latest/contribute.html>`_).
 
 *Step 1.* Anaconda setup (only before first usage and if Anaconda/minicoda is not already installed).
 
@@ -76,7 +76,7 @@ Install the DeepACSA package locally to make use of its functionalities with:
 
 ``python -m Deep_ACSA``
 
-The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem".  For usage of DeepACSA please take a look at the `docs <https://github.com/PaulRitsche/DLTrack/tree/main/docs/usage>`_ directory in the Github repository.
+The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem".  For usage of DeepACSA please take a look at the `docs <https://github.com/PaulRitsche/DeepACSA/blob/v0.2.0/docs/source/usage.rst>`_ directory in the Github repository.
 
 *Step 9.* The second option of running DeepACSA is using the deep_acsa_gui python script. This requires you to clone the whole directory and navigate to the directory where the deep_acsa_gui.py file is located. Moreover, you need the active DeepACSA environment.
 
@@ -84,7 +84,7 @@ The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To exec
 
 ``python deep_acsa_gui.py``
 
-The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at the `docs <https://github.com/PaulRitsche/DLTrack/tree/main/docs/usage>`_ directory in the Github repository.
+The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at the `docs <https://github.com/PaulRitsche/DeepACSA/blob/v0.2.0/docs/source/usage.rst>`_ directory in the Github repository.
 
 
 GPU setup
