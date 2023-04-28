@@ -10,7 +10,7 @@ Download the DeepACSA executable
 
 1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://zenodo.org/record/7498688#.ZEu2L_xBybg>`_.
 2. Download the DeepACSA_example.zip
-3. Download the pre-trained `models <https://zenodo.org/record/7498688#.ZEu2L_xBybg>`_.
+3. Download the pre-trained `models <https://zenodo.org/record/6953924#.ZEu35fxBybh>`_.
 4. Find the DeepACSA.exe Executable in the DeepACSA_example/executable folder.
 5. Create a specified DeepACSA directory and put the DeepACSA.exe, the model files and the example file in seperate subfolders (for example "Executable", "Models" and "Example"). Moreover, unpack the DeepACSA_example.zip file.
 6. Open the DeepACSA GUI by double clicking the DeepACSA.exe file and start with the testing procedure to check that everything works properly.
