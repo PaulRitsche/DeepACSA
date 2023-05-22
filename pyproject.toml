@@ -10,27 +10,27 @@ authors = [
 ]
 description = "Automatic analysis of transversal muscle ultrasonography images"
 readme = "README.md"
-requires-python = "=3.8"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3.8",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent"
 ]
-#dependencies = [
-#    jupyter==1.0.0,
-#    Keras==2.4.3,
-#    matplotlib==3.3.4,
-#    numpy==1.19.5,
-#    opencv-contrib-python==4.5.1.48,
-#    pandas==1.1.2,
-#    Pillow==8.1.0,
-#    scikit-image==0.18.1,
-#    scikit-learn==0.24.1,
-#    tensorflow==2.4.0,
-#    tqdm==4.56.2,
-#    openpyxl==3.0.6,
-#    h5py==2.10.0,
-#  ]
+dependencies = [
+    "jupyter==1.0.0",
+    "Keras==2.4.3",
+    "matplotlib==3.3.4",
+    "numpy==1.19.5",
+    "opencv-contrib-python==4.5.1.48",
+    "pandas==1.1.2",
+    "Pillow==8.1.0",
+    "scikit-image==0.18.1",
+    "scikit-learn==0.24.1",
+    "tensorflow==2.4.0",
+    "tqdm==4.56.2",
+    "openpyxl==3.0.6",
+    "h5py==2.10.0",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/PaulRitsche/DeepACSA"
