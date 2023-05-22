@@ -267,6 +267,15 @@ class DeepACSA:
         self.muscle_volume_calculation_wanted.set("No")
 
         # Comboboxes
+        # Loss Function
+        self.loss_function = StringVar()
+        loss = ("IoU", "Dice Loss", "Focal Loss")
+        loss_entry = ttk.Combobox(self.main, width=15, textvariable=self.loss_function)
+        loss_entry["values"] = loss
+        loss_entry["state"] = "readonly"
+        loss_entry.grid(column=4, row=4, sticky=E)
+        self.loss_function.set("Loss Function")
+
         # Filetype
         self.filetype = StringVar()
         filetype = (
@@ -421,6 +430,7 @@ class DeepACSA:
 
             selected_input_dir = self.input.get()
             selected_model_path = self.model.get()
+            selected_loss = self.loss_function.get()
             selected_filetype = self.filetype.get()
             selected_muscle = self.muscle.get()
             selected_depth = float(self.depth.get())
@@ -469,6 +479,7 @@ class DeepACSA:
                         selected_input_dir,
                         selected_filetype,
                         selected_model_path,
+                        selected_loss,
                         selected_depth,
                         selected_muscle,
                         selected_volume_calculation,
@@ -483,6 +494,7 @@ class DeepACSA:
                         selected_input_dir,
                         selected_filetype,
                         selected_model_path,
+                        selected_loss,
                         selected_spacing,
                         selected_muscle,
                         selected_scaling,
@@ -695,7 +707,9 @@ class DeepACSA:
         mask_button.grid(column=5, row=3, sticky=E)
 
         # Data augmentation button
-        data_augmentation_button = ttk.Button(window, text="Augment Images", command=self.augment_images)
+        data_augmentation_button = ttk.Button(
+            window, text="Augment Images", command=self.augment_images
+        )
         data_augmentation_button.grid(column=4, row=10, sticky=E)
 
         # Input directory
@@ -735,7 +749,7 @@ class DeepACSA:
 
         # Loss function
         self.loss_function = StringVar()
-        loss = "BCE"  # "Dice", "FL")
+        loss = ("BCE", "Dice", "FL")
         loss_entry = ttk.Combobox(window, width=10, textvariable=self.loss_function)
         loss_entry["values"] = loss
         loss_entry["state"] = "readonly"
@@ -843,7 +857,6 @@ class DeepACSA:
             self.do_break()
             self.should_stop = False
             self.is_running = False
-
 
     ## Method used for data augmentation
 

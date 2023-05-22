@@ -177,6 +177,7 @@ def calculate_batch_efov(
     rootpath: str,
     filetype: str,
     modelpath: str,
+    loss_function: str,
     depth: float,
     muscle: str,
     volume_wanted: str,
@@ -190,6 +191,7 @@ def calculate_batch_efov(
         Path to root directory of images,
         type of image files,
         path to model used for predictions,
+        loss_function
         ultrasound scanning depth,
         analyzed muscle.
     """
@@ -205,7 +207,7 @@ def calculate_batch_efov(
         gui.do_break()
         return
 
-    apo_model = ApoModel(gui, model_path=modelpath)
+    apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
     dataframe = pd.DataFrame(
         columns=[
             "File",
@@ -334,6 +336,7 @@ def calculate_batch(
     rootpath: str,
     filetype: str,
     modelpath: str,
+    loss_function: str,
     spacing: int,
     muscle: str,
     scaling: str,
@@ -349,6 +352,7 @@ def calculate_batch(
         type of image files,
         path to txt file containing flipping information for images,
         path to model used for predictions,
+        loss_function
         distance between (vertical) scaling lines (mm),
         analyzed muscle,
         scaling type.
@@ -365,7 +369,7 @@ def calculate_batch(
         gui.do_break()
         return
 
-    apo_model = ApoModel(gui, model_path=modelpath)
+    apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
     dataframe = pd.DataFrame(
         columns=[
             "File",
