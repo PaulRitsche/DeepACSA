@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # from cv2 import CHAIN_APPROX_SIMPLE, RETR_LIST, arcLength, findContours
-from keras import backend as K
 from keras.models import load_model
 from skimage import measure, morphology
 from skimage.transform import resize
@@ -85,7 +84,7 @@ class ApoModel:
         try:
             self.model_path = model_path
             self.apo_threshold = apo_threshold
-
+            print(loss_function)
             # Check for used loss function
             if loss_function == "IoU":
                 self.model_apo = load_model(
@@ -94,12 +93,14 @@ class ApoModel:
 
             if loss_function == "Dice Loss":
                 self.model_apo = load_model(
-                    self.model_path, custom_objects={"dice_score": dice_score}
+                    self.model_path,
+                    custom_objects={"dice_score": dice_score, "IoU": IoU},
                 )
 
             if loss_function == "Focal Loss":
                 self.model_apo = load_model(
-                    self.model_path, custom_objects={"focal_loss": focal_loss}
+                    self.model_path,
+                    custom_objects={"focal_loss": focal_loss, "IoU": IoU},
                 )
 
         # Check if model directory is correct
@@ -192,6 +193,8 @@ class ApoModel:
         """Runs a segmentation model on the input image and
         thresholds the result.
 
+        The input image here containes the scaling lines.
+
         Parameters
         ----------
         gui :
@@ -213,12 +216,14 @@ class ApoModel:
         -------
         Union[np.ndarray, Tuple[float, np.ndarray, plt.Figure]]
             If `return_fig` is False, returns the thresholded bit-mask.
-            If `return_fig` is True, returns the circumference, thresholded bit-mask,
+            If `return_fig` is True, returns the circumference,
+            thresholded bit-mask,
             and a figure of input/scaling/output.
 
         """
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
+        print(pred_apo_t)
 
         if not return_fig:
             # Don't plot the input/output, simply return the mask.
@@ -229,6 +234,10 @@ class ApoModel:
 
         # Postprocess the image.
         circum, pred_apo_th = self.postprocess_image(pred_apo_t)
+
+        cv2.imshow("window", pred_apo_th)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # Create figure with images.
         fig = plt.figure(figsize=(20, 20))
@@ -259,72 +268,35 @@ class ApoModel:
         height: int,
         return_fig: bool = True,
     ):
-        """Runs a segmentation model on the input image and thresholds result.
+        """Runs a segmentation model on the input image and
+        thresholds the result.
 
-        Arguments:
-            Input image
-            Image with scaling lines
-            Name of file
-            Distance between scaling bars
-            Width of the original image
-            Height of the original image
-            Whether or not to plot the input/output and return the figure
+        The input image here was scaled using the scaling bars.
 
-        Returns:
-            The thresholded bit-mask and (optionally) a figure of
-            input/scaling/output.
+        Parameters
+        ----------
+        gui :
+            The GUI object.
+        img : np.ndarray
+            The input image.
+        img_lines : np.ndarray
+            The image with scaling lines.
+        filename : str
+            The name of the image.
+        width : int
+            The width of the original image.
+        height : int
+            The height of the original image.
+        return_fig : bool, optional
+            Whether or not to plot the input/output and return the figure.
 
-        """
-        pred_apo = self.predict(gui, img)
-        pred_apo_t = pred_apo > self.apo_threshold
-
-        if not return_fig:
-            # don't plot the input/output, simply return mask
-            return pred_apo_t
-
-        img = _resize(img, width, height)
-        pred_apo_t = _resize(pred_apo_t, width, height)
-
-        # postprocess image
-        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
-
-        # create figure with images
-        fig = plt.figure(figsize=(20, 20))
-        ax1 = fig.add_subplot(3, 1, 1)
-        ax1.imshow(img_lines.squeeze(), cmap="gray")
-        ax1.grid(False)
-        ax1.set_title(
-            f"Image ID: {filename}" + f"\nDistance between scaling bars {dist}"
-        )
-        ax2 = fig.add_subplot(3, 1, 2)
-        ax2.imshow(img.squeeze(), cmap="gray")
-        ax2.grid(False)
-        ax2.set_title("Resized and normalized  original image")
-        ax3 = fig.add_subplot(3, 1, 3)
-        ax3.imshow(pred_apo_th.squeeze(), cmap="gray")
-        ax3.grid(False)
-        ax3.set_title("Predicted muscle area")
-
-        return circum, pred_apo_th, fig
-
-    def predict_m(
-        self, gui, img, width: int, filename: str, height: int, return_fig: bool = True
-    ):
-        """Runs a segmentation model on the input image and thresholds result.
-
-        Arguments:
-            Input image
-            Image with scaling lines
-            Name of the image
-            Distance between scaling bars
-            Width of the original image
-            Height of the original image
-            Whether or not to plot the input/output and return the figure
-
-        Returns:
-            The thresholded bit-mask and (optionally) a figure of
-            input/scaling/output.
-
+        Returns
+        -------
+        Union[np.ndarray, Tuple[float, np.ndarray, plt.Figure]]
+            If `return_fig` is False, returns the thresholded bit-mask.
+            If `return_fig` is True, returns the circumference,
+            thresholded bit-mask,
+            and a figure of input/scaling/output.
         """
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
@@ -342,12 +314,79 @@ class ApoModel:
         # create figure with images
         fig = plt.figure(figsize=(20, 20))
         ax1 = fig.add_subplot(2, 1, 1)
-        ax1.imshow(img.squeeze(), cmap="gray")
+        ax1.imshow(img_lines.squeeze(), cmap="gray")
         ax1.grid(False)
-        ax1.set_title(f"Image ID: {filename}" + "\nOriginal image with CLAHE")
+        ax1.set_title(
+            f"Image ID: {filename}" + f"\nDistance between scaling bars {dist}"
+        )
         ax2 = fig.add_subplot(2, 1, 2)
-        ax2.imshow(pred_apo_th.squeeze(), cmap="gray")
+        ax2.imshow(img.squeeze(), cmap="gray")
+        ax2.contour(
+            pred_apo_th.squeeze(), levels=[0.5], colors="cyan", linewidths=4, alpha=0.4
+        )
         ax2.grid(False)
-        ax2.set_title("Predicted muscle area")
+        ax2.set_title(
+            "Normalized and resized image with predicted muscle area (overlay)"
+        )
+
+        return circum, pred_apo_th, fig
+
+    def predict_m(
+        self, gui, img, width: int, filename: str, height: int, return_fig: bool = True
+    ):
+        """Runs a segmentation model on the input image and
+        thresholds the result.
+
+        The input image here was scaled manualy.
+
+        Parameters
+        ----------
+        gui :
+            The GUI object.
+        img : np.ndarray
+            The input image.
+        img_lines : np.ndarray
+            The image with scaling lines.
+        filename : str
+            The name of the image.
+        width : int
+            The width of the original image.
+        height : int
+            The height of the original image.
+        return_fig : bool, optional
+            Whether or not to plot the input/output and return the figure.
+
+        Returns
+        -------
+        Union[np.ndarray, Tuple[float, np.ndarray, plt.Figure]]
+            If `return_fig` is False, returns the thresholded bit-mask.
+            If `return_fig` is True, returns the circumference,
+            thresholded bit-mask,
+            and a figure of input/scaling/output.
+        """
+        pred_apo = self.predict(gui, img)
+        pred_apo_t = pred_apo > self.apo_threshold
+
+        if not return_fig:
+            # don't plot the input/output, simply return mask
+            return pred_apo_t
+
+        img = _resize(img, width, height)
+        pred_apo_t = _resize(pred_apo_t, width, height)
+
+        # postprocess image
+        circum, pred_apo_th = self.postprocess_image(pred_apo_t)
+
+        # create figure with images
+        fig = plt.figure(figsize=(20, 20))
+        ax2 = fig.add_subplot(2, 1, 1)
+        ax2.imshow(img.squeeze(), cmap="gray")
+        ax2.contour(
+            pred_apo_th.squeeze(), levels=[0.5], colors="cyan", linewidths=4, alpha=0.4
+        )
+        ax2.grid(False)
+        ax2.set_title(
+            "Normalized and resized image with predicted muscle area (overlay)"
+        )
 
         return circum, pred_apo_th, fig

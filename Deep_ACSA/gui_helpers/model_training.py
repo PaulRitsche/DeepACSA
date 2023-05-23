@@ -284,7 +284,7 @@ def IoU(y_true, y_pred, smooth: int = 1) -> float:
     return iou
 
 
-def dice_score(y_true, y_pred) -> float:
+def dice_score(y_true, y_pred, smooth=1e-6) -> float:
     """
     Function to compute the Dice score, a measure of prediction accuracy.
 
@@ -299,6 +299,8 @@ def dice_score(y_true, y_pred) -> float:
         This is the mask that is provided prior to model training.
     y_pred : tf.Tensor
         Predicted image segmentation by the network.
+    smooth : float
+        Smoothing factor used for score calculation.
 
     Returns
     -------
@@ -318,12 +320,11 @@ def dice_score(y_true, y_pred) -> float:
             smooth=1)
     Tensor("dice_score/truediv:0", shape=(1, 512, 512), dtype=float32)
     """
-    # Cacluate intersection
     intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    # Calculate Dice score
-    score = (2.0 * intersection) / (K.sum(y_true, -1) + K.sum(y_pred, -1))
-
-    return score
+    dice = (2 * intersection + smooth) / (
+        K.sum(y_pred, -1) + K.sum(y_true, -1) + smooth
+    )
+    return 1 - dice
 
 
 def focal_loss(y_true, y_pred, alpha: float = 0.8, gamma: float = 2) -> float:

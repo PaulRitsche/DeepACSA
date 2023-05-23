@@ -679,23 +679,19 @@ class DeepACSA:
             window, width=30, textvariable=self.train_image_dir
         )
         train_image_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
-        self.train_image_dir.set(
-            "C:/Users/admin/Documents/DL_Track/Train_Data_DL_Track/apo_test"
-        )
+        self.train_image_dir.set("C:/Users/admin/Documents/DeepACSA")
 
         # Mask directory
         self.mask_dir = StringVar()
         mask_entry = ttk.Entry(window, width=30, textvariable=self.mask_dir)
         mask_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-        self.mask_dir.set(
-            "C:/Users/admin/Documents/DL_Track/Train_Data_DL_Track/apo_mask_test"
-        )
+        self.mask_dir.set("C:/Users/admin/Documents/DeepACSA")
 
         # Output path
         self.out_dir = StringVar()
         out_entry = ttk.Entry(window, width=30, textvariable=self.out_dir)
         out_entry.grid(column=2, row=4, columnspan=3, sticky=(W, E))
-        self.out_dir.set("C:/Users/admin/Documents")
+        self.out_dir.set("C:/Users/admin/Documents/DeepACSA")
 
         # Buttons
         # Train image button

@@ -208,6 +208,7 @@ def calculate_batch_efov(
         return
 
     apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
+    print(apo_model)
     dataframe = pd.DataFrame(
         columns=[
             "File",
@@ -370,6 +371,7 @@ def calculate_batch(
         return
 
     apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
+    print(apo_model)
     dataframe = pd.DataFrame(
         columns=[
             "File",
