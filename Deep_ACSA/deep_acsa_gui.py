@@ -461,6 +461,17 @@ class DeepACSA:
                 self.do_break()
                 return
 
+            elif selected_loss == "Loss Function":
+                tk.messagebox.showerror(
+                    "Information",
+                    "Check model loss function."
+                    + "\nPotential error source:  Invalid specified loss",
+                )
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
             elif len(selected_filetype) < 3:
                 tk.messagebox.showerror(
                     "Information",

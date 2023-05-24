@@ -41,23 +41,13 @@ Additional information and usage examples can be found at the respective
 functions documentations.
 """
 import os
-import random
 import tkinter as tk
 
 import matplotlib.pyplot as plt
 import numpy as np
 from keras import backend as K
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.layers import Activation, BatchNormalization, Input
-from keras.models import Model
-from keras.optimizers import Adam
-
-# from tensorflow.keras.utils import img_to_array, load_img
-from keras.preprocessing.image import img_to_array, load_img
-from skimage.transform import resize
-from sklearn.model_selection import train_test_split
-from tensorflow.keras.applications import VGG16
-from tensorflow.keras.layers import (
+from keras.layers import (
     Activation,
     BatchNormalization,
     Concatenate,
@@ -65,6 +55,14 @@ from tensorflow.keras.layers import (
     Conv2DTranspose,
     Input,
 )
+from keras.models import Model
+from keras.optimizers import Adam
+from skimage.transform import resize
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.applications import VGG16
+
+# from tensorflow.keras.utils import img_to_array, load_img
+from tensorflow.keras.utils import img_to_array, load_img
 from tqdm import tqdm
 
 

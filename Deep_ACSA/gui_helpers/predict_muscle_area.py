@@ -10,9 +10,9 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from keras.preprocessing.image import img_to_array
 from matplotlib.backends.backend_pdf import PdfPages
 from skimage.transform import resize
+from tensorflow.keras.utils import img_to_array
 
 from Deep_ACSA.gui_helpers.apo_model import ApoModel
 from Deep_ACSA.gui_helpers.calculate_muscle_volume import muscle_volume_calculation
@@ -142,6 +142,8 @@ def calc_area(calib_dist: float, img: np.ndarray):
     3.813
     """
     pix_per_cm = calib_dist
+    print(pix_per_cm)
+    print(cv2.countNonZero(img))
     # Counts pixels with values != 0
     pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
     return pred_muscle_area
@@ -338,7 +340,7 @@ def calculate_batch(
     filetype: str,
     modelpath: str,
     loss_function: str,
-    spacing: int,
+    spacing: str,
     muscle: str,
     scaling: str,
     volume_wanted: str,
