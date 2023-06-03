@@ -31,6 +31,7 @@ U-net: Ronneberger, O., Fischer, P. and Brox, T. "U-Net: Convolutional Networks 
 DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., Franchi, M. "DeepACSA: Automatic Segmentation of Cross-Sectional Area in Ultrasound Images of Lower Limb Muscles Using Deep Learning" (2022)
 """
 
+import os
 import tkinter as tk
 from threading import Lock, Thread
 from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
@@ -182,6 +183,9 @@ class DeepACSA:
 
         # set up gui
         root.title("DeepACSA")
+        master_path = os.path.dirname(os.path.abspath(__file__))
+        iconpath = master_path + "/gui_helpers/icon.ico"
+        root.iconbitmap(iconpath)
 
         self.main = ttk.Frame(root, padding="10 10 12 12")
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
@@ -669,6 +673,9 @@ class DeepACSA:
         # Open Window
         window = tk.Toplevel(bg="SkyBlue4")
         window.title("Model Training Window")
+        master_path = os.path.dirname(os.path.abspath(__file__))
+        iconpath = master_path + "/gui_helpers/icon.ico"
+        window.iconbitmap(iconpath)
         window.grab_set()
 
         # Labels

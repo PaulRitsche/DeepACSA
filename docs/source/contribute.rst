@@ -1,3 +1,5 @@
+.. _contributelabel:
+
 Contributing
 ============
 
@@ -30,7 +32,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 Getting Support
 ---------------
 
-If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DL_Track not related to bugs, don't hesitate to report this in the `Q&A section in the <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_. This is the space to have conversations, ask questions and post answers without opening issues.
+If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DeepACSA not related to bugs, don't hesitate to report this in the `Q&A section in the <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_. This is the space to have conversations, ask questions and post answers without opening issues.
 
 Code of Conduct
 ===============

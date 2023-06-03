@@ -23,7 +23,12 @@ Currently, we have not provided unit testing for the functions and modules inclu
    :caption: Contents
    :hidden:
 
-   modules
+   installation
+   usage
+   contribute
+   tests
+   Deep_ACSA
+
 
 
 

@@ -23,6 +23,9 @@ from Deep_ACSA.gui_helpers.calibrate import (
 )
 from Deep_ACSA.gui_helpers.echo_int import calculate_echo_int
 
+# from keras.preprocessing.image import img_to_array, load_img
+
+
 plt.style.use("ggplot")
 plt.switch_backend("agg")
 
@@ -142,8 +145,7 @@ def calc_area(calib_dist: float, img: np.ndarray):
     3.813
     """
     pix_per_cm = calib_dist
-    print(pix_per_cm)
-    print(cv2.countNonZero(img))
+
     # Counts pixels with values != 0
     pred_muscle_area = cv2.countNonZero(img) / (pix_per_cm**2)
     return pred_muscle_area
@@ -162,17 +164,12 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
         Excel file containing filename, muscle and predicted area.
 
     Example:
-    >>>compile_save_results(C:/Desktop/Test, C:/Desktop/Test/Img1.tif, dataframe)
+    >>>compile_save_results(C:/Desktop/Test, dataframe)
     """
     excelpath = rootpath + "/Results.xlsx"
-    if os.path.exists(excelpath):
-        with pd.ExcelWriter(excelpath, mode="a") as writer:
-            data = dataframe
-            data.to_excel(writer, sheet_name="Results")
-    else:
-        with pd.ExcelWriter(excelpath, mode="w") as writer:
-            data = dataframe
-            data.to_excel(writer, sheet_name="Results")
+    with pd.ExcelWriter(excelpath, mode="w") as writer:
+        data = dataframe
+        data.to_excel(writer, sheet_name="Results")
 
 
 def calculate_batch_efov(
@@ -210,7 +207,7 @@ def calculate_batch_efov(
         return
 
     apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
-    print(apo_model)
+
     dataframe = pd.DataFrame(
         columns=[
             "File",
@@ -373,7 +370,7 @@ def calculate_batch(
         return
 
     apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
-    print(apo_model)
+
     dataframe = pd.DataFrame(
         columns=[
             "File",

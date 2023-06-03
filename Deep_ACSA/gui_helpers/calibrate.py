@@ -393,7 +393,6 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
         math.sqrt((mlocs[3] - mlocs[1]) ** 2 + (mlocs[2] - mlocs[0]) ** 2)
     )
     mlocs = []
-    print(spacing)
     # calculate calib_dist for 10mm
     if spacing == "5":
         calib_dist = calib_dist * 2

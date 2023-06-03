@@ -61,7 +61,7 @@ from skimage.transform import resize
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.applications import VGG16
 
-# from tensorflow.keras.utils import img_to_array, load_img
+# from keras.preprocessing.image import img_to_array, load_img
 from tensorflow.keras.utils import img_to_array, load_img
 from tqdm import tqdm
 

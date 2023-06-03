@@ -84,7 +84,7 @@ class ApoModel:
         try:
             self.model_path = model_path
             self.apo_threshold = apo_threshold
-            print(loss_function)
+
             # Check for used loss function
             if loss_function == "IoU":
                 self.model_apo = load_model(
@@ -223,7 +223,6 @@ class ApoModel:
         """
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
-        print(pred_apo_t)
 
         if not return_fig:
             # Don't plot the input/output, simply return the mask.
@@ -234,10 +233,6 @@ class ApoModel:
 
         # Postprocess the image.
         circum, pred_apo_th = self.postprocess_image(pred_apo_t)
-
-        cv2.imshow("window", pred_apo_th)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
 
         # Create figure with images.
         fig = plt.figure(figsize=(20, 20))
