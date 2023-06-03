@@ -14,6 +14,7 @@ Have fun!
 
 - Loss Function: In the new version of the GUI, you can find a ``Loss Function`` dropdown under the ``Model Path`` textentry. Here you need to specify the loss function used during model training. So far, we implemented *IoU*, *Focal Loss* and *Dice Loss*. When using our pre-trained models, simply select *IoU*. 
 - Model Training (see :ref:`trainlabel`)
+- Image Labelling (see :ref:`trainlabel`)
 - Image Augmentation (see :ref:`trainlabel`)
 - Volume Calculation (see :ref:`volumelabel`)
 
