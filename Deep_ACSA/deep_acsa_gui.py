@@ -31,6 +31,7 @@ U-net: Ronneberger, O., Fischer, P. and Brox, T. "U-Net: Convolutional Networks 
 DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., Franchi, M. "DeepACSA: Automatic Segmentation of Cross-Sectional Area in Ultrasound Images of Lower Limb Muscles Using Deep Learning" (2022)
 """
 
+import os
 import tkinter as tk
 from threading import Lock, Thread
 from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
@@ -61,7 +62,8 @@ class DeepACSA:
     - Model training:
     By pressing the "train model" button, a new window opens and the
     user can train an own neural network based on existing/own
-    training data.
+    training data. Furthermore, the new window allows to augment input images through
+    data augmentation to generate new training images.
 
     Attributes
     ----------
@@ -152,6 +154,9 @@ class DeepACSA:
     train_model
         Instance method to execute the model training when the
         "start training" button is pressed.
+    augment_images
+        Instance method to augment input images and masks,
+        when the "Augment Images" button is pressed.
 
     Notes
     -----
@@ -178,6 +183,9 @@ class DeepACSA:
 
         # set up gui
         root.title("DeepACSA")
+        # master_path = os.path.dirname(os.path.abspath(__file__))
+        # iconpath = master_path + "/gui_helpers/icon.ico"
+        # root.iconbitmap(iconpath)
 
         self.main = ttk.Frame(root, padding="10 10 12 12")
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
@@ -263,6 +271,15 @@ class DeepACSA:
         self.muscle_volume_calculation_wanted.set("No")
 
         # Comboboxes
+        # Loss Function
+        self.loss_function = StringVar()
+        loss = ("IoU", "Dice Loss", "Focal Loss")
+        loss_entry = ttk.Combobox(self.main, width=15, textvariable=self.loss_function)
+        loss_entry["values"] = loss
+        loss_entry["state"] = "readonly"
+        loss_entry.grid(column=4, row=4, sticky=E)
+        self.loss_function.set("Loss Function")
+
         # Filetype
         self.filetype = StringVar()
         filetype = (
@@ -281,7 +298,7 @@ class DeepACSA:
 
         # Muscles
         self.muscle = StringVar()
-        muscle = ("VL", "RF", "GM", "GL")
+        muscle = ("VL", "RF", "GM", "GL", "BF")
         muscle_entry = ttk.Combobox(self.main, width=10, textvariable=self.muscle)
         muscle_entry["values"] = muscle
         muscle_entry["state"] = "readonly"
@@ -417,6 +434,7 @@ class DeepACSA:
 
             selected_input_dir = self.input.get()
             selected_model_path = self.model.get()
+            selected_loss = self.loss_function.get()
             selected_filetype = self.filetype.get()
             selected_muscle = self.muscle.get()
             selected_depth = float(self.depth.get())
@@ -447,6 +465,28 @@ class DeepACSA:
                 self.do_break()
                 return
 
+            elif selected_loss == "Loss Function":
+                tk.messagebox.showerror(
+                    "Information",
+                    "Check model loss function."
+                    + "\nPotential error source:  Invalid specified loss",
+                )
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
+            elif selected_depth <= 0:
+                tk.messagebox.showerror(
+                    "Information",
+                    "Check input parameters."
+                    + "\nPotential error source:  Invalid specified depth.",
+                )
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
             elif len(selected_filetype) < 3:
                 tk.messagebox.showerror(
                     "Information",
@@ -465,6 +505,7 @@ class DeepACSA:
                         selected_input_dir,
                         selected_filetype,
                         selected_model_path,
+                        selected_loss,
                         selected_depth,
                         selected_muscle,
                         selected_volume_calculation,
@@ -479,6 +520,7 @@ class DeepACSA:
                         selected_input_dir,
                         selected_filetype,
                         selected_model_path,
+                        selected_loss,
                         selected_spacing,
                         selected_muscle,
                         selected_scaling,
@@ -494,7 +536,7 @@ class DeepACSA:
             tk.messagebox.showerror(
                 "Information",
                 "Check input parameters."
-                + "\nPotential error source:  Invalid specified depth or distance",
+                + "\nPotential error source:  Invalid specified depth, distance or volume",
             )
             self.should_stop = False
             self.is_running = False
@@ -634,10 +676,17 @@ class DeepACSA:
         practice and devised from the original papers that proposed the models used
         here. Singularly the batch size should be adapted to 1 if comupte power is limited
         (no GPU or GPU with RAM lower than 8 gigabyte).
+
+        There is an "Augment Images" button, which allows to generate new training images.
+        The images and masks for the data augmentation are taken from the chosen image directory
+        and mask directory. The new images are saved under the same directories.
         """
         # Open Window
         window = tk.Toplevel(bg="SkyBlue4")
         window.title("Model Training Window")
+        # master_path = os.path.dirname(os.path.abspath(__file__))
+        # iconpath = master_path + "/gui_helpers/icon.ico"
+        # window.iconbitmap(iconpath)
         window.grab_set()
 
         # Labels
@@ -659,23 +708,19 @@ class DeepACSA:
             window, width=30, textvariable=self.train_image_dir
         )
         train_image_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
-        self.train_image_dir.set(
-            "C:/Users/admin/Documents/DL_Track/Train_Data_DL_Track/apo_test"
-        )
+        self.train_image_dir.set("C:/Users/admin/Documents/DeepACSA")
 
         # Mask directory
         self.mask_dir = StringVar()
         mask_entry = ttk.Entry(window, width=30, textvariable=self.mask_dir)
         mask_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-        self.mask_dir.set(
-            "C:/Users/admin/Documents/DL_Track/Train_Data_DL_Track/apo_mask_test"
-        )
+        self.mask_dir.set("C:/Users/admin/Documents/DeepACSA")
 
         # Output path
         self.out_dir = StringVar()
         out_entry = ttk.Entry(window, width=30, textvariable=self.out_dir)
         out_entry.grid(column=2, row=4, columnspan=3, sticky=(W, E))
-        self.out_dir.set("C:/Users/admin/Documents")
+        self.out_dir.set("C:/Users/admin/Documents/DeepACSA")
 
         # Buttons
         # Train image button
@@ -685,6 +730,12 @@ class DeepACSA:
         # Mask button
         mask_button = ttk.Button(window, text="Masks", command=self.get_mask_dir)
         mask_button.grid(column=5, row=3, sticky=E)
+
+        # Data augmentation button
+        data_augmentation_button = ttk.Button(
+            window, text="Augment Images", command=self.augment_images
+        )
+        data_augmentation_button.grid(column=4, row=10, sticky=E)
 
         # Input directory
         out_button = ttk.Button(window, text="Output", command=self.get_output_dir)
@@ -723,7 +774,7 @@ class DeepACSA:
 
         # Loss function
         self.loss_function = StringVar()
-        loss = "BCE"  # "Dice", "FL")
+        loss = ("BCE", "Dice", "FL")
         loss_entry = ttk.Combobox(window, width=10, textvariable=self.loss_function)
         loss_entry["values"] = loss
         loss_entry["state"] = "readonly"
@@ -827,6 +878,47 @@ class DeepACSA:
         except ValueError:
             tk.messagebox.showerror(
                 "Information", "Analysis parameter entry fields" + " must not be empty."
+            )
+            self.do_break()
+            self.should_stop = False
+            self.is_running = False
+
+    ## Method used for data augmentation
+
+    def augment_images(self):
+        """
+        Instance method to augment input images, when the "Augment Images" button is pressed.
+        Input parameters for the gui_helpers.image_augmentation function are taken from the chosen
+        image and mask directories. The newly generated data will be saved under the same
+        directories.
+        """
+        try:
+            # See if GUI is already running
+            if self.is_running:
+                # don't run again if it is already running
+                return
+            self.is_running = True
+
+            # Get input paremeters
+            selected_images = self.train_image_dir.get()
+            selected_masks = self.mask_dir.get()
+
+            # Make sure some kind of filetype is specified.
+            if len(selected_images) < 3 or len(selected_masks) < 3:
+                tk.messagebox.showerror("Information", "Specified directories invalid.")
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
+            gui_helpers.image_augmentation(selected_images, selected_masks, self)
+
+        # Error handling
+        except ValueError:
+            tk.messagebox.showerror(
+                "Information",
+                "Check input parameters"
+                + "\nPotential error source: Invalid directories",
             )
             self.do_break()
             self.should_stop = False

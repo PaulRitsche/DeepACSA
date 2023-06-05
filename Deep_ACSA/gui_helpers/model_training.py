@@ -41,20 +41,13 @@ Additional information and usage examples can be found at the respective
 functions documentations.
 """
 import os
-import random
 import tkinter as tk
 
 import matplotlib.pyplot as plt
 import numpy as np
 from keras import backend as K
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.layers import Activation, BatchNormalization, Input
-from keras.models import Model
-from keras.optimizers import Adam
-from skimage.transform import resize
-from sklearn.model_selection import train_test_split
-from tensorflow.keras.applications import VGG16
-from tensorflow.keras.layers import (
+from keras.layers import (
     Activation,
     BatchNormalization,
     Concatenate,
@@ -62,9 +55,14 @@ from tensorflow.keras.layers import (
     Conv2DTranspose,
     Input,
 )
-#from tensorflow.keras.utils import img_to_array, load_img
-from keras.preprocessing.image import img_to_array, load_img
+from keras.models import Model
+from keras.optimizers import Adam
+from skimage.transform import resize
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.applications import VGG16
 
+# from keras.preprocessing.image import img_to_array, load_img
+from tensorflow.keras.utils import img_to_array, load_img
 from tqdm import tqdm
 
 
@@ -284,7 +282,7 @@ def IoU(y_true, y_pred, smooth: int = 1) -> float:
     return iou
 
 
-def dice_score(y_true, y_pred) -> float:
+def dice_score(y_true, y_pred, smooth=1e-6) -> float:
     """
     Function to compute the Dice score, a measure of prediction accuracy.
 
@@ -299,6 +297,8 @@ def dice_score(y_true, y_pred) -> float:
         This is the mask that is provided prior to model training.
     y_pred : tf.Tensor
         Predicted image segmentation by the network.
+    smooth : float
+        Smoothing factor used for score calculation.
 
     Returns
     -------
@@ -318,13 +318,11 @@ def dice_score(y_true, y_pred) -> float:
             smooth=1)
     Tensor("dice_score/truediv:0", shape=(1, 512, 512), dtype=float32)
     """
-    # Cacluate intersection
     intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    # Calculate Dice score
-    score = (2.0 * intersection) / (K.sum(y_true, -1) + K.sum(y_pred, -1))
-    print("Score: ", score, type(score))
-
-    return score
+    dice = (2 * intersection + smooth) / (
+        K.sum(y_pred, -1) + K.sum(y_true, -1) + smooth
+    )
+    return 1 - dice
 
 
 def focal_loss(y_true, y_pred, alpha: float = 0.8, gamma: float = 2) -> float:
