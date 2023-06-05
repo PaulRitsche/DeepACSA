@@ -5,7 +5,7 @@
 
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
 More information about the installtion and usage of DeepACSA can be found in the online [documentation](https://deepacsa.readthedocs.io/en/latest/index.html). You can find information about contributing, issues and bug reports there as well.
-Our trained models, training data, an executable as well as example files can be accessed at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7568384.svg)](https://doi.org/10.5281/zenodo.7568384).
+Our trained models, training data, an executable as well as example files can be accessed at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8007009.svg)](https://doi.org/10.5281/zenodo.8007009).
 If you find this work useful, please remember to cite the corresponding [paper](https://journals.lww.com/acsm-msse/Abstract/9900/DeepACSA__Automatic_Segmentation_of.87.aspx), where more information about the model architecture and performance can be found as well. 
 
 ## Quickstart
