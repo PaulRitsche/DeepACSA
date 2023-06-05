@@ -8,6 +8,7 @@ We offer two possible installation approaches for our DeepACSA software. The fir
 Download the DeepACSA executable
 ---------------------------------
 
+
 1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://zenodo.org/record/8007009>`_.
 2. Download the DeepACSA_example.7z
 3. Find the DeepACSA.exe Executable in the DeepACSA_example/executable folder.
@@ -84,7 +85,6 @@ The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To exec
 ``python deep_acsa_gui.py``
 
 The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at :ref:`usagelabel`.
-
 
 GPU setup
 ---------
