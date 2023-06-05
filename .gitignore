@@ -3,3 +3,4 @@ dist/
 Deep_ACSA/__pycache__
 Deep_ACSA/gui_helpers/__pycache__
 build/
+.vscode/

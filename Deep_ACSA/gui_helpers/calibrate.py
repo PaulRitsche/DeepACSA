@@ -28,10 +28,12 @@ calibrate_distance_static
 """
 
 import math
-import numpy as np
+
 import cv2
+import numpy as np
 
 mlocs = []
+
 
 def region_of_interest(img: np.ndarray, vertices: np.ndarray):
     """
@@ -63,6 +65,7 @@ def region_of_interest(img: np.ndarray, vertices: np.ndarray):
     cv2.fillPoly(mask, vertices, match_mask_color)
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
+
 
 def mclick(event, x_val, y_val, flags, param):
     """
@@ -97,6 +100,7 @@ def mclick(event, x_val, y_val, flags, param):
         mlocs.append(y_val)
         mlocs.append(x_val)
 
+
 def draw_the_lines(img: np.ndarray, line: np.ndarray):
     """
     Function to highlight lines on the input images.
@@ -122,12 +126,12 @@ def draw_the_lines(img: np.ndarray, line: np.ndarray):
     blank_image = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
 
     for x_1, y_1, x_2, y_2 in line:
-        cv2.line(blank_image, (x_1, y_1), (x_2, y_2), (0, 255, 0),
-                thickness=3)
+        cv2.line(blank_image, (x_1, y_1), (x_2, y_2), (0, 255, 0), thickness=3)
 
     # Overlay image with lines on original images (only needed for plotting)
     img = cv2.addWeighted(img, 0.8, blank_image, 1, 0.0)
     return img
+
 
 def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     """
@@ -167,28 +171,31 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     # Define ROI with scaling lines
     region_of_interest_vertices = [
         (10, height),
-        (10, height*0.1),
-        (width, height*0.1),
-        (width, height)
+        (10, height * 0.1),
+        (width, height * 0.1),
+        (width, height),
     ]
     # Transform RGB to greyscale for edge detection
     gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     # Edge detecition
     canny_image = cv2.Canny(gray_image, 400, 600)
-    cropped_image = region_of_interest(canny_image,
-                                       np.array([region_of_interest_vertices],
-                                                np.int32),)
+    cropped_image = region_of_interest(
+        canny_image,
+        np.array([region_of_interest_vertices], np.int32),
+    )
 
     # For RF
     muscle = arg_muscle
     if muscle == "RF":
-        lines = cv2.HoughLinesP(cropped_image,
-                                rho=1,
-                                theta=np.pi/180,
-                                threshold=50,
-                                lines=np.array([]),
-                                minLineLength=325,
-                                maxLineGap=3)
+        lines = cv2.HoughLinesP(
+            cropped_image,
+            rho=1,
+            theta=np.pi / 180,
+            threshold=50,
+            lines=np.array([]),
+            minLineLength=325,
+            maxLineGap=3,
+        )
         if lines is None:
             return None, None
         # draw lines on image
@@ -196,13 +203,15 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
 
     # For VL
     if muscle == "VL":
-        lines = cv2.HoughLinesP(cropped_image,
-                                rho=1,  # Distance of pixels in accumulator
-                                theta=np.pi/180,  # Angle resolution
-                                threshold=50,  # Only lines with higher vote
-                                lines=np.array([]),
-                                minLineLength=175,
-                                maxLineGap=3)  # Gap between lines
+        lines = cv2.HoughLinesP(
+            cropped_image,
+            rho=1,  # Distance of pixels in accumulator
+            theta=np.pi / 180,  # Angle resolution
+            threshold=50,  # Only lines with higher vote
+            lines=np.array([]),
+            minLineLength=175,
+            maxLineGap=3,
+        )  # Gap between lines
         if lines is None:
             return None, None
         # draw lines on image
@@ -210,26 +219,46 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
 
     # For GM / GL
     if muscle == "GL":
-        lines = cv2.HoughLinesP(cropped_image,
-                                rho=1,  # Distance of pixels in accumulator
-                                theta=np.pi / 180,  # Angle resolution
-                                threshold=50,  # Only lines with higher vote
-                                lines=np.array([]),
-                                minLineLength=250,
-                                maxLineGap=5)
+        lines = cv2.HoughLinesP(
+            cropped_image,
+            rho=1,  # Distance of pixels in accumulator
+            theta=np.pi / 180,  # Angle resolution
+            threshold=50,  # Only lines with higher vote
+            lines=np.array([]),
+            minLineLength=250,
+            maxLineGap=5,
+        )
         if lines is None:
             return None, None
         # draw scaling lines on image
         image_with_lines = draw_the_lines(image, lines[0])
 
+    # For BF
+    if muscle == "BF":
+        lines = cv2.HoughLinesP(
+            cropped_image,
+            rho=1,
+            theta=np.pi / 180,
+            threshold=50,
+            lines=np.array([]),
+            minLineLength=325,
+            maxLineGap=3,
+        )
+        if lines is None:
+            return None, None
+        # draw lines on image
+        image_with_lines = draw_the_lines(image, lines[0])
+
     else:
-        lines = cv2.HoughLinesP(cropped_image,
-                                rho=1,  # Distance of pixels in accumulator
-                                theta=np.pi / 180,  # Angle resolution
-                                threshold=50,  # Only lines with higher vote
-                                lines=np.array([]),
-                                minLineLength=250,
-                                maxLineGap=5)
+        lines = cv2.HoughLinesP(
+            cropped_image,
+            rho=1,  # Distance of pixels in accumulator
+            theta=np.pi / 180,  # Angle resolution
+            threshold=50,  # Only lines with higher vote
+            lines=np.array([]),
+            minLineLength=250,
+            maxLineGap=5,
+        )
         if lines is None:
             return None, None
         # draw scaling lines on image
@@ -239,10 +268,12 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
     scalingline = lines[0][0]
     point1 = [scalingline[0], scalingline[1]]
     point2 = [scalingline[2], scalingline[3]]
-    scalingline_length = math.sqrt(((point1[0] - point2[0])**2)
-                                   + ((point1[1] - point2[1])**2))
+    scalingline_length = math.sqrt(
+        ((point1[0] - point2[0]) ** 2) + ((point1[1] - point2[1]) ** 2)
+    )
 
     return scalingline_length, image_with_lines
+
 
 def calibrate_distance_static(nonflipped_img: np.ndarray, spacing: int):
     """
@@ -289,11 +320,10 @@ def calibrate_distance_static(nonflipped_img: np.ndarray, spacing: int):
     img2 = np.uint8(nonflipped_img)
     height = img2.shape[0]
     width = img2.shape[1]
-    imgscale = img2[int(height*0.4):(height), (width-int(width*0.15)):width]
+    imgscale = img2[int(height * 0.4) : (height), (width - int(width * 0.15)) : width]
 
     # search for rows with white pixels, calculate median of distance
-    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 150),
-                                axis=0))
+    calib_dist = np.max(np.diff(np.argwhere(imgscale.max(axis=1) > 150), axis=0))
 
     if int(calib_dist) < 1:
         return None, None, None
@@ -302,16 +332,17 @@ def calibrate_distance_static(nonflipped_img: np.ndarray, spacing: int):
     if spacing == "5":
         calib_dist = calib_dist * 2
     if spacing == "15":
-        calib_dist = calib_dist * (2/3)
+        calib_dist = calib_dist * (2 / 3)
     if spacing == "20":
         calib_dist = calib_dist / 2
 
-    #scalingline_length = depth * calib_dist
-    scale_statement = '10 mm corresponds to ' + str(calib_dist) + ' pixels'
+    # scalingline_length = depth * calib_dist
+    scale_statement = "10 mm corresponds to " + str(calib_dist) + " pixels"
 
     return calib_dist, imgscale, scale_statement
 
-def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: int):
+
+def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
     """
     Function to manually calibrate an image to convert measurements
     in pixel units to centimeters.
@@ -358,14 +389,16 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: int):
 
     global mlocs
 
-    calib_dist = np.abs(math.sqrt((mlocs[3] - mlocs[1])**2 + (mlocs[2] - mlocs[0])**2))
+    calib_dist = np.abs(
+        math.sqrt((mlocs[3] - mlocs[1]) ** 2 + (mlocs[2] - mlocs[0]) ** 2)
+    )
     mlocs = []
     # calculate calib_dist for 10mm
-    if spacing == 5:
+    if spacing == "5":
         calib_dist = calib_dist * 2
-    if spacing == 15:
-        calib_dist = calib_dist * (2/3)
-    if spacing == 20:
+    if spacing == "15":
+        calib_dist = calib_dist * (2 / 3)
+    if spacing == "20":
         calib_dist = calib_dist / 2
 
     # print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
