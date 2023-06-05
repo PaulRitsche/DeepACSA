@@ -22,7 +22,7 @@ Have fun!
 The DeepACSA package is only fully functional on windows OS and was not properly tested on MacOS. However, with restricted functionality macOS users can employ the DeepACSA as well. With macOS, the manual scaling option for image analysis is not functional. Therefore, images cannot be scaled this way in the GUI. A possible solution is to scale the analysis results subsequent to completion of the analysis. Therefore, the pixel per centimeter must be calculated elsewhere. One option is to use `FIJI <https://imagej.net/software/fiji/downloads>`_. By drawing a line on the image, it is possible to see the length of the line in pixel units. Open the respective image in FIJI by drag and drop. Draw a line on the image with a known distance of one centimetre, click `cmd + m` and get the length of the line in pixel unit from the result window. Do that for every image with varying scanning depth. Divide the analysis results for muscle thickness and fascicle length by the linelength in pixel units. The result will be the muscle thickness and fascicle length in centimeter units.
 
 Good to know
-""""""""""""
+------------
 
 All relevant instructions and guidelines for the installation of the DeepACSA software are described in the installation section, so please take a look there if anything is unclear. We have also provided information on what to do when you encounter problems during the installation process, encounter errors during the analysis process that are not caught by the GUI (no error message pop ups and advises you what to do), if you want to contribute to the DeepACSA software package, and how you can reach us.
 
@@ -42,11 +42,11 @@ Before we start with this tutorial, here are some important tips:
   inspect the output of the models. If the segmentation results and the actual fascicles and aponeuroses overlap on most of the analysed images, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model.
 
 Starting the interface
-""""""""""""""""""""""
+----------------------
 
 In the very first step of this tutorial, we will take a look at how to start the graphical user interface (GUI) once it was installed. We have provided two different installation procedures: 
 
-1. downloading the DeepACSA.exe file and
+1. downloading the DeepACSA.exe `file <https://zenodo.org/record/8007009>`_
 
 2. installing the DLTrack python package using pip and Github.
 
@@ -78,18 +78,27 @@ to start the GUI. The location of you prompt is irrelevant, as long as the DeepA
 .. _trainlabel:
 
 Train your own networks
-"""""""""""""""""""""""
+-----------------------
 
 It is advantageous to have a working GPU setup, otherwise model training will take much longer. 
 How to setup you GUI for DeepACSA is described above and in the installation section. 
 Although you can adapt a number of parameters during training, you cannot change the neural network architecture from the GUI (of course you could modify source code to do so). 
 This is because during experimenting with different model architectures, we found a combination of a on imagenet pre-trained VGG16 encoder and a standard U-net decoder to be the best performing model. 
-Thus, all the models trained using the GUI will have this architecture. To explain you the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner. Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (link: ). Unzip the folder and put it somewhere accessible, for example on your desktop.
+Thus, all the models trained using the GUI will have this architecture. To explain you the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner.
+Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (link: ). Unzip the folder and put it somewhere accessible, for example on your desktop.
 
-**Data labelling**
-The most important part for model training is data preparation and labelling. We have provided an ImageJ / FIJI script that allows you to label your images and create the masks. The script is located in the `docs/image_labelling/` folder. To use it, simply drag the file into the FIJI GUI. Here you can download `FIJI <https://imagej.net/software/fiji/downloads>`_. Once the script is opened, you can find the usage instructions there.
+Data labelling
+""""""""""""""
 
-**Image Augmentation**
+The most important part for model training is data preparation and labelling.
+We have provided an ImageJ / FIJI script that allows you to label your images and create the masks.
+The script is located in the `docs/image_labelling/` folder.
+To use it, simply drag the file into the FIJI GUI. Here you can download `FIJI <https://imagej.net/software/fiji/downloads>`_.
+Once the script is opened, you can find the usage instructions there.
+
+Image Augmentation
+""""""""""""""""""
+
 Prior to model training, it is possible to augment your images. The main goal is to enlarge the training data size. Here, your images are multiplied three-fold.
 For detailded information about the augmentation process take a look at our `paper <https://journals.lww.com/acsm-msse/Abstract/2022/12000/DeepACSA__Automatic_Segmentation_of.21.aspx>`_ or at the respective in the docs. 
 1. Start the GUI and click the ``Train Model`` button.
@@ -97,7 +106,9 @@ For detailded information about the augmentation process take a look at our `pap
 3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
 4. Click the ``Augment Images`` button and the augmentation process starts. 
 
-**Model Training**
+Model Training
+""""""""""""""
+
 1. Start the GUI and click the ``Train Model`` button.
 2. In the ``Image Directory``, specify the path to your training images by pressing the ``Images`` button.
 3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
@@ -106,19 +117,23 @@ For detailded information about the augmentation process take a look at our `pap
 6. Specify the ``Learning Rate``. Enter a value if you prefer a different learning rate than the default.
 7. Choose a number of ``Epochs``. *Please pay attention to user MORE than 3 ``Epochs`` during actual model training*. We entered 3 as default for testing purposes, otherwise testing would take forever.
 8. Define a ``Loss Function``. So far, you can choose binary cross-entropy (BCE), focal loss (FL) and dice loss (Dice).
+9. Press the ``Start Training`` button and follow the instructions given by the pop-up messages. As stated above, the trained model will be in the ``Output Directory`` once the traing is completed.
 
-Once you have specified according to your needs, you can press the ``Start Training`` button and follow the instructions given by the pop-up messages. As stated above, the trained model will be in the ``Output Directory`` once the traing is completed.
+**Restart the GUI when model training is completed to sucessfully use the trained models.**
 
 .. _volumelabel:
 
 Calculate muscle volume
-"""""""""""""""""""""""
+-----------------------
 
 Here we employ the truncated cone formula to calculate the muscle volume. To calculate the volume of a muscle using DeepACSA, several prerequisites are important:
 
-1. Muscle volume calculation can only be done when several images of the same muscle across several muscle regions are available and stored in the same folder.
-2. The images **must** be named in order from proximal to distal (i.e, img0.tif, img1.tif, img2.tif, ..., imgN.tif).
-3. The distance between the images of different muscle regions is knwon and constant.
-4. The higher the number of images, the more accurate the volume calculation.
+- Muscle volume calculation can only be done when several images of the same muscle across several muscle regions are available and stored in the same folder.
+- The images **must** be named in order from proximal to distal (i.e, img0.tif, img1.tif, img2.tif, ..., imgN.tif).
+- The distance between the images of different muscle regions is knwon and constant.
+- The higher the number of images, the more accurate the volume calculation.
 
-Once all prerequisites are fullfilled, select the folder conatining the images of the same muscle and different regions as ``Root Directory``. Choose a ``Model Path`` to the model you wish to use and specify all other parameters in the GUI accordingly. In the ``Muscle Volume`` section, select the checkbox ``Yes`` for ``Volume Calculation`` and specify the ``Distance`` as the distance between the images you collected. Proceed to press the button ``Run`` and the muscle volume will be calculated combining all ACSA measurements of the images in the ``Root Directory`` and will be displayed in the .xlsx result file. 
+1. Once all prerequisites are fullfilled, select the folder conatining the images of the same muscle and different regions as ``Root Directory``.
+2. Choose a ``Model Path`` to the model you wish to use and specify all other parameters in the GUI accordingly. 
+3. In the ``Muscle Volume`` section, select the checkbox ``Yes`` for ``Volume Calculation`` and specify the ``Distance`` as the distance between the images you collected.
+4. Proceed to press the button ``Run`` and the muscle volume will be calculated combining all ACSA measurements of the images in the ``Root Directory`` and will be displayed in the .xlsx result file. 

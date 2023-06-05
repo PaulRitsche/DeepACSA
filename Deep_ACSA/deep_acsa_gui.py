@@ -183,9 +183,9 @@ class DeepACSA:
 
         # set up gui
         root.title("DeepACSA")
-        master_path = os.path.dirname(os.path.abspath(__file__))
-        iconpath = master_path + "/gui_helpers/icon.ico"
-        root.iconbitmap(iconpath)
+        # master_path = os.path.dirname(os.path.abspath(__file__))
+        # iconpath = master_path + "/gui_helpers/icon.ico"
+        # root.iconbitmap(iconpath)
 
         self.main = ttk.Frame(root, padding="10 10 12 12")
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
@@ -476,6 +476,17 @@ class DeepACSA:
                 self.do_break()
                 return
 
+            elif selected_depth <= 0:
+                tk.messagebox.showerror(
+                    "Information",
+                    "Check input parameters."
+                    + "\nPotential error source:  Invalid specified depth.",
+                )
+                self.should_stop = False
+                self.is_running = False
+                self.do_break()
+                return
+
             elif len(selected_filetype) < 3:
                 tk.messagebox.showerror(
                     "Information",
@@ -525,7 +536,7 @@ class DeepACSA:
             tk.messagebox.showerror(
                 "Information",
                 "Check input parameters."
-                + "\nPotential error source:  Invalid specified depth or distance",
+                + "\nPotential error source:  Invalid specified depth, distance or volume",
             )
             self.should_stop = False
             self.is_running = False
@@ -673,9 +684,9 @@ class DeepACSA:
         # Open Window
         window = tk.Toplevel(bg="SkyBlue4")
         window.title("Model Training Window")
-        master_path = os.path.dirname(os.path.abspath(__file__))
-        iconpath = master_path + "/gui_helpers/icon.ico"
-        window.iconbitmap(iconpath)
+        # master_path = os.path.dirname(os.path.abspath(__file__))
+        # iconpath = master_path + "/gui_helpers/icon.ico"
+        # window.iconbitmap(iconpath)
         window.grab_set()
 
         # Labels

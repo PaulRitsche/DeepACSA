@@ -32,7 +32,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 Getting Support
 ---------------
 
-If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DeepACSA not related to bugs, don't hesitate to report this in the `Q&A section in the <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_. This is the space to have conversations, ask questions and post answers without opening issues.
+If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DeepACSA not related to bugs, don't hesitate to report this in the Github `Q&A section <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_. This is the space to have conversations, ask questions and post answers without opening issues.
 
 Code of Conduct
 ===============
@@ -97,7 +97,7 @@ Enforcement
 -----------
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [paul.ritsche@unibas.ch]. All
+reported by contacting the project team at paul.ritsche@unibas.ch. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
