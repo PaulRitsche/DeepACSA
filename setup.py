@@ -5,17 +5,16 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="DeepACSA",
-    version="0.2.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="A brief description of your package",
+    version="0.3.0",
+    author="Paul Ritsche",
+    author_email="paul.ritsche@unibas.ch",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/DeepACSA",
+    url="https://github.com/PaulRitsche/DeepACSA",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.8",
