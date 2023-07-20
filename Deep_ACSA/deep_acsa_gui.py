@@ -175,6 +175,16 @@ class DeepACSA:
     """
 
     def __init__(self, root):
+        """Initialize the DeepACSA GUI application.
+
+        Parameters
+        ----------
+            root (Tk): The Tkinter root window.
+
+        Returns
+        -------
+            None
+        """
 
         # set up threading
         self._lock = Lock()

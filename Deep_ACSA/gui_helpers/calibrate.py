@@ -55,6 +55,18 @@ def region_of_interest(img: np.ndarray, vertices: np.ndarray):
     masked_img : np.ndarray
         Image cropped to the pre-specified region of interest.
 
+    Notes
+    -----
+    - The `img` parameter should be a processed image, typically containing edges,
+      where the region of interest needs to be cropped.
+    - The `vertices` parameter should be an array of vertices that define a polygon.
+      The function will crop the input image based on the shape defined by these vertices.
+    - The function uses a mask to retain only the region of interest in the input image,
+      based on the defined vertices. Pixels outside the polygon will be set to black (0),
+      while pixels inside the polygon will retain their original values.
+    - The function does not modify the original image; instead, it returns a cropped
+      version containing the region of interest.
+
     Example
     -------
     >>> region_of_interest(preprocessed_image,
@@ -78,19 +90,50 @@ def mclick(event, x_val, y_val, flags, param):
 
     Parameters
     ----------
-    event
+    event : int
         Event flag specified as Cv2 mouse event left mouse button down.
-    x_val
+    x_val : int
         Value of x-coordinate of mouse event to be recorded.
-    y_val
+    y_val : int
         Value of y-coordinate of mouse event to be recorded.
-    flags
+    flags : int
         Specific condition whenever a mouse event occurs. This
         is not used here but needs to be specified as input
         parameter.
-    param
+    param : any
         User input data. This is not required here but needs to
         be specified as input parameter.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - This function is intended to be used with the `setMouseCallback` function
+      from OpenCV. It allows the function to capture mouse click events in an image.
+    - The recorded (x, y) coordinates of mouse clicks are stored in the global
+      variable `mlocs`. The variable `mlocs` should be defined before using this
+      function and should be accessible to other parts of the code.
+    - The global variable `mlocs` can accumulate coordinates of multiple mouse
+      clicks across different mouse events.
+
+    Examples
+    --------
+    # Before using the function, define the global variable `mlocs`.
+    mlocs = []
+
+    # Set the mouse callback function for an image.
+    cv2.imshow("Image", image)
+    cv2.setMouseCallback("Image", mclick)
+
+    # Wait for a key press to exit the image window.
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # Now, the `mlocs` variable contains the recorded mouse click coordinates.
+    # Note that `mlocs` may contain multiple sets of coordinates if multiple
+    # clicks were made.
     """
     # Define global variable for functions to access
     global mlocs
@@ -118,7 +161,17 @@ def draw_the_lines(img: np.ndarray, line: np.ndarray):
     img : np.ndarray
         Input image now with lines drawn upon.
 
-    Example:
+    Notes
+    -----
+    - The function creates a blank image with the same dimensions as the input
+      image to draw the lines.
+    - The lines are drawn using the cv2.line() function from OpenCV, and they are
+      colored in green with a thickness of 3 pixels.
+    - The original input image is not modified; instead, the lines are overlaid
+      on a copy of the input image to preserve the original.
+
+    Example
+    -------
     >>> draw_the_lines(Image1.tif, ([[0 738 200 539]))
     """
     img = np.copy(img)
@@ -157,6 +210,12 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
         pixel units.
     image_with_lines : np.ndarray
         Cropped image containing the drawn lines.
+
+    Notes
+    -----
+    - The function automatically detects and calibrates EFOV images containing scaling bars.
+    - The muscle parameter is used to specify the muscle type, which influences the line detection parameters.
+    - The function uses OpenCV's HoughLinesP function for line detection.
 
     Example
     -------
@@ -311,6 +370,11 @@ def calibrate_distance_static(nonflipped_img: np.ndarray, spacing: int):
         String variable containing a statement how many milimeter
         correspond to how many pixels.
 
+    Notes
+    -----
+    - The function calibrates the image using the scaling bars present on the right side of the image.
+    - The spacing parameter should be provided as an integer, not a string.
+
     Examples
     --------
     >>> calibrateDistanceStatic(img=([[[[0.22414216 0.19730392 0.22414216] ... [0.2509804  0.2509804  0.2509804 ]]]), 5)
@@ -370,6 +434,12 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
         calib_dist : int
             Integer variable containing the distance between the two
             specified point in pixel units.
+
+    Notes
+    -----
+    - The function displays the image and waits for the user to click on two points to specify the distance.
+    - The spacing parameter should be provided as a string, representing the numeric value of the known distance.
+    - After calibration, the function will return the calibration distance in pixel units.
 
     Examples
     --------

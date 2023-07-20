@@ -41,12 +41,20 @@ def muscle_volume_calculation(scan_area: list, dist: float):
         Float variable containing the total predicted muscle
         volume in cm^3.
 
+    Notes
+    -----
+    - The `scan_area` list should contain at least three elements representing
+      the predicted muscle areas from different scans or images of the same
+      muscle.
+    - The `dist` parameter should be the known distance between the images in
+      centimeters (cm). It must be constant for accurate volume calculation.
+    - The returned volume is in cubic centimeters (cm^3).
+
     Example
     -------
     >>>muscle_volume = muscle_volume_calculation([2, 3, 5, 4, 2, 2], 3.75)
     11.3276276145058
     """
-
     total_volume = 0
 
     for scan_nr in range(len(scan_area)-1):

@@ -96,6 +96,13 @@ def conv_block(inputs, num_filters: int):
         the upsampling but this will change the model training. The number of filters
         is halfed.
 
+    Notes
+    -----
+    - The function applies two Conv2D layers with 3x3 kernel size and "same" padding.
+    - After each convolutional layer, BatchNormalization is applied to normalize the activations.
+    - ReLU activation is applied after each BatchNormalization layer.
+    - The purpose of this block is to improve the feature representation and stability of training in deeper networks.
+
     Example
     -------
     >>> conv_block(inputs=KerasTensor(type_spec=TensorSpec(shape=(None, 256, 256, 128),
@@ -145,6 +152,12 @@ def decoder_block(inputs, skip_features, num_filters):
         The upsampling increases image size by a factor of 2. The number of filters is halfed.
         The Tensor can be altered by adapting the input paramenters to the function or
         the upsampling but this will change the model training.
+
+    Notes
+    -----
+    - The function applies a Conv2DTranspose layer with 2x2 kernel size and stride 2 to upsample the inputs.
+    - The upsampled tensor is then concatenated with the skip connection tensor from the corresponding encoder block.
+    - The concatenated tensor is passed through a pre-specified convolutional block defined by the 'conv_block' function.
 
     Example
     -------
@@ -197,6 +210,13 @@ def build_vgg16_unet(input_shape: tuple):
     Notes
     -----
     See our paper () and references for more detailed model description
+
+    Example
+    -------
+    >>> input_shape = (256, 256, 3)
+    >>> model = build_vgg16_unet(input_shape)
+    # The function will create a VGG16 U-Net model for image segmentation with the specified input shape.
+    # The model will be ready for compilation and training.
 
     References
     ----------
@@ -265,8 +285,8 @@ def IoU(y_true, y_pred, smooth: int = 1) -> float:
     The intersection is calculated as the overlap of y_true and
     y_pred, whereas the union is the sum of y_true and y_pred.
 
-    Examples
-    --------
+    Example
+    -------
     >>> IoU(y_true=Tensor("IteratorGetNext:1", shape=(1, 512, 512, 1), dtype=float32),
             y_pred=Tensor("VGG16_U-Net/conv2d_8/Sigmoid:0", shape=(1, 512, 512, 1), dtype=float32),
             smooth=1)
@@ -311,8 +331,8 @@ def dice_score(y_true, y_pred, smooth=1e-6) -> float:
     The intersection is calculated as the overlap of y_true and
     y_pred, whereas the union is the sum of y_true and y_pred.
 
-    Examples
-    --------
+    Example
+    -------
     >>> IoU(y_true=Tensor("IteratorGetNext:1", shape=(1, 512, 512, 1), dtype=float32),
             y_pred=Tensor("VGG16_U-Net/conv2d_8/Sigmoid:0", shape=(1, 512, 512, 1), dtype=float32),
             smooth=1)
@@ -352,8 +372,17 @@ def focal_loss(y_true, y_pred, alpha: float = 0.8, gamma: float = 2) -> float:
     f_loss : tf.Tensor
         Tensor containing the calculated focal loss score.
 
-    Examples
-    --------
+    Notes
+    -----
+    - Focal Loss is defined as -alpha * (1 - p)^gamma * log(p), where p is the predicted probability
+      for the positive class (y_pred) and (1 - p) is the predicted probability for the negative class.
+    - The loss function focuses more on hard-to-classify examples (low-confidence predictions) due to
+      the presence of the gamma term, which increases the loss for well-classified examples.
+    - The alpha parameter controls the weight assigned to the positive class, with alpha = 0.5 giving
+      equal weight to both classes and higher alpha values favoring the positive class.
+
+    Example
+    -------
     >>> IoU(y_true=Tensor("IteratorGetNext:1", shape=(1, 512, 512, 1), dtype=float32),
             y_pred=Tensor("VGG16_U-Net/conv2d_8/Sigmoid:0", shape=(1, 512, 512, 1), dtype=float32),
             smooth=1)
@@ -499,6 +528,10 @@ def trainModel(
         argument, interaction with the GUI is possible i.e., stopping
         the model training model process.
 
+    Returns
+    -------
+    None
+
     Notes
     -----
     For specific explanations for the included functions see the respective
@@ -508,8 +541,8 @@ def trainModel(
     called from the GUI. Thus, tk.messagebox will pop up when errors are
     raised even if the GUI is not started.
 
-    Examples
-    --------
+    Example
+    -------
     >>> trainModel(img_path= "C:/Users/admin/Dokuments/images",
                    mask_path="C:/Users/admin/Dokuments/masks",
                    out_path="C:/Users/admin/Dokuments/results",

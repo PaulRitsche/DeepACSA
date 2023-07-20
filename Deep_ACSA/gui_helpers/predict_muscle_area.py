@@ -1,4 +1,38 @@
-"""Python module to automatically calcuate muscle area in US images"""
+"""Python module to automatically calcuate muscle area in US images
+
+Description
+-----------
+This Python module provides a collection of functions to automatically calculate muscle area in
+ultrasound (US) images. It includes functions for importing and preprocessing images, predicting
+aponeurosis areas, calculating echo intensity, and optionally estimating muscle volume based on the predicted areas.
+The module also offers various calibration methods, including continuous scaling lines (EFOV images)
+and scaling bars or manual calibration for regular ultrasound images. The results are saved in a
+Pandas DataFrame and exported to an Excel file. The module is designed to streamline the analysis
+of muscle area in large batches of ultrasound images for research and medical purposes.
+
+Functions scope
+---------------
+get_list_of_files
+    Gets a list of all files in the directory that match the specified pattern.
+import_image_efov
+    Imports and preprocesses an EFOV image, returning the filename, preprocessed image,
+    original image, height, and width.
+import_image
+    Imports and preprocesses an image, returning the filename, preprocessed image,
+    original image, height, and width.
+calc_area_efov
+    Calculates the predicted muscle area in the region of interest (ROI) of an EFOV ultrasound image.
+calc_area_efov
+    Calculates the predicted muscle area in an ultrasound image using a known calibration distance.
+compile_save_results
+    Saves analysis results to an Excel file.
+calculate_batch_efov
+    Calculates area predictions for batches of EFOV US images containing a continuous scaling line,
+    including echo intensity and optional muscle volume calculations.
+calculate_batch
+    Calculates area predictions for batches of (EFOV) US images not containing a continuous scaling line,
+    including echo intensity and optional muscle volume calculations.
+"""
 
 import glob
 import os
@@ -32,14 +66,19 @@ plt.switch_backend("agg")
 
 def get_list_of_files(pathname: str):
     """Get a list of all files in the directory.
+    
+    Parameters
+    ----------
+    pathname : str
+        The pathname pattern to match against file paths.
 
-    Arguments:
-        One path to root directory.
+    Returns
+    -------
+    List[str]
+        A list of file paths that match the specified pathname pattern.
 
-    Returns:
-        List of all files in root directory.
-
-    Example:
+    Example
+    -------
         >>> get_list_of_files(C:/Desktop/Test)
         ["C:/Desktop/Test/Img1.tif", "C:/Desktop/Test/Img2.tif",
         "C:/Desktop/Test/Flip.txt"]
@@ -50,13 +89,31 @@ def get_list_of_files(pathname: str):
 def import_image_efov(path_to_image: str):
     """Define the image to analyse, import and reshape the image.
 
-    Arguments:
-        Path to image that should be analyzed.
+    Parameters
+    ----------
+    path_to_image : str
+        The file path to the EFOV image.
 
-    Returns:
-        Filename, image, image height, image width
+    Returns
+    -------
+    Tuple[str, np.ndarray, np.ndarray, int, int]
+        A tuple containing the following elements:
+        - filename (str): The filename of the EFOV image without the extension.
+        - img_copy (np.ndarray): A copy of the original EFOV image as a NumPy array.
+        - img (np.ndarray): The preprocessed EFOV image as a NumPy array with shape (1, 256, 256, 3).
+        - height (int): The height of the original EFOV image.
+        - width (int): The width of the original EFOV image.
 
-    Example:
+    Notes
+    -----
+    - The function reads the EFOV image using OpenCV (cv2) library.
+    - The function crops the image to remove unwanted margins (75 pixels from the top, 20 pixels from the left,
+      and 10 pixels from the right).
+    - The function then reshapes the image and resizes it to a fixed size of (256, 256).
+    - The final preprocessed image is normalized to have values in the range [0, 1].
+
+    Example
+    -------
         >>>import_image(C:/Desktop/Test/Img1.tif)
         (Img1.tif, array[[[[...]]]], 864, 1152)
     """
@@ -80,14 +137,23 @@ def import_image_efov(path_to_image: str):
 def import_image(path_to_image: str):
     """Define the image to analyse, import and reshape the image.
 
-    Arguments:
-        Path to image that should be analyzed.
+    Parameters
+    ----------
+    path_to_image : str
+        The file path to the image that should be analyzed.
 
-    Returns:
-        Filename, image, copy of image, image not flipped,
-        image height, image width
+    Returns
+    -------
+    Tuple[str, np.ndarray, np.ndarray, int, int]
+        A tuple containing the following elements:
+        - filename (str): The filename of the image without the extension.
+        - img (np.ndarray): The preprocessed image as a NumPy array with shape (1, 256, 256, 3).
+        - img_copy (np.ndarray): A copy of the original image as a NumPy array.
+        - height (int): The height of the original image.
+        - width (int): The width of the original image.
 
-    Example:
+    Example
+    -------
         >>>import_image(C:/Desktop/Test/Img1.tif)
         (Img1.tif, array[[[[...]]]],
         <PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550>,
@@ -112,15 +178,22 @@ def import_image(path_to_image: str):
 def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
     """Calculates predicted muscle aread.
 
-    Arguments:
-        Scanning depth (cm),
-        Scalingline length (pixel),
-        thresholded binary model prediction.
+    Parameters
+    ----------
+    depth : float
+        The depth of the region of interest (ROI) in centimeters.
+    scalingline_length : int
+        The length of the scaling line in pixels.
+    img : np.ndarray
+        The eFOV ultrasound image as a NumPy array.
 
-    Returns:
-        Predicted muscle area (cm²).
+    Returns
+    -------
+    pred_muscle_area : float
+        The predicted muscle area in the ROI based on the eFOV ultrasound image.
 
-    Example:
+    Example
+    -------
         >>>calc_area(float(5), int(254), Image1.tif)
         3.813
     """
@@ -133,14 +206,20 @@ def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
 def calc_area(calib_dist: float, img: np.ndarray):
     """Calculates predicted muscle aread.
 
-    Arguments:
-        Distance between scaling bars in pixel,
-        thresholded binary model prediction.
+    Parameters
+    ----------
+    calib_dist : float
+        The calibration distance in centimeters, representing the known distance in the image.
+    img : np.ndarray
+        The ultrasound image as a NumPy array.
 
-    Returns:
-        Predicted muscle area (cm²).
+    Returns
+    -------
+    pred_muscle_area : float
+        The predicted muscle area in square centimeters based on the calibration distance.
 
-    Example:
+    Examples
+    --------
     >>>calc_area(int(54), Image1.tif)
     3.813
     """
@@ -154,16 +233,19 @@ def calc_area(calib_dist: float, img: np.ndarray):
 def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
     """Saves analysis results to excel and pdf files.
 
-    Arguments:
-        Path to root directory of files,
-        filename (str),
-        dataframe (pd.DataFrame) containing filename, muscle
-        and predicted area
+    Parameters
+    ----------
+    rootpath : str
+        The root path where the Excel file will be saved.
+    dataframe : pd.DataFrame
+        The Pandas DataFrame containing the results.
 
-    Returns:
+    Returns
+    -------
         Excel file containing filename, muscle and predicted area.
 
-    Example:
+    Example
+    -------
     >>>compile_save_results(C:/Desktop/Test, dataframe)
     """
     excelpath = rootpath + "/Results.xlsx"
@@ -185,14 +267,59 @@ def calculate_batch_efov(
 ):
     """Calculates area predictions for batches of EFOV US images
         containing continous scaling line.
+        This function takes a batch of eFOV ultrasound images, predicts the aponeurosis area,
+        calculates echo intensity, and optionally calculates muscle volume based on the predicted areas.
+        The results are compiled into a Pandas DataFrame and saved to an Excel file.
 
-    Arguments:
-        Path to root directory of images,
-        type of image files,
-        path to model used for predictions,
-        loss_function
-        ultrasound scanning depth,
-        analyzed muscle.
+    Parameters
+    ----------
+    rootpath : str
+        The root path where the eFOV images are located.
+    filetype : str
+        The file extension or pattern to match eFOV image files (e.g., "*.tif").
+    modelpath : str
+        The path to the pre-trained aponeurosis detection model.
+    loss_function : str
+        The loss function used during model training (e.g., "BCE" for binary cross-entropy).
+    depth : float
+        The depth (in centimeters) of the eFOV ultrasound image.
+    muscle : str
+        The name or type of muscle being analyzed.
+    volume_wanted : str
+        Whether to calculate muscle volume based on the predicted aponeurosis areas ("Yes" or "No").
+    distance_acsa : float
+        The distance (in centimeters) between adjacent aponeurosis areas for volume calculation.
+    gui : tkinter.Tk
+        The Tkinter root window to interact with the graphical user interface.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - The function uses a pre-trained aponeurosis detection model to predict aponeurosis areas in each eFOV image.
+    - The function calculates the echo intensity (mean grey value) of the predicted muscle area in each image.
+    - If volume_wanted is set to "Yes", the function calculates the muscle volume based on the predicted aponeurosis areas.
+    - The function saves the results in a Pandas DataFrame and exports them to an Excel file in the rootpath.
+    - The function also saves the analyzed images as a multi-page PDF file named "Analyzed_images.pdf" in the rootpath.
+    - If any image processing or calculation error occurs, the function will record the failed files in "failed_images.txt".
+
+    Example
+    -------
+    >>> rootpath = "/path/to/directory"
+    >>> filetype = "*.tif"
+    >>> modelpath = "/path/to/pretrained_model.h5"
+    >>> loss_function = "BCE"
+    >>> depth = 4.5
+    >>> muscle = "Quadriceps"
+    >>> volume_wanted = "Yes"
+    >>> distance_acsa = 2.0
+    >>> gui = ...  # Your Tkinter root window
+    >>> calculate_batch_efov(rootpath, filetype, modelpath, loss_function, depth, muscle, volume_wanted, distance_acsa, gui)
+    # The function will process the eFOV images in the specified directory, predict the aponeurosis areas,
+    # calculate echo intensity, and optionally calculate muscle volume based on the predicted areas.
+    # The results will be compiled into a DataFrame and saved to an Excel file.
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
@@ -346,16 +473,63 @@ def calculate_batch(
 ):
     """Calculates area predictions for batches of (EFOV) US images
     not containing a continous scaling line.
+    This function takes a batch of ultrasound images, predicts the aponeurosis area,
+    calculates echo intensity, and optionally calculates muscle volume based on the predicted areas.
+    The results are compiled into a Pandas DataFrame and saved to an Excel file.
 
-    Arguments:
-        Path to root directory of images,
-        type of image files,
-        path to txt file containing flipping information for images,
-        path to model used for predictions,
-        loss_function
-        distance between (vertical) scaling lines (mm),
-        analyzed muscle,
-        scaling type.
+    Parameters
+    ----------
+    rootpath : str
+        The root path where the ultrasound images are located.
+    filetype : str
+        The file extension or pattern to match image files (e.g., "*.tif").
+    modelpath : str
+        The path to the pre-trained aponeurosis detection model.
+    loss_function : str
+        The loss function used during model training (e.g., "BCE" for binary cross-entropy).
+    spacing : str
+        The spacing between reference markers on the image (used for scaling calibration).
+    muscle : str
+        The name or type of muscle being analyzed.
+    scaling : str
+        The type of scaling used for calibration ("Bar" for scaling bars, "Manual" for manual calibration).
+    volume_wanted : str
+        Whether to calculate muscle volume based on the predicted aponeurosis areas ("Yes" or "No").
+    distance_acsa : float
+        The distance (in centimeters) between adjacent aponeurosis areas for volume calculation.
+    gui : tkinter.Tk
+        The Tkinter root window to interact with the graphical user interface.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - The function uses a pre-trained aponeurosis detection model to predict aponeurosis areas in each ultrasound image.
+    - The function calculates the echo intensity (mean grey value) of the predicted muscle area in each image.
+    - The scaling type ("Bar" or "Manual") is used to determine the calibration method for scaling.
+    - If volume_wanted is set to "Yes", the function calculates the muscle volume based on the predicted aponeurosis areas.
+    - The function saves the results in a Pandas DataFrame and exports them to an Excel file in the rootpath.
+    - The function also saves the analyzed images as a multi-page PDF file named "Analyzed_images.pdf" in the rootpath.
+    - If any image processing or calculation error occurs, the function will record the failed files in "failed_images.txt".
+
+    Example
+    -------
+    >>> rootpath = "/path/to/directory"
+    >>> filetype = "*.tif"
+    >>> modelpath = "/path/to/pretrained_model.h5"
+    >>> loss_function = "BCE"
+    >>> spacing = "5 cm"
+    >>> muscle = "Quadriceps"
+    >>> scaling = "Bar"
+    >>> volume_wanted = "Yes"
+    >>> distance_acsa = 2.0
+    >>> gui = ...  # Your Tkinter root window
+    >>> calculate_batch(rootpath, filetype, modelpath, loss_function, spacing, muscle, scaling, volume_wanted, distance_acsa, gui)
+    # The function will process the ultrasound images in the specified directory, predict the aponeurosis areas,
+    # calculate echo intensity, and optionally calculate muscle volume based on the predicted areas.
+    # The results will be compiled into a DataFrame and saved to an Excel file.
     """
     list_of_files = glob.glob(rootpath + filetype, recursive=True)
 
