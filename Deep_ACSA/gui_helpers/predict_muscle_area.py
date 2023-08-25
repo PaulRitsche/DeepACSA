@@ -66,7 +66,7 @@ plt.switch_backend("agg")
 
 def get_list_of_files(pathname: str):
     """Get a list of all files in the directory.
-    
+
     Parameters
     ----------
     pathname : str
@@ -114,7 +114,7 @@ def import_image_efov(path_to_image: str):
 
     Example
     -------
-        >>>import_image(C:/Desktop/Test/Img1.tif)
+        >>> import_image(C:/Desktop/Test/Img1.tif)
         (Img1.tif, array[[[[...]]]], 864, 1152)
     """
     image_add = path_to_image
@@ -154,7 +154,7 @@ def import_image(path_to_image: str):
 
     Example
     -------
-        >>>import_image(C:/Desktop/Test/Img1.tif)
+        >>> import_image(C:/Desktop/Test/Img1.tif)
         (Img1.tif, array[[[[...]]]],
         <PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550>,
         <PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550>,
@@ -194,7 +194,7 @@ def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
 
     Example
     -------
-        >>>calc_area(float(5), int(254), Image1.tif)
+        >>> calc_area(float(5), int(254), Image1.tif)
         3.813
     """
     pix_per_cm = scalingline_length / depth
@@ -220,7 +220,7 @@ def calc_area(calib_dist: float, img: np.ndarray):
 
     Examples
     --------
-    >>>calc_area(int(54), Image1.tif)
+    >>> calc_area(int(54), Image1.tif)
     3.813
     """
     pix_per_cm = calib_dist
@@ -246,7 +246,7 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
 
     Example
     -------
-    >>>compile_save_results(C:/Desktop/Test, dataframe)
+    >>> compile_save_results(C:/Desktop/Test, dataframe)
     """
     excelpath = rootpath + "/Results.xlsx"
     with pd.ExcelWriter(excelpath, mode="w") as writer:
