@@ -79,7 +79,7 @@ def find_outliers(dir1, dir2):
     tk.messagebox.showinfo(
         "File Inspection Results",
         df.to_string()
-        + f"Directory {os.path.basename(dir1)} has {count_dir1} images while directory {os.path.basename(dir2)} has {count_dir2} images.",
+        + f"\nDirectory {os.path.basename(dir1)} has {count_dir1} images while directory {os.path.basename(dir2)} has {count_dir2} images.",
     )
 
     return df

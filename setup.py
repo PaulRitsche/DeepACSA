@@ -21,7 +21,7 @@ setuptools.setup(
     install_requires=[
         "jupyter==1.0.0",
         "Keras==2.9.0",
-        "matplotlib==3.4.3",
+        "matplotlib==3.5.2",
         "numpy==1.21.2",
         "opencv-contrib-python==4.5.3.56",
         "pandas==1.3.3",

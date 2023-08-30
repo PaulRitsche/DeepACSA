@@ -2,7 +2,10 @@ import os
 from tkinter.messagebox import WARNING, askokcancel, showerror, showinfo
 
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.use("TkAgg")
 import numpy as np
 import pandas as pd
 
@@ -47,6 +50,7 @@ def select_area(image):
         + "\nClick 'Enter' to confirm, 'ESC' to cancel analysis."
         + "\nUse 'Wheel' to zoom and 'Right Mouse' to delete."
     )
+    ax.grid(False)
 
     coords = []
     (points_plot,) = ax.plot(
@@ -56,6 +60,9 @@ def select_area(image):
 
     # Capture click positions and plot them with adjusted dot size and opacity
     def onclick(event):
+        """
+        Function to detect click.
+        """
         # If left mouse button is clicked, add a point
         if event.button == 1:
             ix, iy = event.xdata, event.ydata
@@ -76,8 +83,11 @@ def select_area(image):
 
     # Handle key events
     def on_key(event):
+        """
+        Function to detect key stroke on keyboard
+        """
         nonlocal cancelled
-        if event.key == "enter":
+        if event.key == "enter" or event.key == "return":
             plt.close()
         elif event.key == "escape":
             cancelled = True
@@ -85,21 +95,28 @@ def select_area(image):
 
     # Handle zoom with mouse wheel
     def zoom(event):
-        cur_xlim = ax.get_xlim()
-        cur_ylim = ax.get_ylim()
-        zoom_factor = 1.2 if event.button == "up" else 1 / 1.2
-        xdata, ydata = event.xdata, event.ydata
-        new_xlim = [
-            xdata - (xdata - cur_xlim[0]) / zoom_factor,
-            xdata + (cur_xlim[1] - xdata) / zoom_factor,
-        ]
-        new_ylim = [
-            ydata - (ydata - cur_ylim[0]) / zoom_factor,
-            ydata + (cur_ylim[1] - ydata) / zoom_factor,
-        ]
-        ax.set_xlim(new_xlim)
-        ax.set_ylim(new_ylim)
-        fig.canvas.draw()
+        """
+        Function to zoom in on the plot.
+        """
+        try:
+            cur_xlim = ax.get_xlim()
+            cur_ylim = ax.get_ylim()
+            zoom_factor = 1.2 if event.button == "up" else 1 / 1.2
+            xdata, ydata = event.xdata, event.ydata
+            new_xlim = [
+                xdata - (xdata - cur_xlim[0]) / zoom_factor,
+                xdata + (cur_xlim[1] - xdata) / zoom_factor,
+            ]
+            new_ylim = [
+                ydata - (ydata - cur_ylim[0]) / zoom_factor,
+                ydata + (cur_ylim[1] - ydata) / zoom_factor,
+            ]
+            ax.set_xlim(new_xlim)
+            ax.set_ylim(new_ylim)
+            fig.canvas.draw()
+
+        except TypeError:
+            pass
 
     fig.canvas.mpl_connect("button_press_event", onclick)
     fig.canvas.mpl_connect("key_press_event", on_key)
@@ -196,8 +213,6 @@ def create_acsa_masks(
                 ):
 
                     # Save analysis of all images
-                    print(output_df)
-                    print(output_imgs_dir)
                     compile_save_results(rootpath=output_imgs_dir, dataframe=output_df)
                     return
 
@@ -220,8 +235,6 @@ def create_acsa_masks(
             return "No Image Saved."
 
     # Save analysis of all images
-    print(output_df)
-    print(output_imgs_dir)
     compile_save_results(rootpath=output_imgs_dir, dataframe=output_df)
 
     return "Processing complete."

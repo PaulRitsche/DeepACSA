@@ -953,7 +953,11 @@ class DeepACSA:
     # Open new toplevel instance for mask creating
 
     def make_masks(self):
-        """ """
+        """
+        Function to open a toplevel where masks
+        can either be created for training purposes or
+        can be inspected subsequent to labelling.
+        """
         # Open Window
         self.mask_window = tk.Toplevel(bg="#7ABAA1")
         self.mask_window.title("Mask Creating Window")
@@ -983,7 +987,10 @@ class DeepACSA:
         # Train image button
 
     def on_mask_change(self, *args):
-        """ """
+        """
+        Depending on which mask opration is selected,
+        this function adapts the GUI.
+        """
         # Train image directory
         self.raw_image_dir = StringVar()
         image_entry = ttk.Entry(
@@ -1044,7 +1051,7 @@ class DeepACSA:
                         gui_helpers.overlay_directory_images(
                             image_dir=self.raw_image_dir.get(),
                             mask_dir=self.mask_image_dir.get(),
-                            start_index=start_idx.get(),
+                            start_index=int(start_idx.get()),
                         ),
                     ),
                 )
