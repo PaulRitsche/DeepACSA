@@ -31,12 +31,16 @@ U-net: Ronneberger, O., Fischer, P. and Brox, T. "U-Net: Convolutional Networks 
 DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., Franchi, M. "DeepACSA: Automatic Segmentation of Cross-Sectional Area in Ultrasound Images of Lower Limb Muscles Using Deep Learning" (2022)
 """
 
-import os
+
 import tkinter as tk
 from threading import Lock, Thread
 from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
 
+import matplotlib
+
 from Deep_ACSA import gui_helpers
+
+matplotlib.use("TkAgg")
 
 
 class DeepACSA:
@@ -212,26 +216,29 @@ class DeepACSA:
         # Style
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("TFrame", background="SkyBlue4")
+        style.configure("TFrame", background="#7ABAA1")
         style.configure(
             "TLabel",
             font=("Lucida Sans", 12),
             foreground="black",
-            background="SkyBlue4",
+            background="#7ABAA1",
         )
         style.configure(
             "TRadiobutton",
-            background="SkyBlue4",
+            background="#7ABAA1",
             foreground="black",
             font=("Lucida Sans", 12),
         )
         style.configure(
-            "TButton", background="linen", foreground="black", font=("Lucida Sans", 11)
+            "TButton",
+            background="#EADCC3",
+            foreground="black",
+            font=("Lucida Sans", 11),
         )
         style.configure(
             "TEntry", font=("Lucida Sans", 12), background="linen", foregrund="black"
         )
-        style.configure("TCombobox", background="SkyBlue4", foreground="black")
+        style.configure("TCombobox", background="#7ABAA1", foreground="black")
 
         # Paths
         # Input directory
@@ -344,21 +351,29 @@ class DeepACSA:
         input_button = ttk.Button(self.main, text="Input", command=self.get_root_dir)
         input_button.grid(column=5, row=2, sticky=E)
 
-        # Model path
+        # Model path button
         model_button = ttk.Button(self.main, text="Model", command=self.get_model_path)
         model_button.grid(column=5, row=3, sticky=E)
 
         # Break Button
         break_button = ttk.Button(self.main, text="Break", command=self.do_break)
         break_button.grid(column=1, row=16, sticky=W)
+
         # Run Button
         run_button = ttk.Button(self.main, text="Run", command=self.run_code)
         run_button.grid(column=2, row=16, sticky=(W, E))
+
         # Train Button
         train_button = ttk.Button(
             self.main, text="Train Model", command=self.train_model_window
         )
         train_button.grid(column=5, row=16, sticky=(W, E))
+
+        # Mask button
+        mask_button = ttk.Button(
+            self.main, text="Create Masks", command=self.make_masks
+        )
+        mask_button.grid(column=5, row=15, sticky=E)
 
         # Labels
         ttk.Label(self.main, text="Directories", font=("Verdana", 14)).grid(
@@ -692,7 +707,7 @@ class DeepACSA:
         and mask directory. The new images are saved under the same directories.
         """
         # Open Window
-        window = tk.Toplevel(bg="SkyBlue4")
+        window = tk.Toplevel(bg="#7ABAA1")
         window.title("Model Training Window")
         # master_path = os.path.dirname(os.path.abspath(__file__))
         # iconpath = master_path + "/gui_helpers/icon.ico"
@@ -934,6 +949,143 @@ class DeepACSA:
             self.should_stop = False
             self.is_running = False
 
+    # ---------------------------------------------------------------------------------------------------
+    # Open new toplevel instance for mask creating
+
+    def make_masks(self):
+        """ """
+        # Open Window
+        self.mask_window = tk.Toplevel(bg="#7ABAA1")
+        self.mask_window.title("Mask Creating Window")
+        # master_path = os.path.dirname(os.path.abspath(__file__))
+        # iconpath = master_path + "/gui_helpers/icon.ico"
+        # window.iconbitmap(iconpath)
+        self.mask_window.grab_set()
+
+        ttk.Label(self.mask_window, text="Select Mask Operation").grid(column=1, row=0)
+
+        # Mask Option
+        self.mask_option = StringVar()
+        mask_entry = ttk.Combobox(
+            self.mask_window, width=10, textvariable=self.mask_option
+        )
+        mask_entry["values"] = ("Create Masks", "Inspect Masks")
+        mask_entry["state"] = "readonly"
+        mask_entry.grid(column=1, row=1, sticky=(W, E))
+        self.mask_option.set(" ")
+        self.mask_option.trace("w", self.on_mask_change)
+
+        # Add padding
+        for child in self.mask_window.winfo_children():
+            child.grid_configure(padx=5, pady=5)
+
+        # Buttons
+        # Train image button
+
+    def on_mask_change(self, *args):
+        """ """
+        # Train image directory
+        self.raw_image_dir = StringVar()
+        image_entry = ttk.Entry(
+            self.mask_window, width=30, textvariable=self.raw_image_dir
+        )
+        image_entry.grid(column=1, row=2, columnspan=2, sticky=(W, E))
+        self.raw_image_dir.set("Select Raw Image Directory")
+
+        dir1_button = ttk.Button(
+            self.mask_window,
+            text="Image Dir",
+            command=lambda: (self.raw_image_dir.set(filedialog.askdirectory())),
+        )
+        dir1_button.grid(column=3, row=2, sticky=(W, E))
+
+        try:
+
+            if self.mask_option.get() == "Inspect Masks":
+
+                if hasattr(self, "mask_button"):
+                    self.mask_button.destroy()
+
+                # Mask directory
+                self.mask_image_dir = StringVar()
+                self.mask_image_entry = ttk.Entry(
+                    self.mask_window, width=30, textvariable=self.mask_image_dir
+                )
+                self.mask_image_entry.grid(column=1, row=3, columnspan=2, sticky=(W, E))
+                self.mask_image_dir.set("Select Mask Image Directory")
+
+                self.dir2_button = ttk.Button(
+                    self.mask_window,
+                    text="Mask Dir",
+                    command=lambda: (
+                        self.mask_image_dir.set(filedialog.askdirectory())
+                    ),
+                )
+                self.dir2_button.grid(column=3, row=3, sticky=(W, E))
+
+                # Start index
+                ttk.Label(self.mask_window, text="Start at Image:").grid(
+                    column=1, row=4, sticky=W
+                )
+                start_idx = StringVar()
+                self.idx = ttk.Entry(self.mask_window, width=10, textvariable=start_idx)
+                self.idx.grid(column=2, row=4, sticky=W)
+                start_idx.set("0")
+
+                # Inspect button
+                self.inspect_button = ttk.Button(
+                    self.mask_window,
+                    text="Inspect Masks",
+                    command=lambda: (
+                        gui_helpers.find_outliers(
+                            dir1=self.raw_image_dir.get(),
+                            dir2=self.mask_image_dir.get(),
+                        ),
+                        gui_helpers.overlay_directory_images(
+                            image_dir=self.raw_image_dir.get(),
+                            mask_dir=self.mask_image_dir.get(),
+                            start_index=start_idx.get(),
+                        ),
+                    ),
+                )
+                self.inspect_button.grid(column=2, row=5, sticky=(W, E))
+
+            elif self.mask_option.get() == "Create Masks":
+
+                # Forget widgets
+                if hasattr(self, "dir2_button"):
+                    self.dir2_button.destroy()
+                    self.mask_image_entry.destroy()
+                    self.inspect_button.destroy()
+                    self.idx.destroy()
+
+                # Train image directory
+                self.raw_image_dir = StringVar()
+                mask_entry = ttk.Entry(
+                    self.mask_window, width=30, textvariable=self.raw_image_dir
+                )
+                mask_entry.grid(column=1, row=2, columnspan=2, sticky=(W, E))
+                self.raw_image_dir.set("Select Raw Image Directory")
+
+                # Mask button
+                self.mask_button = ttk.Button(
+                    self.mask_window,
+                    text="Create Masks",
+                    command=lambda: (
+                        gui_helpers.create_acsa_masks(
+                            input_dir=self.raw_image_dir.get(), muscle_name="image"
+                        ),
+                    ),
+                )
+                self.mask_button.grid(column=2, row=3, sticky=(W, E))
+
+        except FileNotFoundError:
+            tk.messagebox.showerror("Information", "Enter the coorect folder path!")
+
+        # Add padding
+        for child in self.mask_window.winfo_children():
+            child.grid_configure(padx=5, pady=5)
+
 
 # ---------------------------------------------------------------------------------------------------
 # Function required to run the GUI frm the prompt
@@ -947,7 +1099,7 @@ def runMain() -> None:
     Notes
     -----
     The GUI can be executed by typing 'python -m deep_acsa_gui.py' in the command
-    subsequtently to installing the pip package´and activating the
+    subsequtently to installing the pip package and activating the
     respective library.
 
     It is not necessary to download any files from the repository when the pip

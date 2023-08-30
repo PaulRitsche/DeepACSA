@@ -4,6 +4,10 @@ from tkinter.messagebox import WARNING, askokcancel, showerror, showinfo
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+from Deep_ACSA.gui_helpers.calibrate import calibrate_distance_manually
+from Deep_ACSA.gui_helpers.predict_muscle_area import compile_save_results
 
 
 def select_area(image):
@@ -21,6 +25,19 @@ def select_area(image):
     mask : np.ndarray or None
         Binary mask of the selected area or None if selection is cancelled.
     """
+    # scale the image
+    try:
+        showinfo(
+            "Information",
+            "Scale the image before creating a mask."
+            + "\nClick on two scaling bars that are EXACTLY 1 CM APART."
+            + "\nClick 'q' to continue.",
+        )
+        calib_dist = calibrate_distance_manually(image, spacing="1")
+    except IndexError:
+        calib_dist = 1
+
+    # Plot image
     fig, ax = plt.subplots()
     fig.set_size_inches(20 / 2.45, 15 / 2.54)
 
@@ -55,6 +72,7 @@ def select_area(image):
                 fig.canvas.draw()
             except IndexError:
                 showerror("Error", "Select at least one point prior to removal!")
+                return None, None
 
     # Handle key events
     def on_key(event):
@@ -90,15 +108,22 @@ def select_area(image):
     plt.show()
 
     if cancelled:
-        return None
+        return None, None
 
+    # create Mask
     mask = np.zeros_like(image)
     if len(coords) > 2:
         pts = np.array(coords, np.int32)
         pts = pts.reshape((-1, 1, 2))
-        cv2.fillPoly(mask, [pts], 255)
+        area = cv2.fillPoly(mask, [pts], 255)
 
-    return mask
+        # calculate muscle area
+        muscle_area = cv2.countNonZero(area) / (calib_dist**2)
+        print(muscle_area)
+        return mask, muscle_area
+    else:
+        showinfo("Information", "Select a minimum of two points!")
+        return None, None
 
 
 def create_acsa_masks(
@@ -153,22 +178,31 @@ def create_acsa_masks(
     if existing_indices:
         start_idx = max(existing_indices) + 1
     else:
-        start_idx = 2150
+        start_idx = 0
+
+    # Define DF for analysis reports
+    output_df = pd.DataFrame({"image": [], "muscle_area": []})
 
     for idx, image_file in enumerate(image_files, start=start_idx):
         try:
             image_path = os.path.join(input_dir, image_file)
             image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-            mask = select_area(image)
+            mask, muscle_area = select_area(image)
 
             if mask is None:  # User cancelled the selection
                 if askokcancel(
                     "Information", "Do you really want to cancel?", icon=WARNING
                 ):
+
+                    # Save analysis of all images
+                    print(output_df)
+                    print(output_imgs_dir)
+                    compile_save_results(rootpath=output_imgs_dir, dataframe=output_df)
                     return
+
                 else:
-                    mask = select_area(image)
+                    mask, muscle_area = select_area(image)
 
             # Save the images and masks using the determined index
             save_path_img = os.path.join(output_imgs_dir, f"{muscle_name}{idx}.tif")
@@ -176,10 +210,18 @@ def create_acsa_masks(
             cv2.imwrite(save_path_img, image)
             cv2.imwrite(save_path_mask, mask)
 
+            # Save results
+            temp_df = pd.DataFrame(
+                {"image": [image_file], "muscle_area (cm2)": [muscle_area]}
+            )
+            output_df = pd.concat([output_df, temp_df])
+
         except cv2.error:
             return "No Image Saved."
 
+    # Save analysis of all images
+    print(output_df)
+    print(output_imgs_dir)
+    compile_save_results(rootpath=output_imgs_dir, dataframe=output_df)
+
     return "Processing complete."
-
-
-create_acsa_masks("C:/Users/admin/Desktop")

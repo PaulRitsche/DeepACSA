@@ -1,6 +1,7 @@
 """Module to perform analysis of image files used for training model"""
 
 import os
+import tkinter as tk
 
 import cv2
 import matplotlib.pyplot as plt
@@ -47,13 +48,6 @@ def find_outliers(dir1, dir2):
     count_dir1 = len(files_dir1)
     count_dir2 = len(files_dir2)
 
-    if count_dir1 == count_dir2:
-        print("Both directories have the same number of images.")
-    else:
-        print(
-            f"Directory {os.path.basename(dir1)} has {count_dir1} images while directory {os.path.basename(dir2)} has {count_dir2} images."
-        )
-
     # Find outliers
     outliers_dir1 = [
         (f, os.path.basename(dir1), np.nan, np.nan) for f in files_dir1 - files_dir2
@@ -81,6 +75,12 @@ def find_outliers(dir1, dir2):
         "Images in Dir2": count_dir2,
     }
     df = df.append(summary_row, ignore_index=True)
+
+    tk.messagebox.showinfo(
+        "File Inspection Results",
+        df.to_string()
+        + f"Directory {os.path.basename(dir1)} has {count_dir1} images while directory {os.path.basename(dir2)} has {count_dir2} images.",
+    )
 
     return df
 
@@ -198,18 +198,3 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
 
     display_current_image()
     plt.show()
-
-
-# Example usage:
-# overlay_directory_images('/path/to/ultrasound_images/', '/path/to/masks/')
-
-
-overlay_directory_images(
-    "C:/Users/admin/Desktop/Images", "C:/Users/admin/Desktop/Masks"
-)
-outliers = find_outliers(
-    "C:/Users/admin/Documents/DeepACSA/DeepACSA_Hams/Training_Images_panorama",
-    "C:/Users/admin/Documents/DeepACSA/DeepACSA_Hams/Training_Masks_panorama",
-)
-
-print(outliers)
