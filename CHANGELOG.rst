@@ -1,4 +1,13 @@
 
+2023-08-30
+==========
+
+Added
+-----
+
+- Mask creation inside of GUI
+- Mask analysis inside of GUI
+
 2023-06-04
 ==========
 
