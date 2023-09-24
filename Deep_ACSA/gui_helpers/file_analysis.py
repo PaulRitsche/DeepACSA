@@ -24,7 +24,7 @@ def find_outliers(dir1, dir2):
 
     Returns
     -------
-    DataFrame
+    DataFrame : pd.dataframe
         A DataFrame with columns:
         - 'Outlier Image': Names of the outlier images.
         - 'Directory': The directory in which the outlier was found.
@@ -41,8 +41,16 @@ def find_outliers(dir1, dir2):
     """
 
     # List all files in the directories
-    files_dir1 = set(os.listdir(dir1))
-    files_dir2 = set(os.listdir(dir2))
+    try:
+        files_dir1 = set(os.listdir(dir1))
+        files_dir2 = set(os.listdir(dir2))
+    except FileNotFoundError:
+        tk.messagebox.showinfo(
+            "Information",
+            "Select input directory that contains at least one image!"
+            + "\nAccepted image types: .tif, .jpeg, .tiff, .jpg, .png, .bmp",
+        )
+        return
 
     # Check if both directories have the same number of images
     count_dir1 = len(files_dir1)
@@ -58,7 +66,9 @@ def find_outliers(dir1, dir2):
 
     # If there are no outliers
     if not outliers_dir1 and not outliers_dir2:
-        print("There are no different images in both directories.")
+        tk.messagebox.showinfo(
+            "Information", "There are no different images in both directories."
+        )
         return
 
     # Create DataFrame
@@ -115,20 +125,22 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
         [
             f
             for f in os.listdir(image_dir)
-            if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff"))
+            if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"))
         ]
     )
     mask_files = sorted(
         [
             f
             for f in os.listdir(mask_dir)
-            if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff"))
+            if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"))
         ]
     )
 
     # Check if both directories have the same number of files
     if len(image_files) != len(mask_files):
-        raise ValueError("Both directories should have the same number of images.")
+        tk.messagebox.showerror(
+            "Information", "Both directories must have the same number of images."
+        )
 
     # Create a function to overlay a single image and mask
     def overlay_image(image_path, mask_path, alpha=0.5):

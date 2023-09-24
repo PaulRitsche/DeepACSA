@@ -1,4 +1,30 @@
 
+2023-09-24
+==========
+
+Removed
+-------
+
+- Filetype widget in GUI.
+
+Changed
+-------
+
+- GUI layout
+
+2023-09-24
+==========
+
+Removed
+-------
+
+- Filetype widget in GUI.
+
+Changed
+-------
+
+- GUI layout
+
 2023-08-30
 ==========
 
@@ -16,7 +42,6 @@ Added
 
 - Documentation
 - Model training window
-
 - Image saving in PDF now as overlay instead of binary
 - Image augmentation option
 - Loss function dropdown list to include models trained with different losses
@@ -26,7 +51,6 @@ Changed
 
 - Import statements
 - Code documentation
-
 - Documentation start page and usage description
 - Image saving in PDF now includes overlay
 - EXE update

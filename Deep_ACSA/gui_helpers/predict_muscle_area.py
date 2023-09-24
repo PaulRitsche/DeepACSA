@@ -74,7 +74,7 @@ def get_list_of_files(pathname: str):
 
     Returns
     -------
-    List[str]
+    List : list
         A list of file paths that match the specified pathname pattern.
 
     Example
@@ -96,13 +96,16 @@ def import_image_efov(path_to_image: str):
 
     Returns
     -------
-    Tuple[str, np.ndarray, np.ndarray, int, int]
-        A tuple containing the following elements:
-        - filename (str): The filename of the EFOV image without the extension.
-        - img_copy (np.ndarray): A copy of the original EFOV image as a NumPy array.
-        - img (np.ndarray): The preprocessed EFOV image as a NumPy array with shape (1, 256, 256, 3).
-        - height (int): The height of the original EFOV image.
-        - width (int): The width of the original EFOV image.
+    filename : str
+        The filename of the image without the extension.
+    img : np.ndarray
+        The preprocessed image as a NumPy array with shape (1, 256, 256, 3).
+    img_copy : np.ndarray
+        A copy of the original image as a NumPy array.
+    height : int
+        The height of the original image.
+    width : int
+        The width of the original image.
 
     Notes
     -----
@@ -144,13 +147,16 @@ def import_image(path_to_image: str):
 
     Returns
     -------
-    Tuple[str, np.ndarray, np.ndarray, int, int]
-        A tuple containing the following elements:
-        - filename (str): The filename of the image without the extension.
-        - img (np.ndarray): The preprocessed image as a NumPy array with shape (1, 256, 256, 3).
-        - img_copy (np.ndarray): A copy of the original image as a NumPy array.
-        - height (int): The height of the original image.
-        - width (int): The width of the original image.
+    filename : str
+        The filename of the image without the extension.
+    img : np.ndarray
+        The preprocessed image as a NumPy array with shape (1, 256, 256, 3).
+    img_copy : np.ndarray
+        A copy of the original image as a NumPy array.
+    height : int
+        The height of the original image.
+    width : int
+        The width of the original image.
 
     Example
     -------
@@ -256,7 +262,6 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
 
 def calculate_batch_efov(
     rootpath: str,
-    filetype: str,
     modelpath: str,
     loss_function: str,
     depth: float,
@@ -275,8 +280,6 @@ def calculate_batch_efov(
     ----------
     rootpath : str
         The root path where the eFOV images are located.
-    filetype : str
-        The file extension or pattern to match eFOV image files (e.g., "*.tif").
     modelpath : str
         The path to the pre-trained aponeurosis detection model.
     loss_function : str
@@ -308,7 +311,6 @@ def calculate_batch_efov(
     Example
     -------
     >>> rootpath = "/path/to/directory"
-    >>> filetype = "*.tif"
     >>> modelpath = "/path/to/pretrained_model.h5"
     >>> loss_function = "BCE"
     >>> depth = 4.5
@@ -321,12 +323,20 @@ def calculate_batch_efov(
     # calculate echo intensity, and optionally calculate muscle volume based on the predicted areas.
     # The results will be compiled into a DataFrame and saved to an Excel file.
     """
-    list_of_files = glob.glob(rootpath + filetype, recursive=True)
+    # loop through acceptable image files
+    filetypes = ["*.tif", "*.jpeg", "*.tiff", "*.jpg", "*.png", "*.bmp"]
+    list_of_files = []
+    for filetype in filetypes:
+        list_of_files.extend(
+            glob.glob(os.path.join(rootpath, filetype), recursive=True)
+        )
 
     if len(list_of_files) == 0:
         tk.messagebox.showerror(
             "Information",
-            "No image files found." + "\nPotential error source: Unmatched filetype",
+            "No image files found."
+            + "\nPotential error source: Unmatched filetype"
+            + "\nAcceptable filetypes are *.tif, *.jpeg, *.tiff, *.jpg, *.png, *.bmp",
         )
         gui.should_stop = False
         gui.is_running = False
@@ -461,7 +471,6 @@ def calculate_batch_efov(
 
 def calculate_batch(
     rootpath: str,
-    filetype: str,
     modelpath: str,
     loss_function: str,
     spacing: str,
@@ -481,8 +490,6 @@ def calculate_batch(
     ----------
     rootpath : str
         The root path where the ultrasound images are located.
-    filetype : str
-        The file extension or pattern to match image files (e.g., "*.tif").
     modelpath : str
         The path to the pre-trained aponeurosis detection model.
     loss_function : str
@@ -517,7 +524,6 @@ def calculate_batch(
     Example
     -------
     >>> rootpath = "/path/to/directory"
-    >>> filetype = "*.tif"
     >>> modelpath = "/path/to/pretrained_model.h5"
     >>> loss_function = "BCE"
     >>> spacing = "5 cm"
@@ -531,12 +537,20 @@ def calculate_batch(
     # calculate echo intensity, and optionally calculate muscle volume based on the predicted areas.
     # The results will be compiled into a DataFrame and saved to an Excel file.
     """
-    list_of_files = glob.glob(rootpath + filetype, recursive=True)
+    # loop through acceptable image files
+    filetypes = ["*.tif", "*.jpeg", "*.tiff", "*.jpg", "*.png", "*.bmp"]
+    list_of_files = []
+    for filetype in filetypes:
+        list_of_files.extend(
+            glob.glob(os.path.join(rootpath, filetype), recursive=True)
+        )
 
     if len(list_of_files) == 0:
         tk.messagebox.showerror(
             "Information",
-            "No image files found." + "\nPotential error source: Unmatched filetype",
+            "No image files found."
+            + "\nPotential error source: Unmatched filetype"
+            + "\nAcceptable filetypes are *.tif, *.jpeg, *.tiff, *.jpg, *.png, *.bmp",
         )
         gui.should_stop = False
         gui.is_running = False

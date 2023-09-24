@@ -31,7 +31,7 @@ U-net: Ronneberger, O., Fischer, P. and Brox, T. "U-Net: Convolutional Networks 
 DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., Franchi, M. "DeepACSA: Automatic Segmentation of Cross-Sectional Area in Ultrasound Images of Lower Limb Muscles Using Deep Learning" (2022)
 """
 
-
+import os
 import tkinter as tk
 from threading import Lock, Thread
 from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
@@ -197,9 +197,9 @@ class DeepACSA:
 
         # set up gui
         root.title("DeepACSA")
-        # master_path = os.path.dirname(os.path.abspath(__file__))
-        # iconpath = master_path + "/gui_helpers/icon.ico"
-        # root.iconbitmap(iconpath)
+        master_path = os.path.dirname(os.path.abspath(__file__))
+        iconpath = master_path + "/gui_helpers/icon.ico"
+        root.iconbitmap(iconpath)
 
         self.main = ttk.Frame(root, padding="10 10 12 12")
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
@@ -238,6 +238,7 @@ class DeepACSA:
         style.configure(
             "TEntry", font=("Lucida Sans", 12), background="linen", foregrund="black"
         )
+        style.configure("TSeparator", background="linen", foreground="linen")
         style.configure("TCombobox", background="#7ABAA1", foreground="black")
 
         # Paths
@@ -268,6 +269,7 @@ class DeepACSA:
         )
         manual.grid(column=4, row=7, sticky=E)
         self.scaling.set("Bar")
+        self.scaling.trace("w", self.on_scaling_change)
 
         # Volume Calculation
         self.muscle_volume_calculation_wanted = StringVar()
@@ -286,6 +288,7 @@ class DeepACSA:
         )
         no_volume.grid(column=3, row=14, sticky=(W, E))
         self.muscle_volume_calculation_wanted.set("No")
+        self.muscle_volume_calculation_wanted.trace("w", self.on_volume_change)
 
         # Comboboxes
         # Loss Function
@@ -297,22 +300,6 @@ class DeepACSA:
         loss_entry.grid(column=4, row=4, sticky=E)
         self.loss_function.set("Loss Function")
 
-        # Filetype
-        self.filetype = StringVar()
-        filetype = (
-            "/**/*.tif",
-            "/**/*.tiff",
-            "/**/*.png",
-            "/**/*.bmp",
-            "/**/*.jpeg",
-            "/**/*.jpg",
-        )
-        filetype_entry = ttk.Combobox(self.main, width=10, textvariable=self.filetype)
-        filetype_entry["values"] = filetype
-        # filetype_entry["state"] = "readonly"
-        filetype_entry.grid(column=2, row=6, sticky=E)
-        self.filetype.set("/**/*.jpg")
-
         # Muscles
         self.muscle = StringVar()
         muscle = ("VL", "RF", "GM", "GL", "BF")
@@ -321,30 +308,6 @@ class DeepACSA:
         muscle_entry["state"] = "readonly"
         muscle_entry.grid(column=2, row=8, sticky=(W, E))
         self.muscle.set("RF")
-
-        # Image Depth
-        self.depth = StringVar()
-        depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
-        depth_entry = ttk.Combobox(self.main, width=10, textvariable=self.depth)
-        depth_entry["values"] = depth
-        # depth_entry["state"] = "readonly"
-        depth_entry.grid(column=2, row=9, sticky=(W, E))
-        self.depth.set(5.5)
-
-        # Spacing
-        self.spacing = StringVar()
-        spacing = (5, 10, 15, 20)
-        spacing_entry = ttk.Combobox(self.main, width=10, textvariable=self.spacing)
-        spacing_entry["values"] = spacing
-        spacing_entry["state"] = "readonly"
-        spacing_entry.grid(column=2, row=10, sticky=(W, E))
-        self.spacing.set(10)
-
-        # Distance between ACSA for Volume Calculation
-        self.distance = StringVar()
-        distance_entry = ttk.Entry(self.main, width=10, textvariable=self.distance)
-        distance_entry.grid(column=2, row=15, sticky=(W, E))
-        self.distance.set(7)
 
         # Buttons
         # Input directory
@@ -381,19 +344,24 @@ class DeepACSA:
         )
         ttk.Label(self.main, text="Root Directory").grid(column=1, row=2)
         ttk.Label(self.main, text="Model Path").grid(column=1, row=3)
+        ttk.Label(self.main, text="Loss Function").grid(column=1, row=4)
         ttk.Label(self.main, text="Image Properties", font=("Verdana", 14)).grid(
-            column=1, row=5, sticky=W
+            column=1, row=6, sticky=W
         )
-        ttk.Label(self.main, text="Image Type").grid(column=1, row=6)
         ttk.Label(self.main, text="Scaling Type").grid(column=1, row=7)
         ttk.Label(self.main, text="Muscle").grid(column=1, row=8)
-        ttk.Label(self.main, text="Depth (cm)").grid(column=1, row=9)
-        ttk.Label(self.main, text="Spacing (mm)").grid(column=1, row=10)
         ttk.Label(self.main, text="Muscle Volume", font=("Verdana", 14)).grid(
             column=1, row=13, sticky=W
         )
         ttk.Label(self.main, text="Volume Calculation").grid(column=1, row=14)
-        ttk.Label(self.main, text="Distance (cm)").grid(column=1, row=15)
+
+        # Separators
+        ttk.Separator(self.main, orient="horizontal", style="TSeparator").grid(
+            column=0, row=5, columnspan=9, sticky=(W, E)
+        )
+        ttk.Separator(self.main, orient="horizontal", style="TSeparator").grid(
+            column=0, row=12, columnspan=9, sticky=(W, E)
+        )
 
         for child in self.main.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -421,6 +389,80 @@ class DeepACSA:
         model_dir = filedialog.askopenfilename()
         self.model.set(model_dir)
         return model_dir
+
+    def on_volume_change(self, *args):
+        """
+        Instance method to adpat GUI layout based on volume
+        calculation selection.
+        """
+        if self.muscle_volume_calculation_wanted.get() == "Yes":
+            # Distance between ACSA for Volume Calculation
+            self.volume_label = ttk.Label(self.main, text="Slice Distance (cm)")
+            self.volume_label.grid(column=1, row=15)
+
+            self.distance = StringVar()
+            self.distance_entry = ttk.Entry(
+                self.main, width=10, textvariable=self.distance
+            )
+            self.distance_entry.grid(column=2, row=15, sticky=(W, E))
+            self.distance.set(7)
+
+        if self.muscle_volume_calculation_wanted.get() == "No":
+            # Destroy widget on selection
+            if hasattr(self, "distance"):
+                self.distance_entry.grid_remove()
+                self.volume_label.grid_remove()
+
+    def on_scaling_change(self, *args):
+        """
+        Instance method to adpat GUI layout based on scaling
+        calculation selection.
+        """
+        if self.scaling.get() == "Bar":
+            # Spacing
+            self.spacing_label = ttk.Label(self.main, text="Spacing (mm)")
+            self.spacing_label.grid(column=1, row=10)
+            self.spacing = StringVar()
+            spacing = (5, 10, 15, 20)
+            self.spacing_entry = ttk.Combobox(
+                self.main, width=10, textvariable=self.spacing
+            )
+            self.spacing_entry["values"] = spacing
+            self.spacing_entry["state"] = "readonly"
+            self.spacing_entry.grid(column=2, row=10, sticky=(W, E))
+            self.spacing.set(10)
+
+            if hasattr(self, "depth"):
+                self.depth_label.grid_remove()
+                self.depth_entry.grid_remove()
+
+        elif self.scaling.get() == "Line":
+            # Image Depth
+            self.depth_label = ttk.Label(self.main, text="Depth (cm)")
+            self.depth_label.grid(column=1, row=9)
+            self.depth = StringVar()
+            depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
+            self.depth_entry = ttk.Combobox(
+                self.main, width=10, textvariable=self.depth
+            )
+            self.depth_entry["values"] = depth
+            # depth_entry["state"] = "readonly"
+            self.depth_entry.grid(column=2, row=9, sticky=(W, E))
+            self.depth.set(5.5)
+
+            if hasattr(self, "spacing"):
+                self.spacing_label.grid_remove()
+                self.spacing_entry.grid_remove()
+
+        elif self.scaling.get() == "Manual":
+
+            if hasattr(self, "spacing"):
+                self.spacing_label.grid_remove()
+                self.spacing_entry.grid_remove()
+
+            if hasattr(self, "depth"):
+                self.depth_label.grid_remove()
+                self.depth_entry.grid_remove()
 
     def run_code(self):
         """
@@ -460,7 +502,6 @@ class DeepACSA:
             selected_input_dir = self.input.get()
             selected_model_path = self.model.get()
             selected_loss = self.loss_function.get()
-            selected_filetype = self.filetype.get()
             selected_muscle = self.muscle.get()
             selected_depth = float(self.depth.get())
             selected_spacing = self.spacing.get()
@@ -512,23 +553,11 @@ class DeepACSA:
                 self.do_break()
                 return
 
-            elif len(selected_filetype) < 3:
-                tk.messagebox.showerror(
-                    "Information",
-                    "Check input parameters."
-                    + "\nPotential error source:  Invalid specified filetype",
-                )
-                self.should_stop = False
-                self.is_running = False
-                self.do_break()
-                return
-
             if selected_scaling == "Line":
                 thread = Thread(
                     target=gui_helpers.calculate_batch_efov,
                     args=(
                         selected_input_dir,
-                        selected_filetype,
                         selected_model_path,
                         selected_loss,
                         selected_depth,
@@ -543,7 +572,6 @@ class DeepACSA:
                     target=gui_helpers.calculate_batch,
                     args=(
                         selected_input_dir,
-                        selected_filetype,
                         selected_model_path,
                         selected_loss,
                         selected_spacing,
@@ -709,9 +737,9 @@ class DeepACSA:
         # Open Window
         window = tk.Toplevel(bg="#7ABAA1")
         window.title("Model Training Window")
-        # master_path = os.path.dirname(os.path.abspath(__file__))
-        # iconpath = master_path + "/gui_helpers/icon.ico"
-        # window.iconbitmap(iconpath)
+        master_path = os.path.dirname(os.path.abspath(__file__))
+        iconpath = master_path + "/gui_helpers/icon.ico"
+        window.iconbitmap(iconpath)
         window.grab_set()
 
         # Labels
@@ -961,9 +989,9 @@ class DeepACSA:
         # Open Window
         self.mask_window = tk.Toplevel(bg="#7ABAA1")
         self.mask_window.title("Mask Creating Window")
-        # master_path = os.path.dirname(os.path.abspath(__file__))
-        # iconpath = master_path + "/gui_helpers/icon.ico"
-        # window.iconbitmap(iconpath)
+        master_path = os.path.dirname(os.path.abspath(__file__))
+        iconpath = master_path + "/gui_helpers/icon.ico"
+        self.mask_window.iconbitmap(iconpath)
         self.mask_window.grab_set()
 
         ttk.Label(self.mask_window, text="Select Mask Operation").grid(column=1, row=0)

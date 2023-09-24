@@ -173,6 +173,18 @@ def create_acsa_masks(
     --------
     >>> create_acsa_masks('/path/to/images')
     """
+    # Define input images
+    try:
+        ext = [".tif", ".jpeg", ".tiff", ".jpg", ".png", ".bmp"]
+        image_files = [f for f in os.listdir(input_dir) if f.endswith(tuple(ext))]
+    except FileNotFoundError:
+        showinfo(
+            "Information",
+            "Select input directory that contains at least one image!"
+            + "\nAccepted image types: .tif, .jpeg, .tiff, .jpg, .png, .bmp",
+        )
+        return
+
     # Set default output directories if not provided
     if not output_imgs_dir:
         output_imgs_dir = os.path.join(input_dir, "train_images")
@@ -183,8 +195,6 @@ def create_acsa_masks(
     for directory in [output_imgs_dir, output_masks_dir]:
         if not os.path.exists(directory):
             os.makedirs(directory)
-
-    image_files = [f for f in os.listdir(input_dir) if f.endswith(".tif")]
 
     # Determine the starting index based on existing files in the output directory
     existing_indices = [
@@ -198,7 +208,7 @@ def create_acsa_masks(
         start_idx = 0
 
     # Define DF for analysis reports
-    output_df = pd.DataFrame({"image": [], "muscle_area": []})
+    output_df = pd.DataFrame({"image": [], "muscle_area (cm2)": []})
 
     for idx, image_file in enumerate(image_files, start=start_idx):
         try:

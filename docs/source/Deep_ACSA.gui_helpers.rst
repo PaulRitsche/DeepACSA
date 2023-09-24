@@ -52,10 +52,26 @@ Deep\_ACSA.gui\_helpers.predict\_muscle\_area module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+Deep\_ACSA.gui\_helpers.model\_training
+----------------------------------------------------
 
-.. automodule:: Deep_ACSA.gui_helpers
+.. automodule:: Deep_ACSA.gui_helpers.model_training
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Deep\_ACSA.gui\_helpers.file\_analysis
+----------------------------------------------------
+
+.. automodule:: Deep_ACSA.gui_helpers.file_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Deep\_ACSA.gui\_helpers.create\_manual\_masks
+----------------------------------------------------
+
+.. automodule:: Deep_ACSA.gui_helpers.create_manual_masks
    :members:
    :undoc-members:
    :show-inheritance:
