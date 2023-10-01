@@ -40,7 +40,7 @@ import matplotlib
 
 from Deep_ACSA import gui_helpers
 
-matplotlib.use("TkAgg")
+matplotlib.use("Agg")
 
 
 class DeepACSA:

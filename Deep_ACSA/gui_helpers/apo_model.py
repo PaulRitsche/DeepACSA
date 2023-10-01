@@ -22,17 +22,16 @@ For scope of the functions used in the class ApoModel see class documentation.
 import tkinter as tk
 
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-
-# from cv2 import CHAIN_APPROX_SIMPLE, RETR_LIST, arcLength, findContours
 from keras.models import load_model
 from skimage import measure, morphology
 from skimage.transform import resize
 
 from Deep_ACSA.gui_helpers.model_training import IoU, dice_score, focal_loss
 
-plt.style.use("ggplot")
+matplotlib.use("Agg")
 
 
 def _resize(img, width: int, height: int):
@@ -91,7 +90,7 @@ class ApoModel:
     -------
     __init__(self, gui, model_path: str, loss_function: str, apo_threshold: float = 0.5):
         Initialize the ApoModel class.
-    predict(self, gui, img): 
+    predict(self, gui, img):
         Runs a segmentation model on the input image.
     postprocess_image(self, img):
         Deletes unnecessary areas, fills holes, and calculates the length of the detected largest contour.
@@ -272,7 +271,7 @@ class ApoModel:
                [0, 1, 1, 1, 0],
                [0, 1, 1, 1, 0],
                [0, 0, 1, 0, 0]])
- 
+
         """
 
         # Find pixel regions and label them
@@ -397,6 +396,7 @@ class ApoModel:
         ax1.imshow(img_lines.squeeze(), cmap="gray")
         ax1.grid(False)
         ax1.set_title(f"Image ID: {filename}" + "\nOriginal Image with scaling line")
+
         ax2 = fig.add_subplot(2, 1, 2)
         ax2.imshow(img.squeeze(), cmap="gray")
         ax2.contour(

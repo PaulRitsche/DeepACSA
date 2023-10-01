@@ -139,7 +139,7 @@ def select_area(image):
         print(muscle_area)
         return mask, muscle_area
     else:
-        showinfo("Information", "Select a minimum of two points!")
+        showerror("Information", "Select a minimum of two points!")
         return None, None
 
 
@@ -178,7 +178,7 @@ def create_acsa_masks(
         ext = [".tif", ".jpeg", ".tiff", ".jpg", ".png", ".bmp"]
         image_files = [f for f in os.listdir(input_dir) if f.endswith(tuple(ext))]
     except FileNotFoundError:
-        showinfo(
+        showerror(
             "Information",
             "Select input directory that contains at least one image!"
             + "\nAccepted image types: .tif, .jpeg, .tiff, .jpg, .png, .bmp",

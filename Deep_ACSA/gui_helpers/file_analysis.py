@@ -45,7 +45,7 @@ def find_outliers(dir1, dir2):
         files_dir1 = set(os.listdir(dir1))
         files_dir2 = set(os.listdir(dir2))
     except FileNotFoundError:
-        tk.messagebox.showinfo(
+        tk.messagebox.showerror(
             "Information",
             "Select input directory that contains at least one image!"
             + "\nAccepted image types: .tif, .jpeg, .tiff, .jpg, .png, .bmp",
@@ -119,22 +119,30 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
     --------
     >>> overlay_directory_images('/path/to/ultrasound_images/', '/path/to/masks/', start_index=2)
     """
+    try:
+        # Get list of image and mask filenames
+        image_files = sorted(
+            [
+                f
+                for f in os.listdir(image_dir)
+                if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"))
+            ]
+        )
+        mask_files = sorted(
+            [
+                f
+                for f in os.listdir(mask_dir)
+                if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"))
+            ]
+        )
 
-    # Get list of image and mask filenames
-    image_files = sorted(
-        [
-            f
-            for f in os.listdir(image_dir)
-            if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"))
-        ]
-    )
-    mask_files = sorted(
-        [
-            f
-            for f in os.listdir(mask_dir)
-            if f.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"))
-        ]
-    )
+    except FileNotFoundError:
+        tk.messagebox.showerror(
+            "Information",
+            "Select input directory that contains at least one image!"
+            + "\nAccepted image types: .tif, .jpeg, .tiff, .jpg, .png, .bmp",
+        )
+        return
 
     # Check if both directories have the same number of files
     if len(image_files) != len(mask_files):
@@ -179,19 +187,25 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
         display_current_image()
 
     def display_current_image():
-        overlaid = overlay_image(
-            os.path.join(image_dir, image_files[current_idx]),
-            os.path.join(mask_dir, mask_files[current_idx]),
-            alpha,
-        )
-        ax.imshow(cv2.cvtColor(overlaid, cv2.COLOR_BGR2RGB))
-        ax.set_title(
-            f"Image: {image_files[current_idx]}"
-            + "\nClick right/left arrow to navigate through images"
-            + "\nClick Delete to delete the image-mask pair."
-        )
-        ax.axis("off")
-        plt.draw()
+        try:
+            overlaid = overlay_image(
+                os.path.join(image_dir, image_files[current_idx]),
+                os.path.join(mask_dir, mask_files[current_idx]),
+                alpha,
+            )
+            ax.imshow(cv2.cvtColor(overlaid, cv2.COLOR_BGR2RGB))
+            ax.set_title(
+                f"Image: {image_files[current_idx]}"
+                + "\nClick right/left arrow to navigate through images"
+                + "\nClick Delete to delete the image-mask pair."
+            )
+            ax.axis("off")
+            plt.draw()
+        except IndexError:
+            tk.messagebox.showerror(
+                "Information", f"Start index must be between 0 and {len(image_files)}"
+            )
+            return
 
     def on_key(event):
         nonlocal current_idx

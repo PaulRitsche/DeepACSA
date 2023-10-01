@@ -4,7 +4,7 @@ with open("README_Pypi.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="DA_test",
+    name="DeepACSA",
     version="0.3.0",
     author="Paul Ritsche",
     author_email="paul.ritsche@unibas.ch",
