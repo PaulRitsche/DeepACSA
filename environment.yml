@@ -1,4 +1,4 @@
-name: DeepACSA_new
+name: DeepACSA_2
 channels:
   - defaults
 dependencies:

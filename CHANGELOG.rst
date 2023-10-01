@@ -1,4 +1,17 @@
 
+2023-10-01
+==========
+
+Added
+-----
+
+- Figures to documentation for model training workflow.
+
+Changed
+-------
+
+- Updated docs for image labelling and inspection.
+
 2023-09-24
 ==========
 

@@ -9,7 +9,7 @@ authors = [
   { name="Paul Ritsche", email="paul.ritsche@unibas.ch" },
 ]
 description = "Automatic analysis of transversal muscle ultrasonography images"
-readme = "README.md"
+readme = "README_Pypi.md"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3.9",
