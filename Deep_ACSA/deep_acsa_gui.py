@@ -1046,11 +1046,14 @@ class DeepACSA:
             selected_model_path = self.model.get()
             selected_loss = self.loss_function.get()
             selected_muscle = self.muscle.get()
-            selected_depth = float(self.depth.get())
-            selected_spacing = self.spacing.get()
             selected_scaling = self.scaling.get()
             selected_volume_calculation = self.muscle_volume_calculation_wanted.get()
-            distance_acsa = float(self.distance.get())
+
+            # Use distance for volumne only if selected
+            if selected_volume_calculation == "Yes":
+                distance_acsa = float(self.distance.get())
+            else:
+                distance_acsa = 1
 
             if len(selected_input_dir) == 0:
                 tk.messagebox.showerror(
@@ -1085,18 +1088,21 @@ class DeepACSA:
                 self.do_break()
                 return
 
-            elif selected_depth <= 0:
-                tk.messagebox.showerror(
-                    "Information",
-                    "Check input parameters."
-                    + "\nPotential error source:  Invalid specified depth.",
-                )
-                self.should_stop = False
-                self.is_running = False
-                self.do_break()
-                return
-
             if selected_scaling == "Line":
+                selected_depth = float(self.depth.get())
+
+                # Catch depth error.
+                if selected_depth <= 0:
+                    tk.messagebox.showerror(
+                        "Information",
+                        "Check input parameters."
+                        + "\nPotential error source:  Invalid specified depth.",
+                    )
+                    self.should_stop = False
+                    self.is_running = False
+                    self.do_break()
+                    return
+
                 thread = Thread(
                     target=gui_helpers.calculate_batch_efov,
                     args=(
@@ -1111,6 +1117,7 @@ class DeepACSA:
                     ),
                 )
             else:
+                selected_spacing = self.spacing.get()
                 thread = Thread(
                     target=gui_helpers.calculate_batch,
                     args=(

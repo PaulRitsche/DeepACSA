@@ -4,7 +4,7 @@ with open("README_Pypi.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="DeepACSA",
+    name="DA_test",
     version="0.3.0",
     author="Paul Ritsche",
     author_email="paul.ritsche@unibas.ch",
@@ -19,9 +19,8 @@ setuptools.setup(
     ],
     python_requires=">=3.9",
     install_requires=[
-        "jupyter==1.0.0",
         "Keras==2.9.0",
-        "matplotlib==3.5.2",
+        "matplotlib==3.8.0",
         "numpy==1.21.2",
         "opencv-contrib-python==4.5.3.56",
         "pandas==1.3.3",

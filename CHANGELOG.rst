@@ -2,6 +2,14 @@
 2023-10-01
 ==========
 
+Fixed
+-----
+
+- GUI functionalities due to changes in layout.
+
+2023-10-01
+==========
+
 Added
 -----
 
