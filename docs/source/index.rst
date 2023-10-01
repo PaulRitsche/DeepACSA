@@ -7,12 +7,21 @@ Welcome to DeepACSA's documentation!
 ====================================
 *DeepACSA: Automated analysis of human lower limb ultrasonography images*
 
-So, what is DeepACSA all about? The DeepACSA algorithm was developed in 2022 by Paul Ritsche & Philipp Wirth. Moreover, Neil Cronin, Fabio Sarto, Marco Narici, Oliver Faude and Martino Franchi supported the project during development and provided images, materials and insight. The algorithm makes extensive use of fully convolutional neural networks trained on a fair amount of ultrasonography images of the human lower limb. Specifically, the dataset included transversal ultrasonography images from the human gastrocnemius medialis and lateralis, vastus lateralis and rectus femoris. The algorithm is able to analyse muscle anatomical cross-sectional area, echo intensity and muscle volume. 
+So, what is DeepACSA all about? The DeepACSA algorithm was developed in 2022 by `Paul Ritsche <https://twitter.com/ritpau>`_ & `Philipp Wirth <https://twitter.com/phippli>`_. Moreover, `Neil Cronin <https://twitter.com/NeilJCronin84>`_, `Fabio Sarto <https://twitter.com/FabioSarto3>`_, Marco Narici, `Oliver Faude <https://twitter.com/OliverFaude>`_ and `Martino Franchi <https://twitter.com/MVFranchi>`_ supported the project during development and provided images, materials and insight. The algorithm makes extensive use of fully convolutional neural networks trained on a fair amount of ultrasonography images of the human lower limb. Specifically, the dataset included transversal ultrasonography images from the human gastrocnemius medialis and lateralis, vastus lateralis and rectus femoris. The algorithm is able to analyse muscle anatomical cross-sectional area, echo intensity and muscle volume. 
 
 Why use DeepACSA?
 =================
 
 Using the DeepACSA algorithm to analyze muscle morphological parameters in human lower limb muscle ultrasonography images hase two main advantages. The analysis is objectified when using the automated analysis types for images because no user input is required during the analysis process. Secondly, the required analysis time for image analysis is drastically reduced compared to manual analysis. Whereas an image manual analysis takes about one minute, DeepACSA analyzes images in less than one second. This allows users to analyze large amounts of images without supervision during the analysis process in relatively short amounts of time.
+
+Whats new?
+==========
+
+- v0.2.0: 
+   - Restructuring of the GUI.
+   - Inclusion of Mask creation inside GUI.
+   - Inclusion of Mask inspection inside GUI.
+   - Removal of the need to specify image types.
 
 Limitations
 ===========
@@ -23,11 +32,11 @@ Currently, we have not provided unit testing for the functions and modules inclu
    :caption: Contents
    :hidden:
 
-   installation
-   usage
-   contribute
-   tests
-   Deep_ACSA
+   Installation
+   Usage
+   Contribute
+   Tests
+   Documentation
 
 
 

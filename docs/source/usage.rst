@@ -10,13 +10,16 @@ The basics on how to use the GUI are demonstrated in this `video <https://www.yo
 You can find the details on how to start the graphical user interface, how to train your own neural networks and how to calculate muscle volume below. 
 Have fun!
 
-**Not included in the video:**
+Not included in the video:
+--------------------------
 
 - Loss Function: In the new version of the GUI, you can find a ``Loss Function`` dropdown under the ``Model Path`` textentry. Here you need to specify the loss function used during model training. So far, we implemented *IoU*, *Focal Loss* and *Dice Loss*. When using our pre-trained models, simply select *IoU*. 
 - Model Training (see :ref:`trainlabel`)
 - Image Labelling (see :ref:`trainlabel`)
 - Image Augmentation (see :ref:`trainlabel`)
 - Volume Calculation (see :ref:`volumelabel`)
+
+**Please note that the video is using an older version of DeepACSA. The GUI has been updated since then, but the overall workflow remains the same.**
 
 **Attention MacOS users:**
 The DeepACSA package is only fully functional on windows OS and was not properly tested on MacOS. However, with restricted functionality macOS users can employ the DeepACSA as well. With macOS, the manual scaling option for image analysis is not functional. Therefore, images cannot be scaled this way in the GUI. A possible solution is to scale the analysis results subsequent to completion of the analysis. Therefore, the pixel per centimeter must be calculated elsewhere. One option is to use `FIJI <https://imagej.net/software/fiji/downloads>`_. By drawing a line on the image, it is possible to see the length of the line in pixel units. Open the respective image in FIJI by drag and drop. Draw a line on the image with a known distance of one centimetre, click `cmd + m` and get the length of the line in pixel unit from the result window. Do that for every image with varying scanning depth. Divide the analysis results for muscle thickness and fascicle length by the linelength in pixel units. The result will be the muscle thickness and fascicle length in centimeter units.
@@ -73,7 +76,13 @@ However, if DeepACSA included in the conda environment, type
 
 ``python -m Deep_ACSA`` 
 
-to start the GUI. The location of you prompt is irrelevant, as long as the DeepACSA conda environment is activated. 
+to start the GUI. The location of you prompt is irrelevant, as long as the DeepACSA conda environment is activated. The main GUI window should open now.
+
+.. figure:: ..\\gui_files\\main.png
+    :scale: 50 %
+    :alt: main_gui_figure
+
+    Main GUI Window
 
 .. _trainlabel:
 
@@ -91,25 +100,98 @@ Data labelling
 """"""""""""""
 
 The most important part for model training is data preparation and labelling.
-We have provided an ImageJ / FIJI script that allows you to label your images and create the masks.
-The script is located in the `docs/image_labelling/` folder.
-To use it, simply drag the file into the FIJI GUI. Here you can download `FIJI <https://imagej.net/software/fiji/downloads>`_.
-Once the script is opened, you can find the usage instructions there.
+We have provided a functionality inside DeepACSA that allows you to label your images and create the masks.
+1. Start the GUI and click the ``Advanced Methods`` button.
+2. Select the ``Create Masks`` option. The ``Create Masks Winow`` will open. 
+
+.. figure:: ..\\gui_files\\create_masks.png
+  :scale: 50 %
+  :alt: create_masks_figure
+
+  Create Masks Window.
+
+2. In the ``Image Dir``, specify the path to the images you want to label by clicking the ``Image Dir`` button. These images should be contained in a single folder with no subfolders.
+3. Start the mask creation by clicking the ``Create Masks`` button. Two folders will be created in the ``Image Dir`` folder: *train_images* and *train_masks*. The original images will be copied to *train_images* and the masks will be saved in *train_masks* with the same filename but a ".tif" extension.
+4. An information window opens telling you to scale the images. Click ``OK`` to continue.
+  
+.. figure:: ..\\gui_files\\mask_info.png
+  :scale: 50 %
+  :alt: mask_info_figure
+
+  Mask Scaling Info.
+  
+5. Another GUI will open. Create the mask by clicking on the image. Follow the instructions in the GUI. Repeat this process for all images in the selected ``Image Dir``.
+
+.. figure:: ..\\gui_files\\make_mask.png
+  :scale: 50 %
+  :alt: make_mask_figure
+
+  Mask Creation GUI.
+
+All images in the selected folder will be used during mask creation. Please remeber to remove already labelled images from the seleccted ``Image Dir`` to not label them twice. *DO NOT* delete the ``train_images`` and ``train_masks`` folder as those contain your labelled images and leave the masks and renamed images in those folders as well as the image names will be incrementally increased based on the number of images contained in the folders.
+In addtion to the renamed images, the analysis results (ACSA) are saved to an excel file which is why the scaling step is necessary. Thus, the *mask creation can also be used for manual image analysis*.
+Mask / label inspection
+"""""""""""""""""""""""
+
+1. Start the GUI and click the ``Advanced Methods`` button.
+2. Select the ``Inspect Masks`` option. The ``Inspect Masks Winow`` will open.
+
+.. figure:: ..\\gui_files\\inspect.png
+  :scale: 50 %
+  :alt: inspect_figure
+
+  Inspect Masks Window.
+
+3. In the ``Image Dir``, specify the path to the images you want to label by clicking the ``Image Dir`` button. These images should be contained in a single folder with no subfolders.
+4. In the ``Mask Dir``, specify the path to the images you want to label by clicking the ``Mask Dir`` button. These masks should be contained in a single folder with no subfolders.
+5. Change the ``Start Index``, in case you don't want to start at the first image.
+6. Clik the ``Inspect Masks`` button to check you training images and masks. Another GUI will open.
+
+.. figure:: ..\\gui_files\\inspect.png
+  :scale: 50 %
+  :alt: inspect_figure
+
+  Inspect Masks Window.
+
+7. An Information window will appear telling you if a similar amount of images / files are in the image and mask directories as well as whether they are names similarly. **Images and respective masks must have the same filename for proper pairing during training.**
+
+.. figure:: ..\\gui_files\\inspect_info.png
+  :scale: 50 %
+  :alt: inspect_figure
+
+  Inspection Information.
+  
+8. By clicking ``OK``, the inspection window will open. Here you can scroll through all your images with overlays masks and check for any errors. Please ensure masks cover muscle area completely and do not overlap with other muscles /aponeuroses or exclude muscle regions. 
+If errors are found, relabel images using create masks functionality or simply delete the image / label pair using the ``Delete`` button.
+
+.. figure:: ..\\gui_files\\inspect_correct.png
+  :scale: 50 %
+  :alt: inspect_figure
+
+  Correctly labelled image.
+
+.. figure:: ..\\gui_files\\inspect_incorrect.png
+  :scale: 50 %
+  :alt: inspect_figure
+
+  Incorrectly labelled image.
 
 Image Augmentation
 """"""""""""""""""
 
-Prior to model training, it is possible to augment your images. The main goal is to enlarge the training data size. Here, your images are multiplied three-fold.
-For detailded information about the augmentation process take a look at our `paper <https://journals.lww.com/acsm-msse/Abstract/2022/12000/DeepACSA__Automatic_Segmentation_of.21.aspx>`_ or at the respective in the docs. 
-1. Start the GUI and click the ``Train Model`` button.
+Prior to model training, it is possible to augment your images. The main goal is to enlarge the training data size.
+For detailded information about the augmentation process take a look at our `paper <https://journals.lww.com/acsm-msse/Abstract/2022/12000/DeepACSA__Automatic_Segmentation_of.21.aspx>`_ or at the respective functions in the docs. 
+1. Start the GUI and click the ``Advanced Methods`` button.
+2. Select the ``Train Model`` option.
 2. In the ``Image Directory``, specify the path to your training images by pressing the ``Images`` button.
 3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
 4. Click the ``Augment Images`` button and the augmentation process starts. 
+The image augmentation process starts and the images will be augmented three-fold.
 
 Model Training
 """"""""""""""
 
-1. Start the GUI and click the ``Train Model`` button.
+1. Start the GUI and click the ``Train Model`` button. The 
 2. In the ``Image Directory``, specify the path to your training images by pressing the ``Images`` button.
 3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
 4. In the ``Output Directory``, specify the path to your output directory by pressing the ``Output`` button. Here, all the files from the training process will be saved.

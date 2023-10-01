@@ -84,7 +84,16 @@ The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To exec
 
 ``python deep_acsa_gui.py``
 
-The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at :ref:`usagelabel`.
+Whichever option you used, the main GUI should now open. 
+
+.. figure:: ..\\gui_files\\main.png
+    :scale: 50 %
+    :alt: main_gui_figure
+
+    Main GUI Window
+
+
+If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at :ref:`usagelabel`.
 
 GPU setup
 ---------

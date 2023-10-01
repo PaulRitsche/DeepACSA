@@ -1,4 +1,5 @@
 docs/build
+docs/gui_files
 dist/
 Deep_ACSA/__pycache__
 Deep_ACSA/gui_helpers/__pycache__
