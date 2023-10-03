@@ -1,11 +1,10 @@
-name: DeepACSA_2
+name: DeepACSA
 channels:
   - defaults
 dependencies:
   - python=3.9
   - pip=21.0.1
   - pip:
-    - jupyter==1.0.0
     - Keras==2.9.0
     - matplotlib==3.5.2
     - numpy==1.21.2

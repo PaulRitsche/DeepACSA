@@ -12,6 +12,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/PaulRitsche/DeepACSA",
     packages=setuptools.find_packages(),
+    package_data={"": [".Deep_ACSA/gui_helpers/*.ico"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
@@ -20,7 +21,7 @@ setuptools.setup(
     python_requires=">=3.9",
     install_requires=[
         "Keras==2.9.0",
-        "matplotlib==3.8.0",
+        "matplotlib==3.5.2",
         "numpy==1.21.2",
         "opencv-contrib-python==4.5.3.56",
         "pandas==1.3.3",
