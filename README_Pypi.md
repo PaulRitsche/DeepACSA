@@ -12,4 +12,4 @@ To quickly start the DeepACSA either open the executable or type
 
 ``python -m Deep_ACSA``
 
-in your prompt once the package was installed and the DeepACSA_2 env activated.
+in your prompt once the package was installed and the DeepACSA environment activated.
