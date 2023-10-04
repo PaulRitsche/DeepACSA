@@ -1,4 +1,12 @@
 
+2023-10-04
+==========
+
+Fixed
+-----
+
+- GUI interaction with matplotlib figures updated for better UX
+
 2023-10-01
 ==========
 
