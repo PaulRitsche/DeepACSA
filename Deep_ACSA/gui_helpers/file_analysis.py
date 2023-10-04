@@ -2,12 +2,63 @@
 
 import os
 import tkinter as tk
+from tkinter import ttk
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.widgets import Button
+
+
+def show_outliers_popup(df, dir1, dir2):
+    """
+    Display a pop-up window with a table showing outlier images between two directories.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing outlier information.
+    dir1 : str
+        Path to the first directory containing images.
+    dir2 : str
+        Path to the second directory containing images.
+
+    Returns
+    -------
+    None
+    """
+    popup = tk.Toplevel()
+    popup.title("Outliers")
+    master_path = os.path.dirname(os.path.abspath(__file__))
+    iconpath = master_path + "/icon.ico"
+    popup.iconbitmap(iconpath)
+
+    label = tk.Label(popup, text=f"Comparing images in {dir1} \nand {dir2}")
+    label.pack(pady=10)
+
+    tree = ttk.Treeview(
+        popup,
+        columns=("Outlier Image", "Directory", "Images in Dir1", "Images in Dir2"),
+    )
+    tree.heading("#1", text="Outlier Image")
+    tree.heading("#2", text="Directory")
+    tree.heading("#3", text="Images in Dir1")
+    tree.heading("#4", text="Images in Dir2")
+
+    for index, row in df.iterrows():
+        tree.insert(
+            "",
+            "end",
+            values=(
+                row["Outlier Image"],
+                row["Folder"],
+                row["Images in Dir1"],
+                row["Images in Dir2"],
+            ),
+        )
+
+    tree.pack()
 
 
 def find_outliers(dir1, dir2):
@@ -86,11 +137,7 @@ def find_outliers(dir1, dir2):
     }
     df = df.append(summary_row, ignore_index=True)
 
-    tk.messagebox.showinfo(
-        "File Inspection Results",
-        df.to_string()
-        + f"\nDirectory {os.path.basename(dir1)} has {count_dir1} images while directory {os.path.basename(dir2)} has {count_dir2} images.",
-    )
+    show_outliers_popup(df, dir1, dir2)
 
     return df
 
@@ -162,6 +209,7 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
     # Create an interactive plot
     fig, ax = plt.subplots(1, 1)
     fig.set_size_inches(20 / 2.45, 15 / 2.54)
+    fig.set_facecolor("#7ABAA1")
     current_idx = start_index
 
     # Function to handle delete button click

@@ -40,7 +40,7 @@ import matplotlib
 
 from Deep_ACSA import gui_helpers
 
-matplotlib.use("Agg")
+matplotlib.use("TkAgg")
 
 
 class DeepACSA:
@@ -326,12 +326,6 @@ class DeepACSA:
         run_button = ttk.Button(self.main, text="Run", command=self.run_code)
         run_button.grid(column=2, row=16, sticky=(W, E))
 
-        # Train Button
-        train_button = ttk.Button(
-            self.main, text="Train Model", command=self.train_model_window
-        )
-        train_button.grid(column=5, row=16, sticky=(W, E))
-
         # Advanced button with style
         style.configure(
             "B.TButton",
@@ -513,6 +507,55 @@ class DeepACSA:
         """
         Depending on which mask opration is selected,
         this function adapts the GUI.
+
+        Instance method to open new window for model training.
+        The window is opened upon pressing of the "analysis parameters"
+        button.
+
+        Several parameters are displayed.
+        - Image Directory:
+        The user must select or input the image directory. This
+        path must to the directory containing the training images.
+        Images must be in RGB format.
+        - Mask Directory:
+        The user must select or input the mask directory. This
+        path must to the directory containing the training images.
+        Masks must be binary.
+        - Output Directory:
+        The user must select or input the mask directory. This
+        path must lead to the directory where the trained model
+        and the model weights should be saved.
+        - Batch Size:
+        The user must input the batch size used during model training by
+        selecting from the dropdown list or entering a value.
+        Although a larger batch size has advantages during model trainig,
+        the images used here are large. Thus, the larger the batch size,
+        the more compute power is needed or the longer the training duration.
+        Integer, must be non-negative and non-zero.
+        - Learning Rate:
+        The user must enter the learning rate used for model training by
+        selecting from the dropdown list or entering a value.
+        Float, must be non-negative and non-zero.
+        - Epochs:
+        The user must enter the number of Epochs used during model training by
+        selecting from the dropdown list or entering a value.
+        The total amount of epochs will only be used if early stopping does not happen.
+        Integer, must be non-negative and non-zero.
+        - Loss Function:
+        The user must enter the loss function used for model training by
+        selecting from the dropdown list. These can be "BCE" (binary
+        cross-entropy), "Dice" (Dice coefficient) or "FL"(Focal loss).
+
+        Model training is started by pressing the "start training" button. Although
+        all parameters relevant for model training can be adapted, we advise users with
+        limited experience to keep the pre-defined settings. These settings are best
+        practice and devised from the original papers that proposed the models used
+        here. Singularly the batch size should be adapted to 1 if comupte power is limited
+        (no GPU or GPU with RAM lower than 8 gigabyte).
+
+        There is an "Augment Images" button, which allows to generate new training images.
+        The images and masks for the data augmentation are taken from the chosen image directory
+        and mask directory. The new images are saved under the same directories.
         """
         # make new frame
         self.advanced_window_frame = ttk.Frame(
@@ -580,6 +623,7 @@ class DeepACSA:
                     self.advanced_window_frame,
                     text="Inspect Masks",
                     command=lambda: (
+                        self.advanced_window.destroy(),
                         gui_helpers.find_outliers(
                             dir1=self.raw_image_dir.get(),
                             dir2=self.mask_image_dir.get(),
@@ -639,6 +683,7 @@ class DeepACSA:
                     self.advanced_window_frame,
                     text="Create Masks",
                     command=lambda: (
+                        self.advanced_window.destroy(),
                         gui_helpers.create_acsa_masks(
                             input_dir=self.raw_image_dir.get(), muscle_name="image"
                         ),
@@ -807,64 +852,6 @@ class DeepACSA:
             child.grid_configure(padx=5, pady=5)
 
     # ---------------------------------------------------------------------------------------------------
-    # Methods for model training
-
-    def train_model_window(self):
-        """
-        Instance method to open new window for model training.
-        The window is opened upon pressing of the "analysis parameters"
-        button.
-
-        Several parameters are displayed.
-        - Image Directory:
-        The user must select or input the image directory. This
-        path must to the directory containing the training images.
-        Images must be in RGB format.
-        - Mask Directory:
-        The user must select or input the mask directory. This
-        path must to the directory containing the training images.
-        Masks must be binary.
-        - Output Directory:
-        The user must select or input the mask directory. This
-        path must lead to the directory where the trained model
-        and the model weights should be saved.
-        - Batch Size:
-        The user must input the batch size used during model training by
-        selecting from the dropdown list or entering a value.
-        Although a larger batch size has advantages during model trainig,
-        the images used here are large. Thus, the larger the batch size,
-        the more compute power is needed or the longer the training duration.
-        Integer, must be non-negative and non-zero.
-        - Learning Rate:
-        The user must enter the learning rate used for model training by
-        selecting from the dropdown list or entering a value.
-        Float, must be non-negative and non-zero.
-        - Epochs:
-        The user must enter the number of Epochs used during model training by
-        selecting from the dropdown list or entering a value.
-        The total amount of epochs will only be used if early stopping does not happen.
-        Integer, must be non-negative and non-zero.
-        - Loss Function:
-        The user must enter the loss function used for model training by
-        selecting from the dropdown list. These can be "BCE" (binary
-        cross-entropy), "Dice" (Dice coefficient) or "FL"(Focal loss).
-
-        Model training is started by pressing the "start training" button. Although
-        all parameters relevant for model training can be adapted, we advise users with
-        limited experience to keep the pre-defined settings. These settings are best
-        practice and devised from the original papers that proposed the models used
-        here. Singularly the batch size should be adapted to 1 if comupte power is limited
-        (no GPU or GPU with RAM lower than 8 gigabyte).
-
-        There is an "Augment Images" button, which allows to generate new training images.
-        The images and masks for the data augmentation are taken from the chosen image directory
-        and mask directory. The new images are saved under the same directories.
-        """
-
-        # Add padding
-        for child in window.winfo_children():
-            child.grid_configure(padx=5, pady=5)
-
     ## Methods used for model training
 
     def get_train_dir(self):
@@ -1117,7 +1104,10 @@ class DeepACSA:
                     ),
                 )
             else:
-                selected_spacing = self.spacing.get()
+                if selected_scaling == "Bar":
+                    selected_spacing = float(self.spacing.get())
+                else:
+                    selected_spacing = 0
                 thread = Thread(
                     target=gui_helpers.calculate_batch,
                     args=(

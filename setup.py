@@ -16,9 +16,9 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
+        "Operating System :: Microsoft :: Windows",
     ],
-    python_requires=">=3.9",
+    python_requires="==3.9.18",
     install_requires=[
         "Keras==2.9.0",
         "matplotlib==3.5.2",

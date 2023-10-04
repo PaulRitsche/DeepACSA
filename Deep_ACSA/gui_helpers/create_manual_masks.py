@@ -4,8 +4,6 @@ from tkinter.messagebox import WARNING, askokcancel, showerror, showinfo
 import cv2
 import matplotlib
 import matplotlib.pyplot as plt
-
-matplotlib.use("TkAgg")
 import numpy as np
 import pandas as pd
 
@@ -30,12 +28,6 @@ def select_area(image):
     """
     # scale the image
     try:
-        showinfo(
-            "Information",
-            "Scale the image before creating a mask."
-            + "\nClick on two scaling bars that are EXACTLY 1 CM APART."
-            + "\nClick 'q' to continue.",
-        )
         calib_dist = calibrate_distance_manually(image, spacing="1")
     except IndexError:
         calib_dist = 1
@@ -43,6 +35,7 @@ def select_area(image):
     # Plot image
     fig, ax = plt.subplots()
     fig.set_size_inches(20 / 2.45, 15 / 2.54)
+    fig.set_facecolor("#7ABAA1")
 
     ax.imshow(image, cmap="gray")
     ax.set_title(

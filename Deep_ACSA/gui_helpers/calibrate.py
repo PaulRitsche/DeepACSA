@@ -28,6 +28,7 @@ calibrate_distance_static
 """
 
 import math
+import tkinter as tk
 
 import cv2
 import numpy as np
@@ -137,11 +138,14 @@ def mclick(event, x_val, y_val, flags, param):
     """
     # Define global variable for functions to access
     global mlocs
+    global img2
 
     # if the left mouse button was clicked, record the (x, y) coordinates
     if event == cv2.EVENT_LBUTTONDOWN:
-        mlocs.append(y_val)
-        mlocs.append(x_val)
+        mlocs.append((x_val, y_val))
+        # Draw a red dot on the image at the clicked position
+        cv2.circle(img2, (x_val, y_val), 3, (0, 0, 255), -1)
+        cv2.imshow("image", img2)
 
 
 def draw_the_lines(img: np.ndarray, line: np.ndarray):
@@ -380,8 +384,10 @@ def calibrate_distance_static(nonflipped_img: np.ndarray, spacing: int):
     >>> calibrateDistanceStatic(img=([[[[0.22414216 0.19730392 0.22414216] ... [0.2509804  0.2509804  0.2509804 ]]]), 5)
     99, 5 mm corresponds to 99 pixels
     """
+    global img2
     # calibrate according to scale at the right border of image
     img2 = np.uint8(nonflipped_img)
+
     height = img2.shape[0]
     width = img2.shape[1]
     imgscale = img2[int(height * 0.4) : (height), (width - int(width * 0.15)) : width]
@@ -446,6 +452,27 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
     >>> calibrateDistanceManually(img=([[[[0.22414216 0.19730392 0.22414216] ... [0.2509804  0.2509804  0.2509804 ]]]), 5)
     99, 5 mm corresponds to 99 pixels
     """
+    global mlocs
+    mlocs = []
+
+    def mclick(event, x_val, y_val, flags, param):
+        global mlocs
+        img_cop = img2.copy()
+        # if the left mouse button was clicked, record the (x, y) coordinates
+        if event == cv2.EVENT_LBUTTONDOWN:
+            mlocs.append((x_val, y_val))
+            # Draw a red dot on the image at the clicked position
+            cv2.circle(img_cop, (x_val, y_val), 3, (255, 255, 255), 2)
+            cv2.imshow("image", img_cop)
+
+    # give information for scaling
+    tk.messagebox.showinfo(
+        "Information",
+        "Scale the image before creating a mask."
+        + "\nClick on two scaling bars that are EXACTLY 1 CM APART."
+        + "\nClick 'q' to continue.",
+    )
+    # Edit image
     img2 = np.uint8(nonflipped_img)
 
     # display the image and wait for a keypress
@@ -457,20 +484,23 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
     if key == ord("q"):
         cv2.destroyAllWindows()
 
-    global mlocs
+    calib_dist = 0
+    if len(mlocs) == 2:
+        calib_dist = np.abs(
+            math.sqrt(
+                (mlocs[1][0] - mlocs[0][0]) ** 2 + (mlocs[1][1] - mlocs[0][1]) ** 2
+            )
+        )
 
-    calib_dist = np.abs(
-        math.sqrt((mlocs[3] - mlocs[1]) ** 2 + (mlocs[2] - mlocs[0]) ** 2)
-    )
     mlocs = []
-    # calculate calib_dist for 10mm
-    if spacing == "5":
-        calib_dist = calib_dist * 2
-    if spacing == "15":
-        calib_dist = calib_dist * (2 / 3)
-    if spacing == "20":
-        calib_dist = calib_dist / 2
 
-    # print(str(spacing) + ' mm corresponds to ' + str(calib_dist) + ' pixels')
+    if calib_dist == 0:
+        tk.messagebox.showerror(
+            "Error",
+            "Calibration failed. Please click on two points to specify the distance.",
+        )
+        return None
+
+    tk.messagebox.showinfo("Information", f"1 cm corresponds to {calib_dist} pixels")
 
     return calib_dist

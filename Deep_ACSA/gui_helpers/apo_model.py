@@ -155,6 +155,7 @@ class ApoModel:
         >>> instance = ApoModel(gui, model_path, loss_function, apo_threshold)
 
         """
+        matplotlib.use("Agg")
 
         try:
             self.model_path = model_path
@@ -406,6 +407,7 @@ class ApoModel:
         ax2.set_title(
             "Normalized and resized image with predicted muscle area (overlay)"
         )
+        plt.close(fig)
 
         return circum, pred_apo_th, fig
 
@@ -507,7 +509,7 @@ class ApoModel:
         ax2.set_title(
             "Normalized and resized image with predicted muscle area (overlay)"
         )
-
+        plt.close(fig)
         return circum, pred_apo_th, fig
 
     def predict_m(
@@ -591,5 +593,5 @@ class ApoModel:
         ax2.set_title(
             "Normalized and resized image with predicted muscle area (overlay)"
         )
-
+        plt.close(fig)
         return circum, pred_apo_th, fig
