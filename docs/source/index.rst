@@ -17,7 +17,7 @@ Using the DeepACSA algorithm to analyze muscle morphological parameters in human
 Whats new?
 ==========
 
-- v0.2.0: 
+- v0.3.1: 
    - Restructuring of the GUI.
    - Inclusion of Mask creation inside GUI.
    - Inclusion of Mask inspection inside GUI.
