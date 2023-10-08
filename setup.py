@@ -35,7 +35,7 @@ long_descr = (this_directory / "README_Pypi.md").read_text()
 
 if __name__ == "__main__":
     setup(
-        name="ACSADeep",
+        name="DeepACSA",
         version="0.3.1",
         author="Paul Ritsche",
         author_email="paul.ritsche@unibas.ch",

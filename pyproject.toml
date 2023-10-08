@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ACSADeep"
+name = "DeepACSA"
 version = "0.3.1"
 authors = [
   { name="Paul Ritsche", email="paul.ritsche@unibas.ch" },
