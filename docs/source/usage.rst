@@ -51,7 +51,7 @@ Starting the interface
 
 In the very first step of this tutorial, we will take a look at how to start the graphical user interface (GUI) once it was installed. We have provided three different installation procedures: 
 
-1. downloading the DeepACSA.exe `file <https://zenodo.org/record/8007009>`_
+1. downloading the DeepACSA.exe `file <https://doi.org/10.5281/zenodo.8419487>`_
 
 2. installing the DeepACSA python package with pip, Pypi or locally.
 
@@ -96,7 +96,7 @@ It is advantageous to have a working GPU setup, otherwise model training will ta
 How to setup you GUI for DeepACSA is described above and in the installation section. 
 Although you can adapt a number of parameters during training, you cannot change the neural network architecture from the GUI (of course you could modify source code to do so). 
 To explain the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner.
-Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (`link <https://zenodo.org/record/8007009>`_). Unzip the folder and put it somewhere accessible, for example on your desktop.
+Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (`link <https://doi.org/10.5281/zenodo.8419487>`_). Unzip the folder and put it somewhere accessible, for example on your desktop.
 
 .. _datalabel:
 
