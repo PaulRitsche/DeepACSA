@@ -32,7 +32,7 @@ def show_outliers_popup(df, dir1, dir2):
     popup.title("Outliers")
     master_path = os.path.dirname(os.path.abspath(__file__))
     iconpath = master_path + "/icon.ico"
-    # popup.iconbitmap(iconpath)
+    popup.iconbitmap(iconpath)
 
     label = tk.Label(popup, text=f"Comparing images in {dir1} \nand {dir2}")
     label.pack(pady=10)

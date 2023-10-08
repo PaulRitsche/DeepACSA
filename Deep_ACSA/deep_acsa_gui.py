@@ -199,7 +199,7 @@ class DeepACSA:
         root.title("DeepACSA")
         master_path = os.path.dirname(os.path.abspath(__file__))
         iconpath = master_path + "/gui_helpers/icon.ico"
-        # root.iconbitmap(iconpath)
+        root.iconbitmap(iconpath)
 
         self.main = ttk.Frame(root, padding="10 10 12 12")
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
@@ -483,7 +483,7 @@ class DeepACSA:
         self.advanced_window.title("Advanced Methods Window")
         master_path = os.path.dirname(os.path.abspath(__file__))
         iconpath = master_path + "/gui_helpers/icon.ico"
-        # self.advanced_window.iconbitmap(iconpath)
+        self.advanced_window.iconbitmap(iconpath)
         self.advanced_window.grab_set()
 
         ttk.Label(self.advanced_window, text="Select Method").grid(column=1, row=0)
