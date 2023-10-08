@@ -6,11 +6,10 @@ We offer two possible installation approaches for our DeepACSA software. The fir
 Download the DeepACSA executable
 ---------------------------------
 
-
-1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://zenodo.org/record/8007009>`_.
+1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://doi.org/10.5281/zenodo.8419487>`_.
 2. Download the DeepACSA_example.7z
 3. Find the DeepACSA.exe Executable in the DeepACSA_example/executable folder.
-4. Create a specified DeepACSA directory and put the deep_acsa_gui.exe, the model files and the example file in seperate subfolders (for example "Executable", "Models" and "Example"). Moreover, unpack the DeepACSA_example.7z file.
+4. Create a specified DeepACSA directory and put the deep_acsa_gui.exe, the model files and the example file in seperate subfolders (for example "Executable", "Models" and "Example"). Moreover, unpack the DeepACSAv0.3.1_example.7z file.
 5. Open the DeepACSA GUI by double clicking the DeepACSA.exe file and start with the testing procedure to check that everything works properly.
 
 .. _installlabel:
