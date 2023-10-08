@@ -15,7 +15,8 @@ Not included in the video:
 
 - Loss Function: In the new version of the GUI, you can find a ``Loss Function`` dropdown under the ``Model Path`` textentry. Here you need to specify the loss function used during model training. So far, we implemented *IoU*, *Focal Loss* and *Dice Loss*. When using our pre-trained models, simply select *IoU*. 
 - Model Training (see :ref:`trainlabel`)
-- Image Labelling (see :ref:`trainlabel`)
+- Image Labelling (see :ref:`datalabel`)
+- Mask Inspection (see :ref:`masklabel`)
 - Image Augmentation (see :ref:`augmentlabel`)
 - Volume Calculation (see :ref:`volumelabel`)
 
@@ -97,6 +98,8 @@ Although you can adapt a number of parameters during training, you cannot change
 To explain the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner.
 Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (`link <https://zenodo.org/record/8007009>`_). Unzip the folder and put it somewhere accessible, for example on your desktop.
 
+.. _datalabel:
+
 Data labelling
 """"""""""""""
 
@@ -133,6 +136,8 @@ All images in the selected folder will be used during mask creation. Please reme
 In addtion to the renamed images, the analysis results (ACSA) are saved to an excel file which is why the scaling step is necessary. Thus, the *mask creation can also be used for manual image analysis*.
 
 **It might be necessary to restart the GUI subsequent to the labelling process in case of non-responsiveness**
+
+.. _masklabel:
 
 Mask / label inspection
 """""""""""""""""""""""
