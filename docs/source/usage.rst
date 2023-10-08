@@ -179,7 +179,7 @@ If errors are found, relabel images using create masks functionality or simply d
 
   Correctly labelled image.
 
-.. figure:: inspect_incorrect.png
+.. figure:: inspect.png
   :scale: 50 %
   :alt: inspect_figure
 
