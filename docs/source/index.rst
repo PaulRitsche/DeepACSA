@@ -24,11 +24,11 @@ Currently, we have not provided unit testing for the functions and modules inclu
    :hidden:
 
    News
-   Installation
-   Usage
-   Contribute
-   Tests
-   Documentation
+   installation
+   usage
+   contribute
+   tests
+   documentation
 
 
 
