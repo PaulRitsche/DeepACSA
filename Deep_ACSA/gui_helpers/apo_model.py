@@ -1,30 +1,70 @@
-""" Python class to predict muscle area"""
+""" Python class to predict muscle area
+
+Description
+-----------
+This module provides a Python class called "ApoModel" for predicting muscle areas
+in ultrasound (US) images. It uses a pre-trained segmentation model to predict the
+probability of each pixel belonging to the foreground (aponeurosis).
+The class supports various image types, such as those with scaling lines,
+scaling bars, or manually scaled images. It also offers post-processing functions
+to remove unnecessary areas, fill holes, and calculate the circumference of the largest contour.
+The module allows users to return the thresholded bit-mask and optionally plot the input
+image with the predicted muscle area overlay. Its purpose is to automate muscle area analysis
+in US images for research and medical purposes.
+
+Function scopes
+---------------
+_resize
+    Resizes an input image to the specified height and width.
+For scope of the functions used in the class ApoModel see class documentation.
+"""
 
 import tkinter as tk
 
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-
-# from cv2 import CHAIN_APPROX_SIMPLE, RETR_LIST, arcLength, findContours
 from keras.models import load_model
 from skimage import measure, morphology
 from skimage.transform import resize
 
 from Deep_ACSA.gui_helpers.model_training import IoU, dice_score, focal_loss
 
-plt.style.use("ggplot")
+matplotlib.use("Agg")
 
 
 def _resize(img, width: int, height: int):
-    """Resizes an image to height x width.
+    """
+    Resizes an image to height x width.
 
-    Args:
-        Image to be resized,
-        Target width,
-        Target height,
-    Returns:
-        The resized image.
+    Parameters
+    ----------
+    img : np.ndarray
+        The input image to be resized.
+    width : int
+        The desired width of the output image.
+    height : int
+        The desired height of the output image.
+
+    Returns
+    -------
+    np.ndarray
+        The resized image as a 2-dimensional NumPy array with shape (height, width).
+
+    Notes
+    -----
+    This function uses resize function from skimage.transform to initially resize the image,
+    and then reshapes the result to the specified width and height using the 'numpy.reshape' function.
+
+    Example
+    -------
+    >>> img = np.array([[1, 2], [3, 4]])
+    >>> _resize(img, 3, 4)
+    array([[1, 2, 1],
+           [3, 4, 3],
+           [1, 2, 1],
+           [3, 4, 3]])
 
     """
     img = resize(img, (1, height, width, 1))
@@ -45,6 +85,21 @@ class ApoModel:
             The used loss function for training the model.
     model_apo : keras.Model
         The loaded segmentation model.
+
+    Methods
+    -------
+    __init__(self, gui, model_path: str, loss_function: str, apo_threshold: float = 0.5):
+        Initialize the ApoModel class.
+    predict(self, gui, img):
+        Runs a segmentation model on the input image.
+    postprocess_image(self, img):
+        Deletes unnecessary areas, fills holes, and calculates the length of the detected largest contour.
+    predict_e(self, gui, img: np.ndarray, img_lines: np.ndarray, filename: str, width: int, height: int, return_fig: bool = True):
+        Runs a segmentation model on the input image scaled with scaling lines and thresholds the result.
+    predict_s(self, gui, img, img_lines, filename: str, dist: str, width: int, height: int, return_fig: bool = True):
+        Runs a segmentation model on the input image scaled using provided scaling bars and thresholds the result.
+    predict_m(self, gui, img, width: int, filename: str, height: int, return_fig: bool = True):
+        Runs a segmentation model on the input image scaled manually and thresholds the result.
 
     Examples
     --------
@@ -80,7 +135,28 @@ class ApoModel:
         OSError
             If the model directory is incorrect.
 
+        Notes
+        -----
+        This constructor initializes the instance with the specified GUI object,
+        the path to the pre-trained model, the chosen loss function, and the anomaly
+        detection threshold. The model is loaded based on the selected loss function.
+
+        Supported loss functions are:
+        - "IoU" (Intersection over Union)
+        - "Dice Loss"
+        - "Focal Loss"
+
+        Example
+        -------
+        >>> gui = GUI
+        >>> model_path = "path/to/your/model.h5"
+        >>> loss_function = "IoU"
+        >>> apo_threshold = 0.7
+        >>> instance = ApoModel(gui, model_path, loss_function, apo_threshold)
+
         """
+        matplotlib.use("Agg")
+
         try:
             self.model_path = model_path
             self.apo_threshold = apo_threshold
@@ -114,11 +190,34 @@ class ApoModel:
     def predict(self, gui, img):
         """Runs a segmentation model on the input image.
 
-        Arguments:
-            Input image
+        Parameters
+        ----------
+        gui : GUI
+            The GUI object associated with this method.
 
-        Returns:
-            The probability for each pixel, that it belongs to the foreground.
+        img : np.ndarray
+            The input image on which the segmentation model will be applied.
+
+        Returns
+        -------
+        np.ndarray
+            The probability for each pixel, indicating its likelihood to belong to the foreground.
+
+        Notes
+        -----
+        This method takes an input image and applies a segmentation model to predict the
+        probability of each pixel belonging to the foreground. The 'model_apo' attribute of
+        the class should be previously loaded with a segmentation model.
+
+        Example
+        -------
+        >>> gui = GUI
+        >>> img = np.array([[0.1, 0.2], [0.3, 0.4]])
+        >>> detector = ApoModel
+        >>> prediction = detector.predict(gui, img)
+        >>> print(prediction)
+        array([[0.8, 0.9],
+            [0.7, 0.6]])
 
         """
         try:
@@ -136,13 +235,46 @@ class ApoModel:
         """Deletes unnecessary areas, fills holes and calculates the length
            of the detected largest contour.
 
-        Arguments:
-            Input image
+        Parameters
+        ----------
+        img : np.ndarray
+            The input image to be postprocessed.
 
-        Returns:
-            Image containing only largest area of pixels with holes removed.
-            Float containing circumference.
+        Returns
+        -------
+        float, np.ndarray
+            A float value representing the circumference of the detected largest contour.
+            An image containing only the largest area of pixels with holes removed.
+
+        Notes
+        -----
+        This method takes an input image and performs the following steps:
+        1. Finds pixel regions and labels them using `measure.label`.
+        2. Sorts the regions by area in descending order.
+        3. Removes all regions except the one with the largest area, effectively
+           keeping only the largest area in the image.
+        4. Fills holes in the largest area using `morphology.remove_small_holes`.
+        5. Smooths the edges of the predicted area.
+        6. Calculates the circumference of the largest contour in the image.
+
+        Example
+        -------
+        >>> img = np.array([[0, 0, 1, 0, 0],
+                            [0, 1, 1, 1, 0],
+                            [0, 1, 1, 1, 0],
+                            [0, 0, 1, 0, 0]])
+        >>> model = ApoModel()
+        >>> circumference, processed_img = model.postprocess_image(img)
+        >>> print(circumference)
+        16.0
+        >>> print(processed_img)
+        array([[0, 0, 1, 0, 0],
+               [0, 1, 1, 1, 0],
+               [0, 1, 1, 1, 0],
+               [0, 0, 1, 0, 0]])
+
         """
+
         # Find pixel regions and label them
         label_img = measure.label(img)
         regions = measure.regionprops(label_img)
@@ -220,6 +352,31 @@ class ApoModel:
             thresholded bit-mask,
             and a figure of input/scaling/output.
 
+        Notes
+        -----
+        This method runs a segmentation model on the input image and thresholds the
+        resulting probabilities using the specified `apo_threshold`. If `return_fig`
+        is True, it also returns a matplotlib figure displaying the original image
+        with scaling lines, the normalized and resized image with the predicted
+        muscle area overlay.
+
+        Example
+        -------
+        >>> gui = GUI
+        >>> img = np.array([[0.1, 0.2], [0.3, 0.4]])
+        >>> img_lines = np.array([[0.5, 0.5], [0.5, 0.5]])
+        >>> filename = "example.png"
+        >>> width = 640
+        >>> height = 480
+        >>> model = ApoModel()
+        >>> circum, pred_mask, fig = model.predict_e(gui, img, img_lines, filename, width, height)
+        >>> print(circum)
+        16.0
+        >>> print(pred_mask)
+        array([[False, False],
+              [False, False]])
+        >>> print(fig)
+        <matplotlib.figure.Figure object at 0x...>
         """
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
@@ -240,6 +397,7 @@ class ApoModel:
         ax1.imshow(img_lines.squeeze(), cmap="gray")
         ax1.grid(False)
         ax1.set_title(f"Image ID: {filename}" + "\nOriginal Image with scaling line")
+
         ax2 = fig.add_subplot(2, 1, 2)
         ax2.imshow(img.squeeze(), cmap="gray")
         ax2.contour(
@@ -249,6 +407,7 @@ class ApoModel:
         ax2.set_title(
             "Normalized and resized image with predicted muscle area (overlay)"
         )
+        plt.close(fig)
 
         return circum, pred_apo_th, fig
 
@@ -292,6 +451,33 @@ class ApoModel:
             If `return_fig` is True, returns the circumference,
             thresholded bit-mask,
             and a figure of input/scaling/output.
+
+        Notes
+        -----
+        This method runs a segmentation model on the input image, which was scaled
+        using the provided scaling bars. It then thresholds the resulting probabilities
+        using the specified `apo_threshold`. If `return_fig` is True, it also returns
+        a matplotlib figure displaying the original image with scaling lines, the
+        normalized and resized image with the predicted muscle area overlay.
+
+        Example
+        -------
+        >>> gui = GUI
+        >>> img = np.array([[0.1, 0.2], [0.3, 0.4]])
+        >>> img_lines = np.array([[0.5, 0.5], [0.5, 0.5]])
+        >>> filename = "example.png"
+        >>> dist = "10 mm"
+        >>> width = 640
+        >>> height = 480
+        >>> model = ApoModel()
+        >>> circum, pred_mask, fig = model.predict_s(gui, img, img_lines, filename, dist, width, height)
+        >>> print(circum)
+        16.0
+        >>> print(pred_mask)
+        array([[False, False],
+               [False, False]])
+        >>> print(fig)
+        <matplotlib.figure.Figure object at 0x...>
         """
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
@@ -323,7 +509,7 @@ class ApoModel:
         ax2.set_title(
             "Normalized and resized image with predicted muscle area (overlay)"
         )
-
+        plt.close(fig)
         return circum, pred_apo_th, fig
 
     def predict_m(
@@ -358,6 +544,30 @@ class ApoModel:
             If `return_fig` is True, returns the circumference,
             thresholded bit-mask,
             and a figure of input/scaling/output.
+
+        Notes
+        -----
+        This method runs a segmentation model on the input image, which was scaled manually.
+        It then thresholds the resulting probabilities using the specified `apo_threshold`.
+        If `return_fig` is True, it also returns a matplotlib figure displaying the
+        normalized and resized image with the predicted muscle area overlay.
+
+        Example
+        -------
+        >>> gui = GUI
+        >>> img = np.array([[0.1, 0.2], [0.3, 0.4]])
+        >>> filename = "example.png"
+        >>> width = 640
+        >>> height = 480
+        >>> model = ApoModel()
+        >>> circum, pred_mask, fig = model.predict_m(gui, img, width, filename, height)
+        >>> print(circum)
+        16.0
+        >>> print(pred_mask)
+        array([[False, False],
+               [False, False]])
+        >>> print(fig)
+        <matplotlib.figure.Figure object at 0x...>
         """
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
@@ -383,5 +593,5 @@ class ApoModel:
         ax2.set_title(
             "Normalized and resized image with predicted muscle area (overlay)"
         )
-
+        plt.close(fig)
         return circum, pred_apo_th, fig

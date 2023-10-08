@@ -1,8 +1,6 @@
 Installation
 ============
 
-**Attention: The installation procedure differes for macOS and windows users!**
-
 We offer two possible installation approaches for our DeepACSA software. The first option is to download the DeepACSA executable file. The second option we describe is DeepACSA package installation via Github. We want to inform you that there are more ways to install the package. However, we do not aim to be complete and rather demonstrate an (in our opinion) user friendly way for the installation of DeepACSA. Moreover, we advise users with less programming experience to make use of the first option and download the executable file.
 
 Download the DeepACSA executable
@@ -15,40 +13,42 @@ Download the DeepACSA executable
 4. Create a specified DeepACSA directory and put the deep_acsa_gui.exe, the model files and the example file in seperate subfolders (for example "Executable", "Models" and "Example"). Moreover, unpack the DeepACSA_example.7z file.
 5. Open the DeepACSA GUI by double clicking the DeepACSA.exe file and start with the testing procedure to check that everything works properly.
 
+.. _installlabel:
+
 Install DeepACSA via Github
 ---------------------------
 
 In case you want to use this way to install and run DeepACSA, we advise you to setup conda (see step 1) and download the environment.yml file from the repo (see steps 5-8). If you want to actively contribute to the project or customize the code, it might be usefull to you to do all of the following steps (for more information see :ref:`contributelabel`).
 
-*Step 1.* Anaconda setup (only before first usage and if Anaconda/minicoda is not already installed).
+1. *Step 1.* Anaconda setup (only before first usage and if Anaconda/minicoda is not already installed).
 
-Install `Anaconda <https://www.anaconda.com/distribution/>`_ (click 'Download' and be sure to choose 'Python 3.X Version' (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the 'Add Anaconda to my PATH environment variable' box).
+    Install `Anaconda <https://www.anaconda.com/distribution/>`_ (click 'Download' and be sure to choose 'Python 3.X Version' (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the 'Add Anaconda to my PATH environment variable' box).
 
-*Step 2.* **(Only required for MacOS users, contributing or development)** Git setup (only before first usage and if Git is not already installed). This is optional and only required when you want to clone the whole DeepACSA Github repository.
+2. *Step 2.* **(Only required for MacOS users, contributing or development)** Git setup (only before first usage and if Git is not already installed). This is optional and only required when you want to clone the whole DeepACSA Github repository.
 
-In case you have never used Git before on you computer, please install it using the instructions provided `here <https://git-scm.com/download>`_.
+    In case you have never used Git before on you computer, please install it using the instructions provided `here <https://git-scm.com/download>`_.
 
-*Step 3.* **(Only required for MacOS users, contributing or development)** Create a directory for DeepACSA.
+3. *Step 3.* **(Only required for MacOS users, contributing or development)** Create a directory for DeepACSA.
 
-On your computer create a specific directory for DeepACSA (for example "DeepACA") and navigate there. You can use Git as a version control system. Once there open a git bash with right click and then "Git Bash Here". In the bash terminal, type the following:
+    On your computer create a specific directory for DeepACSA (for example "DeepACA") and navigate there. You can use Git as a version control system. Once there open a git bash with right click and then "Git Bash Here". In the bash terminal, type the following:
 
-``git init``
+    ``git init``
 
-This will initialize a git repository and allows you to continue. If run into problems, check this `website <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`_.
+    This will initialize a git repository and allows you to continue. If run into problems, check this `website <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`_.
 
-*Step 4.* **(Only required for MacOS users, contributing or development)** Clone the DeepACSA Github repository into a pre-specified folder (for example "DeepACSA") by typing the following code in your bash window:
+4. *Step 4.* **(Only required for MacOS users, contributing or development)** Clone the DeepACSA Github repository into a pre-specified folder (for example "DeepACSA") by typing the following code in your bash window:
 
-``git clone https://github.com/PaulRitsche/DeepACSA.git``
+    ``git clone https://github.com/PaulRitsche/DeepACSA.git``
 
-This will clone the entire repository to your local computer. To make sure that everything worked, see if the files in your local directory match the ones you can find in the Github DeepACSA repository. If you run into problem, check this `website <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`_.
+    This will clone the entire repository to your local computer. To make sure that everything worked, see if the files in your local directory match the ones you can find in the Github DeepACSA repository. If you run into problem, check this `website <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`_.
 
-Alternatively, you can only download the environment.yml file from the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA.git>`_ and continue to the next step.
+    Alternatively, you can only download the environment.yml file from the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA.git>`_ and continue to the next step.
 
-*Step 5.* Create the virtual environment required for DeepACSA.
+5. *Step 5.* Create the virtual environment required for DeepACSA.
 
-DeepACSA is bound to a specific python version (3.8.13). To create an environment for DeepACSA, type the following command in your Git bash terminal:
+    DeepACSA is bound to a specific python version (3.9.18). To create an environment for DeepACSA, type the following command in your Git bash terminal:
 
-``conda create -n DeepACSA python=3.8``
+    ``conda create -n DeepACSA python=3.9``
 
 *Step 6.* Activate the environment for usage of DeepACSA.
 
@@ -84,7 +84,16 @@ The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To exec
 
 ``python deep_acsa_gui.py``
 
-The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at :ref:`usagelabel`.
+Whichever option you used, the main GUI should now open. 
+
+.. figure:: main.png
+    :scale: 50 %
+    :alt: main_gui_figure
+
+    Main GUI Window
+
+
+If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at :ref:`usagelabel`.
 
 GPU setup
 ---------

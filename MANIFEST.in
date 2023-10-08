@@ -1,0 +1,7 @@
+# Add README, LICENSE and requirements :
+include README.md
+include LICENSE
+include requirements.txt
+
+# Add all the non .py files in openhdemg
+include Deep_ACSA/gui_files/Icon.ico

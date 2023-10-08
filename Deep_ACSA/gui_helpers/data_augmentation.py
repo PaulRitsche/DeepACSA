@@ -4,6 +4,16 @@ Description
 Python module which contains a function, which allows to generate new training images
 from the input images. The newly generated data will be saved under the same directories
 as the input data.
+
+This module provides a function, image_augmentation, that performs data augmentation on
+input images and their corresponding masks to generate new training data for machine
+learning models. Data augmentation is a common technique used to artificially increase
+the diversity of the training dataset by applying various transformations to the original images.
+
+Functions scope
+---------------
+image_augmentation
+    Function, which generates new training data from the input images through data augmentation.
 """
 
 import os
@@ -18,15 +28,20 @@ def image_augmentation(input_img_folder, input_mask_folder, gui):
     """
     Function, which generates new training data from the input images through data augmentation.
     At the moment the number of added images is set to five.
+    Perform data augmentation on images and masks in the specified input directories.
+
+    The function applies data augmentation techniques to the images and masks located in the specified
+    input directories. It creates augmented images and masks based on various augmentation parameters,
+    and saves the augmented images and masks back to their respective input directories.
 
     Parameters
     ----------
-    input_img_folder: str
-        String, which contains the folder path of the input images.
-        The newly generated images will be added to this folder.
-    input_mask_folder: str
-        String, which containd the folder path of the input masks.
-        The newly generated masks will be added to this folder.
+    input_img_folder : str
+        Path to the folder containing the original input images.
+    input_mask_folder : str
+        Path to the folder containing the original input masks corresponding to the images.
+    gui : tkinter.Tk
+        The main tkinter GUI object to display information to the user.
 
     Returns
     -------
@@ -34,9 +49,19 @@ def image_augmentation(input_img_folder, input_mask_folder, gui):
 
     Notes
     -----
-    Although nothing is returned, the images in the input folders will be augmented three-fold.
-    """
+    - Although nothing is returned, the images in the input folders will be augmented three-fold.
+    - The function uses the Keras ImageDataGenerator for data augmentation.
+    - Augmented images and masks will be saved to their respective input directories with
+      filenames prefixed with numbers representing the index of the original images.
+    - The function will display information to the user in the specified tkinter GUI.
 
+    Example
+    -------
+    >>> root = tk.Tk()
+    >>> image_augmentation("data/images/", "data/masks/", root)
+    # The function will apply data augmentation to images and masks in the specified directories
+    # and display information in the tkinter GUI when the operation is completed.
+    """
     # Adapt folder paths
     # This is necessary to concattenate id to path
     input_img_folder = input_img_folder + "/"

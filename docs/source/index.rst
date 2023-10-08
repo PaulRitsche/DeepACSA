@@ -7,7 +7,7 @@ Welcome to DeepACSA's documentation!
 ====================================
 *DeepACSA: Automated analysis of human lower limb ultrasonography images*
 
-So, what is DeepACSA all about? The DeepACSA algorithm was developed in 2022 by Paul Ritsche & Philipp Wirth. Moreover, Neil Cronin, Fabio Sarto, Marco Narici, Oliver Faude and Martino Franchi supported the project during development and provided images, materials and insight. The algorithm makes extensive use of fully convolutional neural networks trained on a fair amount of ultrasonography images of the human lower limb. Specifically, the dataset included transversal ultrasonography images from the human gastrocnemius medialis and lateralis, vastus lateralis and rectus femoris. The algorithm is able to analyse muscle anatomical cross-sectional area, echo intensity and muscle volume. 
+So, what is DeepACSA all about? The DeepACSA algorithm was developed in 2022 by `Paul Ritsche <https://twitter.com/ritpau>`_ & `Philipp Wirth <https://twitter.com/phippli>`_. Moreover, `Neil Cronin <https://twitter.com/NeilJCronin84>`_, `Fabio Sarto <https://twitter.com/FabioSarto3>`_, Marco Narici, `Oliver Faude <https://twitter.com/OliverFaude>`_ and `Martino Franchi <https://twitter.com/MVFranchi>`_ supported the project during development and provided images, materials and insight. The algorithm makes extensive use of fully convolutional neural networks trained on a fair amount of ultrasonography images of the human lower limb. Specifically, the dataset included transversal ultrasonography images from the human gastrocnemius medialis and lateralis, vastus lateralis and rectus femoris. The algorithm is able to analyse muscle anatomical cross-sectional area, echo intensity and muscle volume. 
 
 Why use DeepACSA?
 =================
@@ -23,11 +23,12 @@ Currently, we have not provided unit testing for the functions and modules inclu
    :caption: Contents
    :hidden:
 
+   news
    installation
    usage
    contribute
    tests
-   Deep_ACSA
+   documentation
 
 
 
