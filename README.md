@@ -1,6 +1,7 @@
 ![Title_Image](https://user-images.githubusercontent.com/71383228/148084248-5e169761-a075-4c86-836a-e9b2cec56ef6.jpg)
 
 # DeepACSA
+[![Documentation Status](https://readthedocs.org/projects/deepacsa/badge/?version=latest)](https://deepacsa.readthedocs.io/en/latest/?badge=latest)
 *Automatic analysis of human lower limb ultrasonography images*
 
 DeepACSA is an open-source tool to evaluate the anatomical cross-sectional area of muscles in ultrasound images using deep learning.
