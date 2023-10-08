@@ -28,7 +28,7 @@ Currently, we have not provided unit testing for the functions and modules inclu
    usage
    contribute
    tests
-   documentation
+   Documentation
 
 
 
