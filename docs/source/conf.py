@@ -25,7 +25,7 @@ templates_path = ["_templates"]
 exclude_patterns = []
 
 pygments_style = "sphinx"
-pygments_dark_style = "monokai"
+
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -40,6 +40,6 @@ html_theme_options = {
     },
     "sidebar_hide_name": True,
 }
-html_static_path = ["_static"]
+
 html_logo = "deep_acsa.jpg"
 html_favicon = "icon.ico"
