@@ -12,7 +12,7 @@ v0.3.1:
     - Removal of the need to specify image types 
 
 2. Data:
-    We included a new model architecture as pre-trained models in the DeepACSA dataset for the RF and VL muscles.
+    We included a new model architecture as pre-trained models in the DeepACSA dataset for the RF and VL muscles. The new dataset can be accessed `here <https://doi.org/10.5281/zenodo.8419487>`_
     These model architectures were: 
 
     - **UNet3+** `(Huang et al., 2020) <https://doi.org/10.48550/arXiv.2004.08790>`_ for RF and VL: It uses full-scale skip connections, causing increased skip connections. These additional skip connections in between layers help to preserve data that is needed for further training. Full-scale skip connections incorporate low-level details with high-level semantics from feature maps in different scales, which is beneficial for medical image segmentation.
