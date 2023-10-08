@@ -32,14 +32,26 @@ def show_outliers_popup(df, dir1, dir2):
     popup.title("Outliers")
     master_path = os.path.dirname(os.path.abspath(__file__))
     iconpath = master_path + "/icon.ico"
-    popup.iconbitmap(iconpath)
+    # popup.iconbitmap(iconpath)
 
     label = tk.Label(popup, text=f"Comparing images in {dir1} \nand {dir2}")
     label.pack(pady=10)
 
+    # Create the Treeview widget with displaycolumns attribute
     tree = ttk.Treeview(
         popup,
-        columns=("Outlier Image", "Directory", "Images in Dir1", "Images in Dir2"),
+        columns=(
+            "Outlier Image Name",
+            "Directory",
+            "Num. Images in Dir1",
+            "Num. Images in Dir2",
+        ),
+        displaycolumns=(
+            "Outlier Image Name",
+            "Directory",
+            "Num. Images in Dir1",
+            "Num. Images in Dir2",
+        ),
     )
     tree.heading("#1", text="Outlier Image")
     tree.heading("#2", text="Directory")
@@ -199,12 +211,50 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
 
     # Create a function to overlay a single image and mask
     def overlay_image(image_path, mask_path, alpha=0.5):
+        """
+        Overlay a mask on top of an ultrasound image.
+
+        Parameters
+        ----------
+        image_path : str
+            Path to the ultrasound image.
+        mask_path : str
+            Path to the mask image.
+        alpha : float, optional
+            Alpha value for the overlay (transparency), default is 0.5.
+
+        Returns
+        -------
+        overlaid_image : np.ndarray
+            The ultrasound image overlaid with the mask.
+
+        Notes
+        -----
+        - The ultrasound and mask images should have the same dimensions.
+        - The mask is displayed in green on top of the ultrasound image.
+
+        Examples
+        --------
+        >>> overlaid = overlay_image("ultrasound.png", "mask.png", alpha=0.5)
+        >>> cv2.imshow("Overlay", overlaid)
+        >>> cv2.waitKey(0)
+        >>> cv2.destroyAllWindows()
+        """
+        # Read the ultrasound and mask images in grayscale
         ultrasound = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+
+        # Create a colored mask with green color
         colored_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
         colored_mask[mask == 255] = [0, 255, 0]  # Green color for mask
+
+        # Convert the ultrasound image to color
         ultrasound_colored = cv2.cvtColor(ultrasound, cv2.COLOR_GRAY2BGR)
-        return cv2.addWeighted(ultrasound_colored, 1, colored_mask, alpha, 0)
+
+        # Overlay the colored mask on the ultrasound image
+        overlaid_image = cv2.addWeighted(ultrasound_colored, 1, colored_mask, alpha, 0)
+
+        return overlaid_image
 
     # Create an interactive plot
     fig, ax = plt.subplots(1, 1)
@@ -235,19 +285,47 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
         display_current_image()
 
     def display_current_image():
+        """
+        Display the current ultrasound image overlaid with its mask.
+
+        This function updates the plot with the current ultrasound image overlaid with its mask.
+        It also sets the title and defines navigation instructions.
+
+        Notes
+        -----
+        - Assumes `ax`, `image_files`, `mask_files`, `current_idx`, and `alpha` are defined externally.
+        - Handles navigation between images using right and left arrow keys.
+        - Displays the image title with navigation instructions.
+        - Handles exceptions for invalid indices and displays an error message.
+
+        Examples
+        --------
+        To display the current image, call this function within your application:
+
+        >>> display_current_image()
+        """
         try:
+            # Overlay the current image with its mask
             overlaid = overlay_image(
                 os.path.join(image_dir, image_files[current_idx]),
                 os.path.join(mask_dir, mask_files[current_idx]),
                 alpha,
             )
+
+            # Display the overlaid image on the plot
             ax.imshow(cv2.cvtColor(overlaid, cv2.COLOR_BGR2RGB))
+
+            # Set the title with navigation instructions
             ax.set_title(
                 f"Image: {image_files[current_idx]}"
                 + "\nClick right/left arrow to navigate through images"
                 + "\nClick Delete to delete the image-mask pair."
             )
+
+            # Turn off axis display
             ax.axis("off")
+
+            # Redraw the plot
             plt.draw()
         except IndexError:
             tk.messagebox.showerror(
@@ -256,6 +334,28 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
             return
 
     def on_key(event):
+        """
+        Handle keypress events for image navigation.
+
+        This function is used to navigate through images using right and left arrow keys.
+        It updates the `current_idx` variable and calls `display_current_image()` to show the new image.
+
+        Parameters
+        ----------
+        event : mpl.backend_bases.KeyEvent
+            The key event triggered by pressing a key.
+
+        Notes
+        -----
+        - Assumes `current_idx` and `image_files` are defined externally.
+        - Handles right and left arrow keys to navigate images in a loop.
+
+        Examples
+        --------
+        To handle keypress events for image navigation, connect this function to your plot:
+
+        >>> fig.canvas.mpl_connect("key_press_event", on_key)
+        """
         nonlocal current_idx
         if event.key == "right":
             current_idx = (current_idx + 1) % len(image_files)

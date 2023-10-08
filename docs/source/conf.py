@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "DeepACSA"
 copyright = "2023, Paul Ritsche"
 author = "Paul Ritsche"
-release = "0.2.0"
+release = "0.3.1"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

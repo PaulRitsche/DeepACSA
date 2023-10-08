@@ -199,7 +199,7 @@ class DeepACSA:
         root.title("DeepACSA")
         master_path = os.path.dirname(os.path.abspath(__file__))
         iconpath = master_path + "/gui_helpers/icon.ico"
-        root.iconbitmap(iconpath)
+        # root.iconbitmap(iconpath)
 
         self.main = ttk.Frame(root, padding="10 10 12 12")
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
@@ -320,11 +320,11 @@ class DeepACSA:
 
         # Break Button
         break_button = ttk.Button(self.main, text="Break", command=self.do_break)
-        break_button.grid(column=1, row=16, sticky=W)
+        break_button.grid(column=1, row=17, sticky=W)
 
         # Run Button
         run_button = ttk.Button(self.main, text="Run", command=self.run_code)
-        run_button.grid(column=2, row=16, sticky=(W, E))
+        run_button.grid(column=2, row=17, sticky=(W, E))
 
         # Advanced button with style
         style.configure(
@@ -339,7 +339,7 @@ class DeepACSA:
             command=self.advanced_methods,
             style="B.TButton",
         )
-        advanced_button.grid(column=5, row=16, sticky=E)
+        advanced_button.grid(column=5, row=17, sticky=E)
 
         # Labels
         ttk.Label(self.main, text="Directories", font=("Verdana", 14)).grid(
@@ -366,7 +366,7 @@ class DeepACSA:
             column=0, row=12, columnspan=9, sticky=(W, E)
         )
         ttk.Separator(self.main, orient="horizontal", style="TSeparator").grid(
-            column=0, row=15, columnspan=9, sticky=(W, E)
+            column=0, row=16, columnspan=9, sticky=(W, E)
         )
 
         for child in self.main.winfo_children():
@@ -483,7 +483,7 @@ class DeepACSA:
         self.advanced_window.title("Advanced Methods Window")
         master_path = os.path.dirname(os.path.abspath(__file__))
         iconpath = master_path + "/gui_helpers/icon.ico"
-        self.advanced_window.iconbitmap(iconpath)
+        # self.advanced_window.iconbitmap(iconpath)
         self.advanced_window.grab_set()
 
         ttk.Label(self.advanced_window, text="Select Method").grid(column=1, row=0)

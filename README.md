@@ -21,6 +21,8 @@ in your prompt once the package was installed locally with
 when navigated at the DeepACSA/DeepACSA folder. 
 Irrespective of the way the software was started, the GUI should open and is ready to be used.
 
+![main_gui](https://github.com/PaulRitsche/DeepACSA/assets/71383228/b3a48daf-58ea-4971-badd-dcd6387000b7)
+
 ## Descriptive figure of the model used
 
 ![Figure2_VGG16Unet](https://user-images.githubusercontent.com/71383228/182554020-2c8bad75-7f08-4194-8f5f-0a521a70781c.jpg)
@@ -32,3 +34,7 @@ DeepACSA workflow. a) Original ultrasound image of the m. rectus femoris (RF) at
 ![Figure3_BAP](https://user-images.githubusercontent.com/71383228/182554096-c5fde7cd-a137-4cc4-ad73-a819368d13ec.jpg)
 
 Bland-Altman plots of all muscles plotting the difference between manual and DeepACSA with incorrect predictions removed (rm), manual and DeepACSA as well as manual and ACSAuto area segmentation measurements against the mean of both measures. Dotted and solid lines illustrate 95% limits of agreement and bias. M. rectus femoris (RF) and m. vastus lateralis (VL), mm. gastrocnemius medialis (GM), and lateralis (GL).
+
+## Whats new?
+
+With version 0.3.1, we included new models for the m. vastus lateralis (VL) and m. rectus femoris (RF) and added manual image labelling and mask inspection to the GUI. Take a look at our documentation LINK to see more details and the result of the model comparisons.

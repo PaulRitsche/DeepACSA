@@ -16,7 +16,7 @@ Not included in the video:
 - Loss Function: In the new version of the GUI, you can find a ``Loss Function`` dropdown under the ``Model Path`` textentry. Here you need to specify the loss function used during model training. So far, we implemented *IoU*, *Focal Loss* and *Dice Loss*. When using our pre-trained models, simply select *IoU*. 
 - Model Training (see :ref:`trainlabel`)
 - Image Labelling (see :ref:`trainlabel`)
-- Image Augmentation (see :ref:`trainlabel`)
+- Image Augmentation (see :ref:`augmentlabel`)
 - Volume Calculation (see :ref:`volumelabel`)
 
 **Please note that the video is using an older version of DeepACSA. The GUI has been updated since then, but the overall workflow remains the same.**
@@ -36,43 +36,45 @@ Before we start with this tutorial, here are some important tips:
   extensive documentation on how to do so in the section “Training your own network” in this tutorial.
 
 - Although we used extensive data augmentation during the model training process, we must 
-  caution you about the generalizability of our models. Deep learning is no magic! Even though our model demonstrated good performance on unseen images during testing, we cannot confidently claim that they will work fine on all lower limb ultrasonography images. It is possible that even for images of muscles represented in our training data set, different device types, different muscle regions and even different settings of ultrasonography devices during image acquisition might offset model performance. 
+  caution you about the generalizability of our models. Deep learning is no magic! Even though our model demonstrated good performance on unseen images during testing, we cannot confidently claim that they will work fine on all lower limb ultrasonography images.
+  It is possible that even for images of muscles represented in our training data set, different device types, different muscle regions and even different settings of ultrasonography devices during image acquisition might offset model performance. 
 
 - Quality matters! Please pay attention that the images you want to analyse with DeepACSA are 
   of high quality. High quality means good image contrast, appropriate image brightness, clearly visible fascicles and aponeurosis and clear alignment of the probe with the fascicle plain. If the quality of the images you want to analyse is bad, the results will be as well.
 
 - Bad model performance can be detected. The first and easiest step to take is to visually 
-  inspect the output of the models. If the segmentation results and the actual fascicles and aponeuroses overlap on most of the analysed images, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model.
+  inspect the output of the models. If the segmentation results and the actual aponeuroses overlap on most of the analysed images, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good. If not, train a separate model.
 
 Starting the interface
 ----------------------
 
-In the very first step of this tutorial, we will take a look at how to start the graphical user interface (GUI) once it was installed. We have provided two different installation procedures: 
+In the very first step of this tutorial, we will take a look at how to start the graphical user interface (GUI) once it was installed. We have provided three different installation procedures: 
 
 1. downloading the DeepACSA.exe `file <https://zenodo.org/record/8007009>`_
 
-2. installing the DLTrack python package using pip and Github.
+2. installing the DeepACSA python package with pip, Pypi or locally.
 
-Let's begin with 1., how to start the GUI when you downloaded the DLTrack_GUI.exe: 
+Let's begin with 1., how to start the GUI when you downloaded the DeepACSA.exe: 
 It doesn't get any easier than this. Navigate to the downloads folder and place the DeepACSA.exe file somewhere you can easily find it again. Done so, you just have to double click the DeepACSA.exe file with your left mouse button to start the GUI. Once you’ve done that, the GUI should open and you are ready to start an analysis.
 
-Now to 2., how to start the GUI when you installed the DLTrack python package via Pip, Github and Pypi:
+Now to 2., how to start the GUI when you installed the DeepACSA python package via Pip, Github and Pypi:
 There are essentially two ways you can start the GUI. But first lets make sure that DeepACSA was correctly installed. The package should be included in the conda virtual environment, as you probably installed it locally in your machine. Therefore, open a prompt and activate the environment by typing 
 
 ``conda activate DeepACSA``
 
+If this does not work, go back to the Installation section (see :ref:`installlabel`).
 You should see the activated environment now in the left round brackets. Next type
 
 ``conda list``
 
-to see all packages installed in the DLTrack environment. When DeepACSA is included, you are good to go. If this is not the case, navigate to the source folder of DeepACSA in your prompt. Type
+to see all packages installed in the DeepACSA environment. When DeepACSA is included, you are good to go. If this is not the case, navigate to the source folder of DeepACSA (with the pyproject.toml file) in your prompt. Type
 
 ``python -m pip install -e .``
 
-to install the package locally (for more information, see section Installation)
+to install the package locally (for more information, see section Installation (see :ref:`installlabel`))
 Check again if the package is listed inside the environment now. If you still encounter a problem, ask a question in the Q&A discussion section of DLTrack on Github and add the Label “Problem”.
 
-However, if DeepACSA included in the conda environment, type 
+However, if DeepACSA is included in the conda environment, type 
 
 ``python -m Deep_ACSA`` 
 
@@ -92,9 +94,8 @@ Train your own networks
 It is advantageous to have a working GPU setup, otherwise model training will take much longer. 
 How to setup you GUI for DeepACSA is described above and in the installation section. 
 Although you can adapt a number of parameters during training, you cannot change the neural network architecture from the GUI (of course you could modify source code to do so). 
-This is because during experimenting with different model architectures, we found a combination of a on imagenet pre-trained VGG16 encoder and a standard U-net decoder to be the best performing model. 
-Thus, all the models trained using the GUI will have this architecture. To explain you the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner.
-Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (link: ). Unzip the folder and put it somewhere accessible, for example on your desktop.
+To explain the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner.
+Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (`link <https://zenodo.org/record/8007009>`_). Unzip the folder and put it somewhere accessible, for example on your desktop.
 
 Data labelling
 """"""""""""""
@@ -130,6 +131,9 @@ We have provided a functionality inside DeepACSA that allows you to label your i
 
 All images in the selected folder will be used during mask creation. Please remeber to remove already labelled images from the seleccted ``Image Dir`` to not label them twice. *DO NOT* delete the ``train_images`` and ``train_masks`` folder as those contain your labelled images and leave the masks and renamed images in those folders as well as the image names will be incrementally increased based on the number of images contained in the folders.
 In addtion to the renamed images, the analysis results (ACSA) are saved to an excel file which is why the scaling step is necessary. Thus, the *mask creation can also be used for manual image analysis*.
+
+**It might be necessary to restart the GUI subsequent to the labelling process in case of non-responsiveness**
+
 Mask / label inspection
 """""""""""""""""""""""
 
@@ -175,6 +179,8 @@ If errors are found, relabel images using create masks functionality or simply d
   :alt: inspect_figure
 
   Incorrectly labelled image.
+
+.. _augmentlabel:
 
 Image Augmentation
 """"""""""""""""""

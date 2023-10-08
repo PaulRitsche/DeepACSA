@@ -43,6 +43,7 @@ functions documentations.
 import os
 import tkinter as tk
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from keras import backend as K
@@ -550,6 +551,8 @@ def trainModel(
                    epochs=3, loss="BCE", gui)
 
     """
+    matplotlib.use("Agg")
+
     # Check input paramters
     if batch_size <= 0 or learning_rate <= 0 or epochs <= 0:
         # Make sure some kind of filetype is specified.

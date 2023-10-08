@@ -166,6 +166,8 @@ def create_acsa_masks(
     --------
     >>> create_acsa_masks('/path/to/images')
     """
+    matplotlib.use("TkAgg")
+
     # Define input images
     try:
         ext = [".tif", ".jpeg", ".tiff", ".jpg", ".png", ".bmp"]

@@ -14,15 +14,6 @@ Why use DeepACSA?
 
 Using the DeepACSA algorithm to analyze muscle morphological parameters in human lower limb muscle ultrasonography images hase two main advantages. The analysis is objectified when using the automated analysis types for images because no user input is required during the analysis process. Secondly, the required analysis time for image analysis is drastically reduced compared to manual analysis. Whereas an image manual analysis takes about one minute, DeepACSA analyzes images in less than one second. This allows users to analyze large amounts of images without supervision during the analysis process in relatively short amounts of time.
 
-Whats new?
-==========
-
-- v0.3.1: 
-   - Restructuring of the GUI.
-   - Inclusion of Mask creation inside GUI.
-   - Inclusion of Mask inspection inside GUI.
-   - Removal of the need to specify image types.
-
 Limitations
 ===========
 
@@ -32,6 +23,7 @@ Currently, we have not provided unit testing for the functions and modules inclu
    :caption: Contents
    :hidden:
 
+   Whats new
    Installation
    Usage
    Contribute
