@@ -81,7 +81,7 @@ However, if DeepACSA is included in the conda environment, type
 
 to start the GUI. The location of you prompt is irrelevant, as long as the DeepACSA conda environment is activated. The main GUI window should open now.
 
-.. figure:: ..\\gui_files\\main.png
+.. figure:: main.png
     :scale: 50 %
     :alt: main_gui_figure
 
@@ -108,7 +108,7 @@ We have provided a functionality inside DeepACSA that allows you to label your i
 1. Start the GUI and click the ``Advanced Methods`` button.
 2. Select the ``Create Masks`` option. The ``Create Masks Winow`` will open. 
 
-.. figure:: ..\\gui_files\\create_masks.png
+.. figure:: create_masks.png
   :scale: 50 %
   :alt: create_masks_figure
 
@@ -118,7 +118,7 @@ We have provided a functionality inside DeepACSA that allows you to label your i
 3. Start the mask creation by clicking the ``Create Masks`` button. Two folders will be created in the ``Image Dir`` folder: *train_images* and *train_masks*. The original images will be copied to *train_images* and the masks will be saved in *train_masks* with the same filename but a ".tif" extension.
 4. An information window opens telling you to scale the images. Click ``OK`` to continue.
   
-.. figure:: ..\\gui_files\\mask_info.png
+.. figure:: mask_info.png
   :scale: 50 %
   :alt: mask_info_figure
 
@@ -126,7 +126,7 @@ We have provided a functionality inside DeepACSA that allows you to label your i
   
 5. Another GUI will open. Create the mask by clicking on the image. Follow the instructions in the GUI. Repeat this process for all images in the selected ``Image Dir``.
 
-.. figure:: ..\\gui_files\\make_mask.png
+.. figure:: make_mask.png
   :scale: 50 %
   :alt: make_mask_figure
 
@@ -145,7 +145,7 @@ Mask / label inspection
 1. Start the GUI and click the ``Advanced Methods`` button.
 2. Select the ``Inspect Masks`` option. The ``Inspect Masks Winow`` will open.
 
-.. figure:: ..\\gui_files\\inspect.png
+.. figure:: inspect.png
   :scale: 50 %
   :alt: inspect_figure
 
@@ -156,7 +156,7 @@ Mask / label inspection
 5. Change the ``Start Index``, in case you don't want to start at the first image.
 6. Clik the ``Inspect Masks`` button to check you training images and masks. Another GUI will open.
 
-.. figure:: ..\\gui_files\\inspect.png
+.. figure:: inspect.png
   :scale: 50 %
   :alt: inspect_figure
 
@@ -164,7 +164,7 @@ Mask / label inspection
 
 7. An Information window will appear telling you if a similar amount of images / files are in the image and mask directories as well as whether they are names similarly. **Images and respective masks must have the same filename for proper pairing during training.**
 
-.. figure:: ..\\gui_files\\inspect_info.png
+.. figure:: inspect_info.png
   :scale: 50 %
   :alt: inspect_figure
 
@@ -173,13 +173,13 @@ Mask / label inspection
 8. By clicking ``OK``, the inspection window will open. Here you can scroll through all your images with overlays masks and check for any errors. Please ensure masks cover muscle area completely and do not overlap with other muscles /aponeuroses or exclude muscle regions. 
 If errors are found, relabel images using create masks functionality or simply delete the image / label pair using the ``Delete`` button.
 
-.. figure:: ..\\gui_files\\inspect_correct.png
+.. figure:: inspect_correct.png
   :scale: 50 %
   :alt: inspect_figure
 
   Correctly labelled image.
 
-.. figure:: ..\\gui_files\\inspect_incorrect.png
+.. figure:: inspect_incorrect.png
   :scale: 50 %
   :alt: inspect_figure
 

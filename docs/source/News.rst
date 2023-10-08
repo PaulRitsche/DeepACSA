@@ -21,25 +21,25 @@ v0.3.1:
     We provide two more models and compared them to manual analysis (Fig. 1-4). Users are adivsed to select the performing models for VL and RF. However, we still advise to test the selected model prior to usage. 
     All models were trained using K-fold (5 folds used) cross-validation to ensure that overfitting is reduced. 
 
-    .. figure:: ..\\gui_files\\RF_without_inspection.png
+    .. figure:: RF_without_inspection.png
         :scale: 50 %
         :alt: inspect_figure
 
         Figure 1: Comparison of RF images to manual analysis with uninspected results.
 
-    .. figure:: ..\\gui_files\\RF_with_inspection.png
+    .. figure:: RF_with_inspection.png
         :scale: 50 %
         :alt: inspect_figure
 
         Figure 2: Comparison of RF images to manual analysis with inspected results.
 
-    .. figure:: ..\\gui_files\\VL_without_inspection.png
+    .. figure:: VL_without_inspection.png
         :scale: 50 %
         :alt: inspect_figure
 
         Figure 2: Comparison of VL images to manual analysis with inspected results.
 
-    .. figure:: ..\\gui_files\\VL_with_inspection.png
+    .. figure:: VL_with_inspection.png
         :scale: 50 %
         :alt: inspect_figure
 

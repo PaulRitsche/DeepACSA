@@ -86,7 +86,7 @@ The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To exec
 
 Whichever option you used, the main GUI should now open. 
 
-.. figure:: ..\\gui_files\\main.png
+.. figure:: main.png
     :scale: 50 %
     :alt: main_gui_figure
 
