@@ -21,8 +21,7 @@ release = "0.3.1"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ["sphinx.ext.autodoc"]
-templates_path = ["_templates"]
-exclude_patterns = []
+
 
 pygments_style = "sphinx"
 
