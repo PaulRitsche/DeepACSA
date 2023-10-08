@@ -23,7 +23,7 @@ Currently, we have not provided unit testing for the functions and modules inclu
    :caption: Contents
    :hidden:
 
-   Whats new
+   News
    Installation
    Usage
    Contribute
