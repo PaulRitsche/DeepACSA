@@ -5,7 +5,7 @@ Tests
 
 Image analaysis
 """""""""""""""
-So far, we have not included unit testing in DeepACSA. However, in the DeepACAS_example that you can download `here <https://zenodo.org/record/8007009>`_  you will find an *images_test* folder. 
+So far, we have not included unit testing in DeepACSA. However, in the DeepACAS_example that you can download `here <https://doi.org/10.5281/zenodo.8419487>`_  you will find an *images_test* folder. 
 There, we have included three rectus femoris images as well as an *Original_Results.xlsx* file. Analyse these images using the ``RF`` muscle option,  ``Line`` scaling option and an ``Imagedepth`` of **4.5**. 
 Tick the ``Calculate Volume`` checkbox to ``YES``. Compare your results with the one in the *Original_Results.xlsx*. Should the results be identical, DeepACSA works fine. In theory, every pre-trained model should produce similar
 results. However, for the sake of accuracy, we used the VGG16-Unet for the test results. 
