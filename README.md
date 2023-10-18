@@ -12,7 +12,7 @@ If you find this work useful, please remember to cite the corresponding [paper](
 
 ## Whats new?
 
-With version 0.3.1, we included new models for the m. vastus lateralis (VL) and m. rectus femoris (RF) and added manual image labelling and mask inspection to the GUI. Take a look at our documentation LINK to see more details and the result of the model comparisons.
+With version 0.3.1, we included new models for the m. vastus lateralis (VL) and m. rectus femoris (RF) and added manual image labelling and mask inspection to the GUI. Take a look at our [documentation (https://deepacsa.readthedocs.io/en/latest/news.html)] to see more details and the result of the model comparisons.
 
 ## Quickstart
 
