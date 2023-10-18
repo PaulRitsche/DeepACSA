@@ -12,7 +12,20 @@ If you find this work useful, please remember to cite the corresponding [paper](
 
 ## Whats new?
 
-With version 0.3.1, we included new models for the m. vastus lateralis (VL) and m. rectus femoris (RF) and added manual image labelling and mask inspection to the GUI. Take a look at our documentation LINK to see more details and the result of the model comparisons.
+With version 0.3.1, we included new models for the m. vastus lateralis (VL) and m. rectus femoris (RF) and added manual image labelling and mask inspection to the GUI. Take a look at our [documentation](https://deepacsa.readthedocs.io/en/latest/index.html) to see more details and the result of the model comparisons.
+
+### Hamstring models
+In collaboration with the [ORB Michingan (https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory)], we developed models for the automatic segmentation of the biceps femoris. The dataset consited of ... images from aroung 150 participants. Participants included were youth and adult soccer players, 
+adult endurance runners, adult track and field athletes as well as adults with a recent ACL tear (in total 30% women). We compared the performance of different models to manual analysis of the images. We used similar training procedures as decribed in our DeepACSA [paper](https://journals.lww.com/acsm-msse/Abstract/9900/DeepACSA__Automatic_Segmentation_of.87.aspx), however, we evaluated the models unsing 5-fold cross-validation to counteract overfitting. We provide the model with the highest IoU scores for ACSA segmentation. We compared the same model architectures as described previously in the "What's new" [section (https://deepacsa.readthedocs.io/en/latest/news.html)]. Below we have outlined the analysis results and the trained models can be found [here ()]. 
+
+*Table 1. Comparison of model architectures throughout validation folds.*
+
+![image](https://github.com/PaulRitsche/DeepACSA/assets/71383228/3844d5c7-8376-4016-9c2e-a36eb42f301e)
+
+*Table 2. Comparison of model architectures to manual evaluation on external test set. all -> all Testsets; 1/2/3 -> only Testset 1/2/3; p -> panoramic; s -> single image; 1+2 -> without device images (fewer images in training set), only Testset 1+2; rm -> with visual inspection; n -> number of images.*		
+
+![image](https://github.com/PaulRitsche/DeepACSA/assets/71383228/f33e687a-3343-445d-be45-4be997d03a81)
+
 
 ## Quickstart
 
@@ -22,9 +35,9 @@ To quickly start the DeepACSA either open the executable or type
 
 in your prompt once the package was installed locally with
 
-``python -m pip install -e .``
+``pip install DeepACSA==0.3.1.``
 
-when navigated at the DeepACSA/DeepACSA folder. 
+when the DeepACSA environment is activated. 
 Irrespective of the way the software was started, the GUI should open and is ready to be used.
 
 ![main_gui](https://github.com/PaulRitsche/DeepACSA/assets/71383228/b3a48daf-58ea-4971-badd-dcd6387000b7)
