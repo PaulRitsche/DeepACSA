@@ -1,6 +1,11 @@
 News
 ==========
 
+Hamstring models
+----------------
+1. Data:
+    We provide, together with `ORBlab Michigan <https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory>`_, models for the automatic segmentation of the biceps femoris long head at several muscle length in male, female young and adult people. More information can be found in the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA/tree/main>`_. The models can be downloaded from `OSF <https://osf.io/a3u4v/>`_.
+
 v0.3.1: 
 -------
 
