@@ -49,39 +49,43 @@ In case you want to use this way to install and run DeepACSA, we advise you to s
 
     ``conda create -n DeepACSA python=3.9``
 
-*Step 6.* Activate the environment for usage of DeepACSA.
+6. *Step 6.* Activate the environment for usage of DeepACSA.
 
-You can now activate the virtual environment by typing:
+    You can now activate the virtual environment by typing:
+    
+    ``conda activate DeepACSA``
+    
+    An active conda environment is visible in () brackets befor your current path in the bash terminal. In this case, this should look something like (DeepACSA) C:/user/.../DeepACSA.Then, download the DeepACSA package by typing:
 
-``conda activate DeepACSA``
+7. *Step 7.* Install the DeepACSA package **on Windows**.
 
-An active conda environment is visible in () brackets befor your current path in the bash terminal. In this case, this should look something like (DeepACSA) C:/user/.../DeepACSA.Then, download the DeepACSA package by typing:
+    ``pip install DeepACSA==0.3.1``
 
-*Step 7.* Install the DeepACSA package.
+7. *Step 7.* Install the DeepACSA package **on MacOS**.
 
-Navigate into the folder that you cloned from Github (DeepACSA) with the bash terminal. You can do that by typing "cd" followed by the path to the folder containing the requirements.txt file. This should look something like:
+    Navigate into the folder that you cloned from Github (DeepACSA) with the bash terminal. You can do that by typing "cd" followed by the path to the folder containing the requirements.txt file. This should look something like:
+    
+    ``cd /.../.../DeepACSA/DeepACSA``
+    
+    Then you can install the requirements of DeepACSA with: 
+    
+    ``pip install -r requirements.txt``
+    
+    Install the DeepACSA package locally to make use of its functionalities with:
+    
+    ``python -m pip install -e .``
 
-``cd /.../.../DeepACSA/DeepACSA``
+8. *Step 8.* The First option of running DeepACSA is using the installed DeepACSA package (either by pip or locally installed). You do not need the whole cloned repository for this, only the active DeepACSA environment. You do moreover not need be any specific directory. Type in your bash terminal:
 
-Then you can install the requirements of DeepACSA with: 
+    ``python -m Deep_ACSA``
+    
+    The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem".  For usage of DeepACSA please take a look at :ref:`usagelabel`.
+    
+9. *Step 9.* The second option of running DeepACSA is using the deep_acsa_gui python script. This requires you to clone the whole directory and navigate to the directory where the deep_acsa_gui.py file is located. Moreover, you need the active DeepACSA environment.
 
-``pip install -r requirements.txt``
-
-Install the DeepACSA package locally to make use of its functionalities with:
-
-``python -m pip install -e .``
-
-*Step 8.* The First option of running DeepACSA is using the installed DeepACSA package. You do not need the whole cloned repository for this, only the active DeepACSA environment. You do moreover not need be any specific directory. Type in your bash terminal:
-
-``python -m Deep_ACSA``
-
-The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem".  For usage of DeepACSA please take a look at :ref:`usagelabel`.
-
-*Step 9.* The second option of running DeepACSA is using the deep_acsa_gui python script. This requires you to clone the whole directory and navigate to the directory where the deep_acsa_gui.py file is located. Moreover, you need the active DeepACSA environment.
-
-The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To execute the module type the following command in your bash terminal.
-
-``python deep_acsa_gui.py``
+    The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To execute the module type the following command in your bash terminal.
+    
+    ``python deep_acsa_gui.py``
 
 Whichever option you used, the main GUI should now open. 
 
