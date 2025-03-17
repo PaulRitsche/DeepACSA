@@ -40,6 +40,7 @@ Notes
 Additional information and usage examples can be found at the respective
 functions documentations.
 """
+
 import os
 import tkinter as tk
 

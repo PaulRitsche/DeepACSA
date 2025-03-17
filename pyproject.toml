@@ -1,6 +1,7 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["setuptools", "wheel", "hatchling"]
 build-backend = "hatchling.build"
+
 
 [project]
 name = "DeepACSA"

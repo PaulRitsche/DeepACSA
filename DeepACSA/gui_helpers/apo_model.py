@@ -1,4 +1,4 @@
-""" Python class to predict muscle area
+"""Python class to predict muscle area
 
 Description
 -----------
@@ -29,7 +29,7 @@ from keras.models import load_model
 from skimage import measure, morphology
 from skimage.transform import resize
 
-from Deep_ACSA.gui_helpers.model_training import IoU, dice_score, focal_loss
+from DeepACSA.gui_helpers.model_training import IoU, dice_score, focal_loss
 
 matplotlib.use("Agg")
 

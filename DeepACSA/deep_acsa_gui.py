@@ -38,7 +38,7 @@ from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
 
 import matplotlib
 
-from Deep_ACSA import gui_helpers
+from DeepACSA import gui_helpers
 
 matplotlib.use("TkAgg")
 

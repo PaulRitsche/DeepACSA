@@ -48,14 +48,14 @@ from matplotlib.backends.backend_pdf import PdfPages
 from skimage.transform import resize
 from tensorflow.keras.utils import img_to_array
 
-from Deep_ACSA.gui_helpers.apo_model import ApoModel
-from Deep_ACSA.gui_helpers.calculate_muscle_volume import muscle_volume_calculation
-from Deep_ACSA.gui_helpers.calibrate import (
+from DeepACSA.gui_helpers.apo_model import ApoModel
+from DeepACSA.gui_helpers.calculate_muscle_volume import muscle_volume_calculation
+from DeepACSA.gui_helpers.calibrate import (
     calibrate_distance_efov,
     calibrate_distance_manually,
     calibrate_distance_static,
 )
-from Deep_ACSA.gui_helpers.echo_int import calculate_echo_int
+from DeepACSA.gui_helpers.echo_int import calculate_echo_int
 
 # from keras.preprocessing.image import img_to_array, load_img
 

@@ -7,7 +7,7 @@ import cv2
 import pandas as pd
 from PIL import Image, ImageTk
 
-from Deep_ACSA.gui_helpers.image_processing import (
+from DeepACSA.gui_helpers.image_processing import (
     excel_expo,
     find_starting_points,
     measure_area,

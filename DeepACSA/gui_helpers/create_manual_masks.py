@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from Deep_ACSA.gui_helpers.calibrate import calibrate_distance_manually
-from Deep_ACSA.gui_helpers.predict_muscle_area import compile_save_results
+from DeepACSA.gui_helpers.calibrate import calibrate_distance_manually
+from DeepACSA.gui_helpers.predict_muscle_area import compile_save_results
 
 
 def select_area(image):
