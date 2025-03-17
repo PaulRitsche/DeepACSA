@@ -6,6 +6,7 @@ import customtkinter as ctk
 import cv2
 import pandas as pd
 from PIL import Image, ImageTk
+import numpy as np
 
 from DeepACSA.gui_helpers.image_processing import (
     excel_expo,
@@ -21,20 +22,21 @@ class ACSAutoApp(ctk.CTk):
         super().__init__()
 
         self.title("ACSAuto - Anatomical Cross-Sectional Area Analysis")
-        self.geometry("800x600")
+        self.geometry("1000x600")
+        self.configure(padx=10, pady=10)
 
         # Variables
-        self.analysis_type = tk.StringVar(value="Folder")
-        self.export_excel = tk.BooleanVar(value=False)
-        self.input_dir = tk.StringVar()
-        self.output_dir = tk.StringVar()
-        self.muscle = tk.StringVar(value="Rectus femoris")
-        self.outline_strategy = tk.StringVar(value="Automatic")
-        self.sorting = tk.BooleanVar(value=True)
-        self.scaling = tk.StringVar(value="Automatic")
-        self.scan_depth = tk.DoubleVar(value=5)
-        self.flip_horizontal = tk.BooleanVar(value=False)
-        self.flip_vertical = tk.BooleanVar(value=False)
+        self.analysis_type = ctk.StringVar(value="Folder")
+        self.export_excel = ctk.BooleanVar(value=False)
+        self.input_dir = ctk.StringVar()
+        self.output_dir = ctk.StringVar()
+        self.muscle = ctk.StringVar(value="Rectus femoris")
+        self.outline_strategy = ctk.StringVar(value="Automatic")
+        self.sorting = ctk.BooleanVar(value=True)
+        self.scaling = ctk.StringVar(value="Automatic")
+        self.scan_depth = ctk.DoubleVar(value=5)
+        self.flip_horizontal = ctk.BooleanVar(value=False)
+        self.flip_vertical = ctk.BooleanVar(value=False)
 
         self.circles = []
         self.drawing = False
@@ -43,25 +45,40 @@ class ACSAutoApp(ctk.CTk):
         self.create_ui()
 
     def create_ui(self):
-        ctk.CTkLabel(self, text="Type of Analysis").pack()
+        main_frame = ctk.CTkFrame(self)
+        main_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+
+        ctk.CTkLabel(main_frame, text="Type of Analysis").grid(
+            row=0, column=0, sticky="w"
+        )
         ctk.CTkRadioButton(
-            self, text="Folder", variable=self.analysis_type, value="Folder"
-        ).pack()
+            main_frame, text="Folder", variable=self.analysis_type, value="Folder"
+        ).grid(row=1, column=0, sticky="w")
         ctk.CTkRadioButton(
-            self, text="Image", variable=self.analysis_type, value="Image"
-        ).pack()
+            main_frame, text="Image", variable=self.analysis_type, value="Image"
+        ).grid(row=1, column=1, sticky="w")
 
-        ctk.CTkCheckBox(self, text="Export to Excel", variable=self.export_excel).pack()
+        ctk.CTkCheckBox(
+            main_frame, text="Export to Excel", variable=self.export_excel
+        ).grid(row=2, column=0, sticky="w")
 
-        ctk.CTkLabel(self, text="Input Directory").pack()
-        ctk.CTkButton(self, text="Browse", command=self.select_input_dir).pack()
+        ctk.CTkLabel(main_frame, text="Input Directory").grid(
+            row=3, column=0, sticky="w"
+        )
+        ctk.CTkButton(main_frame, text="Browse", command=self.select_input_source).grid(
+            row=3, column=1, sticky="w"
+        )
 
-        ctk.CTkLabel(self, text="Output Directory").pack()
-        ctk.CTkButton(self, text="Browse", command=self.select_output_dir).pack()
+        ctk.CTkLabel(main_frame, text="Output Directory").grid(
+            row=4, column=0, sticky="w"
+        )
+        ctk.CTkButton(main_frame, text="Browse", command=self.select_output_dir).grid(
+            row=4, column=1, sticky="w"
+        )
 
-        ctk.CTkLabel(self, text="Muscle Type").pack()
+        ctk.CTkLabel(main_frame, text="Muscle Type").grid(row=5, column=0, sticky="w")
         ctk.CTkOptionMenu(
-            self,
+            main_frame,
             variable=self.muscle,
             values=[
                 "Rectus femoris",
@@ -71,75 +88,99 @@ class ACSAutoApp(ctk.CTk):
                 "Quadriceps",
                 "Gastro MED",
             ],
-        ).pack()
+        ).grid(row=5, column=1, sticky="w")
 
-        ctk.CTkLabel(self, text="Outline Finder Strategy").pack()
+        ctk.CTkLabel(main_frame, text="Outline Finder Strategy").grid(
+            row=6, column=0, sticky="w"
+        )
         ctk.CTkOptionMenu(
-            self,
+            main_frame,
             variable=self.outline_strategy,
             values=["Manual", "Automatic", "Fixed Pixels"],
-        ).pack()
+        ).grid(row=6, column=1, sticky="w")
 
-        ctk.CTkCheckBox(self, text="Sort Coordinates", variable=self.sorting).pack()
-
-        ctk.CTkLabel(self, text="Scaling").pack()
+        ctk.CTkLabel(main_frame, text="Scaling").grid(row=7, column=0, sticky="w")
         ctk.CTkOptionMenu(
-            self, variable=self.scaling, values=["Automatic", "Manual"]
-        ).pack()
+            main_frame, variable=self.scaling, values=["Automatic", "Manual"]
+        ).grid(row=7, column=1, sticky="w")
 
-        ctk.CTkLabel(self, text="Scan Depth (cm)").pack()
-        ctk.CTkEntry(self, textvariable=self.scan_depth).pack()
-
-        ctk.CTkCheckBox(
-            self, text="Flip Horizontally", variable=self.flip_horizontal
-        ).pack()
-        ctk.CTkCheckBox(
-            self, text="Flip Vertically", variable=self.flip_vertical
-        ).pack()
-
-        ctk.CTkButton(self, text="Start Analysis", command=self.start_analysis).pack(
-            pady=20
+        ctk.CTkLabel(main_frame, text="Scan Depth (cm)").grid(
+            row=8, column=0, sticky="w"
+        )
+        ctk.CTkEntry(main_frame, textvariable=self.scan_depth).grid(
+            row=8, column=1, sticky="w"
         )
 
-        # Canvas for image display and drawing
-        self.canvas_frame = ctk.CTkFrame(self, width=600, height=400)
-        self.canvas_frame.pack(pady=10)
+        ctk.CTkCheckBox(
+            main_frame, text="Flip Horizontally", variable=self.flip_horizontal
+        ).grid(row=9, column=0, sticky="w")
+        ctk.CTkCheckBox(
+            main_frame, text="Flip Vertically", variable=self.flip_vertical
+        ).grid(row=9, column=1, sticky="w")
+
+        ctk.CTkButton(
+            main_frame, text="Start Analysis", command=self.start_analysis
+        ).grid(row=10, column=0, columnspan=2, pady=10)
+
+        # Canvas for image display
+        self.canvas_frame = ctk.CTkFrame(self)
+        self.canvas_frame.grid(row=0, column=1, padx=10, pady=10, sticky="ne")
         self.canvas = ctk.CTkCanvas(
-            self.canvas_frame, width=600, height=400, bg="white"
+            self.canvas_frame, width=500, height=500, bg="white"
         )
-        self.canvas.pack()
+        self.canvas.grid()
 
         self.canvas.bind("<Button-1>", self.on_mouse_down)
         self.canvas.bind("<B1-Motion>", self.on_mouse_move)
         self.canvas.bind("<ButtonRelease-1>", self.on_mouse_up)
         self.bind("<Delete>", self.on_delete_circle)
 
-    def select_input_dir(self):
-        directory = filedialog.askdirectory()
-        if directory:
-            self.input_dir.set(directory)
-            # self.load_image(directory)
+    def select_input_source(self):
+        if self.analysis_type.get() == "Folder":
+            directory = filedialog.askdirectory()
+            if directory:
+                self.input_dir.set(directory)
+                self.load_images_from_folder(directory)
+        else:
+            file_paths = filedialog.askopenfilenames(
+                filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tif")]
+            )
+            if file_paths:
+                self.image_list = list(file_paths)
+                self.current_image_index = 0
+                self.load_image(self.image_list[self.current_image_index])
 
     def select_output_dir(self):
         directory = filedialog.askdirectory()
         if directory:
             self.output_dir.set(directory)
 
+    def load_images_from_folder(self, folder_path):
+        self.image_list = [
+            os.path.join(folder_path, f)
+            for f in os.listdir(folder_path)
+            if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tif"))
+        ]
+        if self.image_list:
+            self.current_image_index = 0
+            self.load_image(self.image_list[self.current_image_index])
+
     def load_image(self, image_path):
-        # Load and display the image on the canvas
         self.original_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        if self.original_image is None:
+            messagebox.showerror("Error", f"Failed to load image: {image_path}")
+            return
         self.image = self.original_image.copy()
-        self.temp_image = self.image.copy()
-        self.mask = np.ones_like(self.image, dtype=np.uint8) * 255
         self.display_image(self.image)
 
     def display_image(self, img):
-        """Display the given image on the canvas."""
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)  # Convert grayscale to BGR
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         img_pil = Image.fromarray(img)
+        img_pil.thumbnail((600, 400))  # Resize to fit within 600x400
         img_tk = ImageTk.PhotoImage(img_pil)
+        self.canvas.delete("all")  # Clear previous image
         self.canvas.create_image(0, 0, anchor="nw", image=img_tk)
-        self.canvas.image = img_tk  # Keep a reference to avoid garbage collection
+        self.canvas.image = img_tk  # Keep reference to avoid garbage collection
 
     def on_mouse_down(self, event):
         """Start drawing a circle."""

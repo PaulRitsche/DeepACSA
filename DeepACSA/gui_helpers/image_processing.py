@@ -191,7 +191,7 @@ def find_starting_points(image, method="Automatic"):
                 cY = int(M["m01"] / M["m00"])
                 starting_points.append((cX, cY))
                 # Draw the starting point on the image
-                cv2.circle(image, (cX, cY), 5, (0, 255, 0), -1)
+                cv2.circle(image, (cX, cY), 5, (255, 0, 255), -1)
 
     elif method == "Manual":
         # Manually select starting points using mouse clicks

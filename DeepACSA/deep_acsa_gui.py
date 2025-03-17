@@ -32,6 +32,7 @@ DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., 
 """
 
 import os
+import customtkinter as ctk
 import tkinter as tk
 from threading import Lock, Thread
 from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
@@ -43,7 +44,7 @@ from DeepACSA import gui_helpers
 matplotlib.use("TkAgg")
 
 
-class DeepACSA:
+class DeepACSA(ctk.CTk):
     """
     Python class to automatically or manually annotate tranversal muscle
     ultrasonography images of human lower limb muscles.
@@ -178,7 +179,7 @@ class DeepACSA:
     model_training.py, predict_muscle_area.py
     """
 
-    def __init__(self, root):
+    def __init__(self, *args, **kwargs):
         """Initialize the DeepACSA GUI application.
 
         Parameters
@@ -189,6 +190,7 @@ class DeepACSA:
         -------
             None
         """
+        super().__init__(*args, **kwargs)
 
         # set up threading
         self._lock = Lock()
@@ -196,12 +198,15 @@ class DeepACSA:
         self._should_stop = False
 
         # set up gui
-        root.title("DeepACSA")
+        self.title("DeepACSA")
         master_path = os.path.dirname(os.path.abspath(__file__))
+        ctk.set_default_color_theme(
+            master_path + "/gui_helpers/gui_files/ui_color_theme.json"
+        )
         iconpath = master_path + "/gui_helpers/icon.ico"
-        root.iconbitmap(iconpath)
+        self.iconbitmap(iconpath)
 
-        self.main = ttk.Frame(root, padding="10 10 12 12")
+        self.main = ctk.CTkFrame(self)
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
         # Configure resizing of user interface
         self.main.columnconfigure(0, weight=1)
@@ -210,8 +215,8 @@ class DeepACSA:
         self.main.columnconfigure(3, weight=1)
         self.main.columnconfigure(4, weight=1)
         self.main.columnconfigure(5, weight=1)
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
+        # root.columnconfigure(0, weight=1)
+        # root.rowconfigure(0, weight=1)
 
         # Style
         style = ttk.Style()
@@ -243,87 +248,77 @@ class DeepACSA:
 
         # Paths
         # Input directory
-        self.input = StringVar()
-        input_entry = ttk.Entry(self.main, width=30, textvariable=self.input)
+        self.input = ctk.StringVar()
+        input_entry = ctk.CTkEntry(self.main, width=30, textvariable=self.input)
         input_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
         # self.input.set("Desktop/DeepACSA/")
         # Model path
-        self.model = StringVar()
-        model_entry = ttk.Entry(self.main, width=30, textvariable=self.model)
+        self.model = ctk.StringVar()
+        model_entry = ctk.CTkEntry(self.main, width=30, textvariable=self.model)
         model_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
         # self.model.set("C:/Users/admin/Documents/DeepACSA/notebooks/VGG16pre-VL-256.h5")
 
-        # Radiobuttons
-        # Image Type
-        self.scaling = StringVar()
-        efov = ttk.Radiobutton(
-            self.main, text="Line", variable=self.scaling, value="Line"
+        self.scaling = ctk.StringVar(value="Bar")
+        self.scaling_menu = ctk.CTkComboBox(
+            self.main,
+            variable=self.scaling,
+            values=["Line", "Bar", "Manual"],
+            command=self.on_scaling_change,
         )
-        efov.grid(column=2, row=7, sticky=W)
-        static = ttk.Radiobutton(
-            self.main, text="Bar", variable=self.scaling, value="Bar"
-        )
-        static.grid(column=3, row=7, sticky=(W, E))
-        manual = ttk.Radiobutton(
-            self.main, text="Manual", variable=self.scaling, value="Manual"
-        )
-        manual.grid(column=4, row=7, sticky=E)
-        self.scaling.set("Bar")
-        self.scaling.trace("w", self.on_scaling_change)
+        self.scaling_menu.grid(column=2, row=7, sticky=W)
 
-        # Volume Calculation
-        self.muscle_volume_calculation_wanted = StringVar()
-        yes_volume = ttk.Radiobutton(
+        self.volume_calc_wanted = ctk.StringVar(value="No")
+        self.volume_menu = ctk.CTkComboBox(
             self.main,
-            text="Yes",
-            variable=self.muscle_volume_calculation_wanted,
-            value="Yes",
+            variable=self.volume_calc_wanted,
+            values=["Yes", "No"],
+            command=self.on_volume_change,
+            state="readonly",
         )
-        yes_volume.grid(column=2, row=14, sticky=W)
-        no_volume = ttk.Radiobutton(
-            self.main,
-            text="No",
-            variable=self.muscle_volume_calculation_wanted,
-            value="No",
-        )
-        no_volume.grid(column=3, row=14, sticky=(W, E))
-        self.muscle_volume_calculation_wanted.set("No")
-        self.muscle_volume_calculation_wanted.trace("w", self.on_volume_change)
+        self.volume_menu.grid(column=3, row=14, sticky=(W, E))
 
         # Comboboxes
         # Loss Function
         self.loss_function = StringVar()
-        loss = ("IoU", "Dice Loss", "Focal Loss")
-        loss_entry = ttk.Combobox(self.main, width=15, textvariable=self.loss_function)
-        loss_entry["values"] = loss
-        loss_entry["state"] = "readonly"
-        loss_entry.grid(column=4, row=4, sticky=E)
+        loss_entry = ctk.CTkComboBox(
+            self.main,
+            width=15,
+            values=["IoU", "Dice Loss", "Focal Loss"],
+            variable=self.loss_function,
+            state="readonly",
+        )
+        loss_entry.grid(column=4, row=4, sticky=(W, E))
         self.loss_function.set("Loss Function")
 
         # Muscles
         self.muscle = StringVar()
-        muscle = ("VL", "RF", "GM", "GL", "BF")
-        muscle_entry = ttk.Combobox(self.main, width=10, textvariable=self.muscle)
-        muscle_entry["values"] = muscle
-        muscle_entry["state"] = "readonly"
+        muscle_entry = ctk.CTkComboBox(
+            self.main,
+            width=10,
+            values=["VL", "RF", "GM", "GL", "BF"],
+            state="readonly",
+            variable=self.muscle,
+        )
         muscle_entry.grid(column=2, row=8, sticky=(W, E))
         self.muscle.set("RF")
 
         # Buttons
         # Input directory
-        input_button = ttk.Button(self.main, text="Input", command=self.get_root_dir)
+        input_button = ctk.CTkButton(self.main, text="Input", command=self.get_root_dir)
         input_button.grid(column=5, row=2, sticky=E)
 
         # Model path button
-        model_button = ttk.Button(self.main, text="Model", command=self.get_model_path)
+        model_button = ctk.CTkButton(
+            self.main, text="Model", command=self.get_model_path
+        )
         model_button.grid(column=5, row=3, sticky=E)
 
         # Break Button
-        break_button = ttk.Button(self.main, text="Break", command=self.do_break)
+        break_button = ctk.CTkButton(self.main, text="Break", command=self.do_break)
         break_button.grid(column=1, row=17, sticky=W)
 
         # Run Button
-        run_button = ttk.Button(self.main, text="Run", command=self.run_code)
+        run_button = ctk.CTkButton(self.main, text="Run", command=self.run_code)
         run_button.grid(column=2, row=17, sticky=(W, E))
 
         # Advanced button with style
@@ -333,30 +328,30 @@ class DeepACSA:
             foreground="white",
             font=("Lucida Sans", 11),
         )
-        advanced_button = ttk.Button(
+        advanced_button = ctk.CTkButton(
             self.main,
             text="Advanced Methods",
             command=self.advanced_methods,
-            style="B.TButton",
+            # style="B.TButton",
         )
         advanced_button.grid(column=5, row=17, sticky=E)
 
         # Labels
-        ttk.Label(self.main, text="Directories", font=("Verdana", 14)).grid(
+        ctk.CTkLabel(self.main, text="Directories", font=("Verdana", 14)).grid(
             column=1, row=1, sticky=W
         )
-        ttk.Label(self.main, text="Root Directory").grid(column=1, row=2)
-        ttk.Label(self.main, text="Model Path").grid(column=1, row=3)
-        ttk.Label(self.main, text="Loss Function").grid(column=1, row=4)
-        ttk.Label(self.main, text="Image Properties", font=("Verdana", 14)).grid(
+        ctk.CTkLabel(self.main, text="Root Directory").grid(column=1, row=2)
+        ctk.CTkLabel(self.main, text="Model Path").grid(column=1, row=3)
+        ctk.CTkLabel(self.main, text="Loss Function").grid(column=1, row=4)
+        ctk.CTkLabel(self.main, text="Image Properties", font=("Verdana", 14)).grid(
             column=1, row=6, sticky=W
         )
-        ttk.Label(self.main, text="Scaling Type").grid(column=1, row=7)
-        ttk.Label(self.main, text="Muscle").grid(column=1, row=8)
-        ttk.Label(self.main, text="Muscle Volume", font=("Verdana", 14)).grid(
+        ctk.CTkLabel(self.main, text="Scaling Type").grid(column=1, row=7)
+        ctk.CTkLabel(self.main, text="Muscle").grid(column=1, row=8)
+        ctk.CTkLabel(self.main, text="Muscle Volume", font=("Verdana", 14)).grid(
             column=1, row=13, sticky=W
         )
-        ttk.Label(self.main, text="Volume Calculation").grid(column=1, row=14)
+        ctk.CTkLabel(self.main, text="Volume Calculation").grid(column=1, row=14)
 
         # Separators
         ttk.Separator(self.main, orient="horizontal", style="TSeparator").grid(
@@ -372,7 +367,7 @@ class DeepACSA:
         for child in self.main.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
-        root.bind("<Return>", self.run_code)  # execute by pressing return
+        self.bind("<Return>", self.run_code)  # execute by pressing return
 
     # --------------------------------------------------------------------------------------------------
     # Functionalities used in GUI
@@ -1241,14 +1236,12 @@ def runMain() -> None:
 
     For documentation of DL_Track see top of this module.
     """
-    root = Tk()
-    DeepACSA(root)
-    root.mainloop()
+    app = DeepACSA()
+    app.mainloop()
 
 
 # This statement is required to execute the GUI by typing 'python deep_acsa_gui.py' in the prompt
 # when navigated to the folder containing the file and all dependencies.
 if __name__ == "__main__":
-    root = Tk()
-    DeepACSA(root)
-    root.mainloop()
+    app = DeepACSA()
+    app.mainloop()
