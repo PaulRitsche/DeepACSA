@@ -24,6 +24,11 @@ class ACSAutoApp(ctk.CTk):
         self.title("ACSAuto - Anatomical Cross-Sectional Area Analysis")
         self.geometry("1000x600")
         self.configure(padx=10, pady=10)
+        master_path = os.path.dirname(os.path.abspath(__file__))
+        theme_path = os.path.join(
+            master_path, "..", "gui_helpers", "gui_files", "ui_color_theme.json"
+        )
+        ctk.set_default_color_theme(theme_path)
 
         # Variables
         self.analysis_type = ctk.StringVar(value="Folder")
@@ -134,6 +139,9 @@ class ACSAutoApp(ctk.CTk):
         self.canvas.bind("<B1-Motion>", self.on_mouse_move)
         self.canvas.bind("<ButtonRelease-1>", self.on_mouse_up)
         self.bind("<Delete>", self.on_delete_circle)
+
+        for child in main_frame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
     def select_input_source(self):
         if self.analysis_type.get() == "Folder":

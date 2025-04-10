@@ -1,0 +1,39 @@
+.. A new scriv changelog fragment.
+..
+.. Uncomment the header that is right (remove the leading dots).
+..
+Removed
+-------
+
+- GUI advanced modules from main GUI file. 
+- Loss function declaration in the main GUI file.
+
+Added
+-----
+
+- GUI advanced modules subdir.
+- Support for more models (swinunet, 3Dunet)
+- No Scaling analysis option,
+
+Changed
+-------
+
+- ALoading of models now based on names
+- GUI graphics and layout.
+- Create masks not has full customtkiner support.
+
+.. Deprecated
+.. ----------
+..
+.. - A bullet item for the Deprecated category.
+..
+.. Fixed
+.. -----
+..
+.. - A bullet item for the Fixed category.
+..
+.. Security
+.. --------
+..
+.. - A bullet item for the Security category.
+..

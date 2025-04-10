@@ -3,8 +3,12 @@
 import os
 import tkinter as tk
 from tkinter import ttk
+import shutil
+from pathlib import Path
+from PIL import Image, ImageDraw
 
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -31,8 +35,8 @@ def show_outliers_popup(df, dir1, dir2):
     popup = tk.Toplevel()
     popup.title("Outliers")
     master_path = os.path.dirname(os.path.abspath(__file__))
-    iconpath = master_path + "/icon.ico"
-    popup.iconbitmap(iconpath)
+    iconpath = master_path + "/home_im.ico"
+    # popup.iconbitmap(iconpath)
 
     label = tk.Label(popup, text=f"Comparing images in {dir1} \nand {dir2}")
     label.pack(pady=10)
@@ -244,9 +248,12 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
         ultrasound = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
 
-        # Create a colored mask with green color
+        # Ensure both images have the same dimensions by resizing the mask
+        ultrasound = cv2.resize(ultrasound, (mask.shape[1], mask.shape[0]))
+
+        # Create a colored mask with green color for the white regions in the mask
         colored_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-        colored_mask[mask == 255] = [0, 255, 0]  # Green color for mask
+        colored_mask[mask > 0] = [0, 255, 0]  # Green color for mask regions
 
         # Convert the ultrasound image to color
         ultrasound_colored = cv2.cvtColor(ultrasound, cv2.COLOR_GRAY2BGR)
@@ -256,10 +263,12 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
 
         return overlaid_image
 
+    matplotlib.use("TkAgg")
+
     # Create an interactive plot
     fig, ax = plt.subplots(1, 1)
     fig.set_size_inches(20 / 2.45, 15 / 2.54)
-    fig.set_facecolor("#7ABAA1")
+    fig.set_facecolor("#2A484E")
     current_idx = start_index
 
     # Function to handle delete button click
@@ -319,7 +328,8 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
             ax.set_title(
                 f"Image: {image_files[current_idx]}"
                 + "\nClick right/left arrow to navigate through images"
-                + "\nClick Delete to delete the image-mask pair."
+                + "\nClick Delete to delete the image-mask pair.",
+                color="white",
             )
 
             # Turn off axis display
@@ -372,3 +382,78 @@ def overlay_directory_images(image_dir, mask_dir, alpha=0.5, start_index=0):
 
     display_current_image()
     plt.show()
+
+
+def collect_images(root_dir, target_dir, image_type):
+    """
+    Searches through the root directory and its subdirectories for images of the
+    specified type and copies them to the target directory with modified names to
+    avoid overwriting. The modified name format is original_filename_n.extension, where
+    n starts from 0.
+
+    Parameters
+    ----------
+    root_dir : str
+        The root directory to search for images.
+    target_dir : str
+        The directory where found images will be stored.
+    image_type : str
+        The type of the images to search for (e.g., 'jpg', 'png', 'tiff').
+
+    Notes
+    -----
+    The function creates the target directory if it does not already exist.
+    """
+    # Ensure target directory exists
+    Path(target_dir).mkdir(parents=True, exist_ok=True)
+    file_counter = {}
+
+    for subdir, dirs, files in os.walk(root_dir):
+        for file in files:
+            if file.endswith("." + image_type):
+                # Check if the file name is already in our counter dictionary
+                if file in file_counter:
+                    # Increment the counter for that file name
+                    file_counter[file] += 1
+                else:
+                    # Initialize counter for this file name
+                    file_counter[file] = 0
+
+                src_path = os.path.join(subdir, file)
+                # Modify the target file name to include the counter
+                file_name, file_ext = os.path.splitext(file)
+                target_file_name = f"{file_name}_{file_counter[file]}{file_ext}"
+                target_path = os.path.join(target_dir, target_file_name)
+
+                shutil.copy(src_path, target_path)
+
+
+def redact_images_in_directory(directory):
+    """
+    Redacts the upper 50 pixels of every image in the specified directory by
+    drawing a black rectangle over them. The images are saved under the same
+    names in the same directory.
+
+    Parameters
+    ----------
+    directory : str
+        The path to the directory containing the images to be redacted.
+    """
+    for filename in os.listdir(directory):
+        # Check if the file is an image based on its extension.
+        # You might want to adjust the list of extensions based on your needs.
+        if filename.lower().endswith(
+            (".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".gif", ".tif")
+        ):
+            try:
+                filepath = os.path.join(directory, filename)
+                with Image.open(filepath) as img:
+                    # Use ImageDraw to draw a black rectangle over the top 50 pixels
+                    draw = ImageDraw.Draw(img)
+                    draw.rectangle([0, 0, img.width, 60], fill="black")
+
+                    # Save the image, overwriting the original file
+                    img.save(filepath)
+                print(f"Processed {filename}")
+            except Exception as e:
+                print(f"Failed to process {filename}: {e}")

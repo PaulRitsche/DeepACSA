@@ -40,8 +40,11 @@ from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
 import matplotlib
 
 from DeepACSA import gui_helpers
+from DeepACSA.gui_modules import AdvancedAnalysis
 
 matplotlib.use("TkAgg")
+
+# TODO Docs
 
 
 class DeepACSA(ctk.CTk):
@@ -92,7 +95,7 @@ class DeepACSA(ctk.CTk):
     self.scaling : tk.Stringvar
         tk.Stringvariable containing the selected scaling type.
         This can be "bar", "manual" or "no scaling".
-    self.muscle_volume_calculation_wanted : tk.Stringvar
+    self.volume_calc_wanted : tk.Stringvar
         tk.Stringvariale defining whether the muscle volume
         should be calculated.
         This can be "yes" or "no".
@@ -218,40 +221,14 @@ class DeepACSA(ctk.CTk):
         # root.columnconfigure(0, weight=1)
         # root.rowconfigure(0, weight=1)
 
-        # Style
-        style = ttk.Style()
-        style.theme_use("clam")
-        style.configure("TFrame", background="#7ABAA1")
-        style.configure(
-            "TLabel",
-            font=("Lucida Sans", 12),
-            foreground="black",
-            background="#7ABAA1",
-        )
-        style.configure(
-            "TRadiobutton",
-            background="#7ABAA1",
-            foreground="black",
-            font=("Lucida Sans", 12),
-        )
-        style.configure(
-            "TButton",
-            background="#EADCC3",
-            foreground="black",
-            font=("Lucida Sans", 11),
-        )
-        style.configure(
-            "TEntry", font=("Lucida Sans", 12), background="linen", foregrund="black"
-        )
-        style.configure("TSeparator", background="linen", foreground="linen")
-        style.configure("TCombobox", background="#7ABAA1", foreground="black")
-
         # Paths
         # Input directory
         self.input = ctk.StringVar()
         input_entry = ctk.CTkEntry(self.main, width=30, textvariable=self.input)
         input_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
-        # self.input.set("Desktop/DeepACSA/")
+        self.input.set(
+            "C:/Users/admin/Desktop/DeepACSA_example_v0.3.1/DeepACSA_example_v0.3.1/images_test"
+        )
         # Model path
         self.model = ctk.StringVar()
         model_entry = ctk.CTkEntry(self.main, width=30, textvariable=self.model)
@@ -262,10 +239,12 @@ class DeepACSA(ctk.CTk):
         self.scaling_menu = ctk.CTkComboBox(
             self.main,
             variable=self.scaling,
-            values=["Line", "Bar", "Manual"],
+            values=["Line", "Bar", "Manual", "No Scaling"],
             command=self.on_scaling_change,
+            state="readonly",
         )
-        self.scaling_menu.grid(column=2, row=7, sticky=W)
+        self.scaling_menu.grid(column=2, row=7, sticky=(W, E))
+        self.scaling_menu.set("No Scaling")
 
         self.volume_calc_wanted = ctk.StringVar(value="No")
         self.volume_menu = ctk.CTkComboBox(
@@ -277,30 +256,24 @@ class DeepACSA(ctk.CTk):
         )
         self.volume_menu.grid(column=3, row=14, sticky=(W, E))
 
-        # Comboboxes
-        # Loss Function
-        self.loss_function = StringVar()
-        loss_entry = ctk.CTkComboBox(
-            self.main,
-            width=15,
-            values=["IoU", "Dice Loss", "Focal Loss"],
-            variable=self.loss_function,
-            state="readonly",
-        )
-        loss_entry.grid(column=4, row=4, sticky=(W, E))
-        self.loss_function.set("Loss Function")
-
-        # Muscles
+        # Structure to segment
         self.muscle = StringVar()
         muscle_entry = ctk.CTkComboBox(
             self.main,
-            width=10,
-            values=["VL", "RF", "GM", "GL", "BF"],
+            values=[
+                "Vastus Lateralis",
+                "Rectus Femoris",
+                "Gastrocnemius Medialis",
+                "Gastrocnemius Lateralis",
+                "Biceps Femoris",
+                "Vastus Medialis",
+                "Patellar Tendon",
+            ],
             state="readonly",
             variable=self.muscle,
         )
         muscle_entry.grid(column=2, row=8, sticky=(W, E))
-        self.muscle.set("RF")
+        self.muscle.set("Recus Femoris")
 
         # Buttons
         # Input directory
@@ -321,18 +294,13 @@ class DeepACSA(ctk.CTk):
         run_button = ctk.CTkButton(self.main, text="Run", command=self.run_code)
         run_button.grid(column=2, row=17, sticky=(W, E))
 
-        # Advanced button with style
-        style.configure(
-            "B.TButton",
-            background="black",
-            foreground="white",
-            font=("Lucida Sans", 11),
-        )
         advanced_button = ctk.CTkButton(
             self.main,
             text="Advanced Methods",
-            command=self.advanced_methods,
-            # style="B.TButton",
+            command=lambda: (AdvancedAnalysis(self),),
+            fg_color="#000000",
+            text_color="#FFFFFF",
+            border_color="yellow3",
         )
         advanced_button.grid(column=5, row=17, sticky=E)
 
@@ -342,12 +310,11 @@ class DeepACSA(ctk.CTk):
         )
         ctk.CTkLabel(self.main, text="Root Directory").grid(column=1, row=2)
         ctk.CTkLabel(self.main, text="Model Path").grid(column=1, row=3)
-        ctk.CTkLabel(self.main, text="Loss Function").grid(column=1, row=4)
         ctk.CTkLabel(self.main, text="Image Properties", font=("Verdana", 14)).grid(
             column=1, row=6, sticky=W
         )
         ctk.CTkLabel(self.main, text="Scaling Type").grid(column=1, row=7)
-        ctk.CTkLabel(self.main, text="Muscle").grid(column=1, row=8)
+        ctk.CTkLabel(self.main, text="Structure").grid(column=1, row=8)
         ctk.CTkLabel(self.main, text="Muscle Volume", font=("Verdana", 14)).grid(
             column=1, row=13, sticky=W
         )
@@ -366,6 +333,22 @@ class DeepACSA(ctk.CTk):
 
         for child in self.main.winfo_children():
             child.grid_configure(padx=5, pady=5)
+
+        # Label above progress bar
+        self.progress_label = ctk.CTkLabel(
+            self.main, text="Predicting images...", font=("Verdana", 8)
+        )
+        self.progress_label.grid(column=1, row=18, columnspan=4, sticky="w", padx=10)
+        self.after(100, self.progress_label.grid_remove)
+
+        self.progress_var = ctk.DoubleVar(value=0)
+        self.progress_bar = ctk.CTkProgressBar(self.main, variable=self.progress_var)
+        self.progress_bar.grid(
+            column=1, row=19, columnspan=4, sticky="ew", padx=10, pady=2
+        )
+        self.progress_bar.set(0)
+        self.progress_bar.configure(mode="determinate")
+        self.after(100, self.progress_bar.grid_remove())
 
         self.bind("<Return>", self.run_code)  # execute by pressing return
 
@@ -396,7 +379,7 @@ class DeepACSA(ctk.CTk):
         Instance method to adpat GUI layout based on volume
         calculation selection.
         """
-        if self.muscle_volume_calculation_wanted.get() == "Yes":
+        if self.volume_calc_wanted.get() == "Yes":
             # Distance between ACSA for Volume Calculation
             self.volume_label = ttk.Label(self.main, text="Slice Distance (cm)")
             self.volume_label.grid(column=1, row=15)
@@ -408,7 +391,7 @@ class DeepACSA(ctk.CTk):
             self.distance_entry.grid(column=2, row=15, sticky=(W, E))
             self.distance.set(7)
 
-        if self.muscle_volume_calculation_wanted.get() == "No":
+        if self.volume_calc_wanted.get() == "No":
             # Destroy widget on selection
             if hasattr(self, "distance"):
                 self.distance_entry.grid_remove()
@@ -421,15 +404,17 @@ class DeepACSA(ctk.CTk):
         """
         if self.scaling.get() == "Bar":
             # Spacing
-            self.spacing_label = ttk.Label(self.main, text="Spacing (mm)")
+            self.spacing_label = ctk.CTkLabel(self.main, text="Spacing (mm)")
             self.spacing_label.grid(column=1, row=10)
             self.spacing = StringVar()
-            spacing = (5, 10, 15, 20)
-            self.spacing_entry = ttk.Combobox(
-                self.main, width=10, textvariable=self.spacing
+            spacing = [5, 10, 15, 20]
+            self.spacing_entry = ctk.CTkComboBox(
+                self.main,
+                width=10,
+                variable=self.spacing,
+                values=spacing,
+                state="readonly",
             )
-            self.spacing_entry["values"] = spacing
-            self.spacing_entry["state"] = "readonly"
             self.spacing_entry.grid(column=2, row=10, sticky=(W, E))
             self.spacing.set(10)
 
@@ -439,15 +424,13 @@ class DeepACSA(ctk.CTk):
 
         elif self.scaling.get() == "Line":
             # Image Depth
-            self.depth_label = ttk.Label(self.main, text="Depth (cm)")
+            self.depth_label = ctk.CTkLabel(self.main, text="Depth (cm)")
             self.depth_label.grid(column=1, row=9)
             self.depth = StringVar()
-            depth = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8)
-            self.depth_entry = ttk.Combobox(
-                self.main, width=10, textvariable=self.depth
+            depth = [2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8]
+            self.depth_entry = ctk.CTkombobox(
+                self.main, width=10, variable=self.depth, values=depth
             )
-            self.depth_entry["values"] = depth
-            # depth_entry["state"] = "readonly"
             self.depth_entry.grid(column=2, row=9, sticky=(W, E))
             self.depth.set(5.5)
 
@@ -465,526 +448,14 @@ class DeepACSA(ctk.CTk):
                 self.depth_label.grid_remove()
                 self.depth_entry.grid_remove()
 
-    # ---------------------------------------------------------------------------------------------------
-    # Open new toplevel instance for advanced methods
-    def advanced_methods(self):
-        """
-        Function to open a toplevel where masks
-        can either be created for training purposes or
-        can be inspected subsequent to labelling.
-        """
-        # Open Window
-        self.advanced_window = tk.Toplevel(bg="#7ABAA1")
-        self.advanced_window.title("Advanced Methods Window")
-        master_path = os.path.dirname(os.path.abspath(__file__))
-        iconpath = master_path + "/gui_helpers/icon.ico"
-        self.advanced_window.iconbitmap(iconpath)
-        self.advanced_window.grab_set()
+        elif self.scaling.get() == "No Scaling":
+            if hasattr(self, "spacing"):
+                self.spacing_label.grid_remove()
+                self.spacing_entry.grid_remove()
 
-        ttk.Label(self.advanced_window, text="Select Method").grid(column=1, row=0)
-
-        # Mask Option
-        self.advanced_option = StringVar()
-        advanced_entry = ttk.Combobox(
-            self.advanced_window, width=20, textvariable=self.advanced_option
-        )
-        advanced_entry["values"] = ("Train Model", "Create Masks", "Inspect Masks")
-        advanced_entry["state"] = "readonly"
-        advanced_entry.grid(column=1, row=1, sticky=(W, E))
-        self.advanced_option.set(" ")
-        self.advanced_option.trace("w", self.on_mask_change)
-
-        # Add padding
-        for child in self.advanced_window.winfo_children():
-            child.grid_configure(padx=5, pady=5)
-
-    def on_mask_change(self, *args):
-        """
-        Depending on which mask opration is selected,
-        this function adapts the GUI.
-
-        Instance method to open new window for model training.
-        The window is opened upon pressing of the "analysis parameters"
-        button.
-
-        Several parameters are displayed.
-        - Image Directory:
-        The user must select or input the image directory. This
-        path must to the directory containing the training images.
-        Images must be in RGB format.
-        - Mask Directory:
-        The user must select or input the mask directory. This
-        path must to the directory containing the training images.
-        Masks must be binary.
-        - Output Directory:
-        The user must select or input the mask directory. This
-        path must lead to the directory where the trained model
-        and the model weights should be saved.
-        - Batch Size:
-        The user must input the batch size used during model training by
-        selecting from the dropdown list or entering a value.
-        Although a larger batch size has advantages during model trainig,
-        the images used here are large. Thus, the larger the batch size,
-        the more compute power is needed or the longer the training duration.
-        Integer, must be non-negative and non-zero.
-        - Learning Rate:
-        The user must enter the learning rate used for model training by
-        selecting from the dropdown list or entering a value.
-        Float, must be non-negative and non-zero.
-        - Epochs:
-        The user must enter the number of Epochs used during model training by
-        selecting from the dropdown list or entering a value.
-        The total amount of epochs will only be used if early stopping does not happen.
-        Integer, must be non-negative and non-zero.
-        - Loss Function:
-        The user must enter the loss function used for model training by
-        selecting from the dropdown list. These can be "BCE" (binary
-        cross-entropy), "Dice" (Dice coefficient) or "FL"(Focal loss).
-
-        Model training is started by pressing the "start training" button. Although
-        all parameters relevant for model training can be adapted, we advise users with
-        limited experience to keep the pre-defined settings. These settings are best
-        practice and devised from the original papers that proposed the models used
-        here. Singularly the batch size should be adapted to 1 if comupte power is limited
-        (no GPU or GPU with RAM lower than 8 gigabyte).
-
-        There is an "Augment Images" button, which allows to generate new training images.
-        The images and masks for the data augmentation are taken from the chosen image directory
-        and mask directory. The new images are saved under the same directories.
-        """
-        # make new frame
-        self.advanced_window_frame = ttk.Frame(
-            self.advanced_window, padding="10 10 12 12"
-        )
-        self.advanced_window_frame.grid(column=1, row=2, sticky=(N, S, W, E))
-
-        try:
-
-            if self.advanced_option.get() == "Inspect Masks":
-
-                if hasattr(self, "mask_button"):
-                    self.mask_button.destroy()
-
-                # Train image directory
-                self.raw_image_dir = StringVar()
-                image_entry = ttk.Entry(
-                    self.advanced_window_frame,
-                    width=30,
-                    textvariable=self.raw_image_dir,
-                )
-                image_entry.grid(column=1, row=2, columnspan=2, sticky=(W, E))
-                self.raw_image_dir.set("Select Raw Image Directory")
-
-                dir1_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Image Dir",
-                    command=lambda: (self.raw_image_dir.set(filedialog.askdirectory())),
-                )
-                dir1_button.grid(column=3, row=2, sticky=(W, E))
-
-                # Mask directory
-                self.mask_image_dir = StringVar()
-                self.mask_image_entry = ttk.Entry(
-                    self.advanced_window_frame,
-                    width=30,
-                    textvariable=self.mask_image_dir,
-                )
-                self.mask_image_entry.grid(column=1, row=3, columnspan=2, sticky=(W, E))
-                self.mask_image_dir.set("Select Mask Image Directory")
-
-                self.dir2_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Mask Dir",
-                    command=lambda: (
-                        self.mask_image_dir.set(filedialog.askdirectory())
-                    ),
-                )
-                self.dir2_button.grid(column=3, row=3, sticky=(W, E))
-
-                # Start index
-                self.start_label = ttk.Label(
-                    self.advanced_window_frame, text="Start at Image:"
-                )
-                self.start_label.grid(column=1, row=4, sticky=W)
-                start_idx = StringVar()
-                self.idx = ttk.Entry(
-                    self.advanced_window_frame, width=10, textvariable=start_idx
-                )
-                self.idx.grid(column=2, row=4, sticky=W)
-                start_idx.set("0")
-
-                # Inspect button
-                self.inspect_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Inspect Masks",
-                    command=lambda: (
-                        self.advanced_window.destroy(),
-                        gui_helpers.find_outliers(
-                            dir1=self.raw_image_dir.get(),
-                            dir2=self.mask_image_dir.get(),
-                        ),
-                        gui_helpers.overlay_directory_images(
-                            image_dir=self.raw_image_dir.get(),
-                            mask_dir=self.mask_image_dir.get(),
-                            start_index=int(start_idx.get()),
-                        ),
-                    ),
-                )
-                self.inspect_button.grid(column=2, row=5, sticky=(W, E))
-
-            elif self.advanced_option.get() == "Create Masks":
-
-                # Forget widgets
-                if hasattr(self, "train_image_dir"):
-                    for widget in self.advanced_window_frame.winfo_children():
-                        widget.destroy()
-
-                if hasattr(self, "dir2_button"):
-                    self.dir2_button.destroy()
-                    self.mask_image_entry.destroy()
-                    self.inspect_button.destroy()
-                    self.idx.destroy()
-                    self.start_label.destroy()
-
-                # Train image directory
-                self.raw_image_dir = StringVar()
-                image_entry = ttk.Entry(
-                    self.advanced_window_frame,
-                    width=30,
-                    textvariable=self.raw_image_dir,
-                )
-                image_entry.grid(column=1, row=2, columnspan=2, sticky=(W, E))
-                self.raw_image_dir.set("Select Raw Image Directory")
-
-                dir1_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Image Dir",
-                    command=lambda: (self.raw_image_dir.set(filedialog.askdirectory())),
-                )
-                dir1_button.grid(column=3, row=2, sticky=(W, E))
-
-                # Train image directory
-                self.raw_image_dir = StringVar()
-                mask_entry = ttk.Entry(
-                    self.advanced_window_frame,
-                    width=30,
-                    textvariable=self.raw_image_dir,
-                )
-                mask_entry.grid(column=1, row=2, columnspan=2, sticky=(W, E))
-                self.raw_image_dir.set("Select Raw Image Directory")
-
-                # Mask button
-                self.mask_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Create Masks",
-                    command=lambda: (
-                        self.advanced_window.destroy(),
-                        gui_helpers.create_acsa_masks(
-                            input_dir=self.raw_image_dir.get(), muscle_name="image"
-                        ),
-                    ),
-                )
-                self.mask_button.grid(column=2, row=3, sticky=(W, E))
-
-            elif self.advanced_option.get() == "Train Model":
-                # Labels
-                ttk.Label(
-                    self.advanced_window_frame,
-                    text="Training Directories",
-                    font=("Verdana", 14),
-                ).grid(column=1, row=0, padx=10)
-                ttk.Label(self.advanced_window_frame, text="Image Directory").grid(
-                    column=1, row=2
-                )
-                ttk.Label(self.advanced_window_frame, text="Mask Directory").grid(
-                    column=1, row=3
-                )
-                ttk.Label(self.advanced_window_frame, text="Output Directory").grid(
-                    column=1, row=4
-                )
-
-                ttk.Label(
-                    self.advanced_window_frame,
-                    text="Hyperparameters",
-                    font=("Verdana", 14),
-                ).grid(column=1, row=6, padx=10)
-                ttk.Label(self.advanced_window_frame, text="Batch Size").grid(
-                    column=1, row=7
-                )
-                ttk.Label(self.advanced_window_frame, text="Learning Rate").grid(
-                    column=1, row=8
-                )
-                ttk.Label(self.advanced_window_frame, text="Epochs").grid(
-                    column=1, row=9
-                )
-                ttk.Label(self.advanced_window_frame, text="Loss Function").grid(
-                    column=1, row=10
-                )
-
-                # Entryboxes
-                # Train image directory
-                self.train_image_dir = StringVar()
-                train_image_entry = ttk.Entry(
-                    self.advanced_window_frame,
-                    width=30,
-                    textvariable=self.train_image_dir,
-                )
-                train_image_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
-                self.train_image_dir.set("C:/Users/admin/Documents/DeepACSA")
-
-                # Mask directory
-                self.mask_dir = StringVar()
-                mask_entry = ttk.Entry(
-                    self.advanced_window_frame, width=30, textvariable=self.mask_dir
-                )
-                mask_entry.grid(column=2, row=3, columnspan=3, sticky=(W, E))
-                self.mask_dir.set("C:/Users/admin/Documents/DeepACSA")
-
-                # Output path
-                self.out_dir = StringVar()
-                out_entry = ttk.Entry(
-                    self.advanced_window_frame, width=30, textvariable=self.out_dir
-                )
-                out_entry.grid(column=2, row=4, columnspan=3, sticky=(W, E))
-                self.out_dir.set("C:/Users/admin/Documents/DeepACSA")
-
-                # Buttons
-                # Train image button
-                train_img_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Images",
-                    command=self.get_train_dir,
-                )
-                train_img_button.grid(column=5, row=2, sticky=E)
-
-                # Mask button
-                mask_button = ttk.Button(
-                    self.advanced_window_frame, text="Masks", command=self.get_mask_dir
-                )
-                mask_button.grid(column=5, row=3, sticky=E)
-
-                # Data augmentation button
-                data_augmentation_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Augment Images",
-                    command=self.augment_images,
-                )
-                data_augmentation_button.grid(column=4, row=12, sticky=E)
-
-                # Input directory
-                out_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Output",
-                    command=self.get_output_dir,
-                )
-                out_button.grid(column=5, row=4, sticky=E)
-
-                # Model train button
-                model_button = ttk.Button(
-                    self.advanced_window_frame,
-                    text="Start Training",
-                    command=self.train_model,
-                )
-                model_button.grid(column=5, row=12, sticky=E)
-
-                # Comboboxes
-                # Batch size
-                self.batch_size = StringVar()
-                size = ("1", "2", "3", "4", "5", "6")
-                size_entry = ttk.Combobox(
-                    self.advanced_window_frame, width=10, textvariable=self.batch_size
-                )
-                size_entry["values"] = size
-                size_entry.grid(column=2, row=7, sticky=(W, E))
-                self.batch_size.set("1")
-
-                # Learning rate
-                self.learn_rate = StringVar()
-                learn = ("0.005", "0.001", "0.0005", "0.0001", "0.00005", "0.00001")
-                learn_entry = ttk.Combobox(
-                    self.advanced_window_frame, width=10, textvariable=self.learn_rate
-                )
-                learn_entry["values"] = learn
-                learn_entry.grid(column=2, row=8, sticky=(W, E))
-                self.learn_rate.set("0.00001")
-
-                # Number of training epochs
-                self.epochs = StringVar()
-                epoch = ("30", "40", "50", "60", "70", "80")
-                epoch_entry = ttk.Combobox(
-                    self.advanced_window_frame, width=10, textvariable=self.epochs
-                )
-                epoch_entry["values"] = epoch
-                epoch_entry.grid(column=2, row=9, sticky=(W, E))
-                self.epochs.set("3")
-
-                # Loss function
-                self.loss_function = StringVar()
-                loss = ("BCE", "Dice", "FL")
-                loss_entry = ttk.Combobox(
-                    self.advanced_window_frame,
-                    width=10,
-                    textvariable=self.loss_function,
-                )
-                loss_entry["values"] = loss
-                loss_entry["state"] = "readonly"
-                loss_entry.grid(column=2, row=10, sticky=(W, E))
-                self.loss_function.set("BCE")
-
-                # Seperators
-                ttk.Separator(
-                    self.advanced_window_frame, orient="horizontal", style="TSeparator"
-                ).grid(column=0, row=5, columnspan=9, sticky=(W, E))
-                ttk.Separator(
-                    self.advanced_window_frame, orient="horizontal", style="TSeparator"
-                ).grid(column=0, row=11, columnspan=9, sticky=(W, E))
-
-        except FileNotFoundError:
-            tk.messagebox.showerror("Information", "Enter the coorect folder path!")
-
-        # Add padding
-        for child in self.advanced_window_frame.winfo_children():
-            child.grid_configure(padx=5, pady=5)
-
-    # ---------------------------------------------------------------------------------------------------
-    ## Methods used for model training
-
-    def get_train_dir(self):
-        """
-        Instance method to ask the user to select the training image
-        directory path. All image files (of the same specified filetype) in
-        the directory are analysed. This must be an absolute path.
-        """
-        train_image_dir = filedialog.askdirectory()
-        self.train_image_dir.set(train_image_dir)
-
-    def get_mask_dir(self):
-        """
-        Instance method to ask the user to select the training mask
-        directory path. All mask files (of the same specified filetype) in
-        the directory are analysed.The mask files and the corresponding
-        image must have the exact same name. This must be an absolute path.
-        """
-        mask_dir = filedialog.askdirectory()
-        self.mask_dir.set(mask_dir)
-
-    def get_output_dir(self):
-        """
-        Instance method to ask the user to select the output
-        directory path. Here, all file created during model
-        training (model file, weight file, graphs) are saved.
-        This must be an absolute path.
-        """
-        out_dir = filedialog.askdirectory()
-        self.out_dir.set(out_dir)
-
-    def train_model(self):
-        """
-        Instance method to execute the model training when the
-        "start training" button is pressed.
-
-        By pressing the button, a seperate thread is started
-        in which the model training is run. This allows the user to break any
-        training process at certain stages. When the analysis can be
-        interrupted, a tk.messagebox opens asking the user to either
-        continue or terminate the analysis. Moreover, the threading allows interaction
-        with the GUI during ongoing analysis process.
-        """
-        try:
-            # See if GUI is already running
-            if self.is_running:
-                # don't run again if it is already running
-                return
-            self.is_running = True
-
-            # Get input paremeter
-            selected_images = self.train_image_dir.get()
-            selected_masks = self.mask_dir.get()
-            selected_outpath = self.out_dir.get()
-
-            # Make sure some kind of filetype is specified.
-            if (
-                len(selected_images) < 3
-                or len(selected_masks) < 3
-                or len(selected_outpath) < 3
-            ):
-                tk.messagebox.showerror("Information", "Specified directories invalid.")
-                self.should_stop = False
-                self.is_running = False
-                self.do_break()
-                return
-
-            selected_batch_size = int(self.batch_size.get())
-            selected_learning_rate = float(self.learn_rate.get())
-            selected_epochs = int(self.epochs.get())
-            selected_loss_function = self.loss_function.get()
-
-            # Start thread
-            thread = Thread(
-                target=gui_helpers.trainModel,
-                args=(
-                    selected_images,
-                    selected_masks,
-                    selected_outpath,
-                    selected_batch_size,
-                    selected_learning_rate,
-                    selected_epochs,
-                    selected_loss_function,
-                    self,
-                ),
-            )
-
-            thread.start()
-
-        # Error handling
-        except ValueError:
-            tk.messagebox.showerror(
-                "Information", "Analysis parameter entry fields" + " must not be empty."
-            )
-            self.do_break()
-            self.should_stop = False
-            self.is_running = False
-
-    ## Method used for data augmentation
-
-    def augment_images(self):
-        """
-        Instance method to augment input images, when the "Augment Images" button is pressed.
-        Input parameters for the gui_helpers.image_augmentation function are taken from the chosen
-        image and mask directories. The newly generated data will be saved under the same
-        directories.
-        """
-        try:
-            # See if GUI is already running
-            if self.is_running:
-                # don't run again if it is already running
-                return
-            self.is_running = True
-
-            # Get input paremeters
-            selected_images = self.train_image_dir.get()
-            selected_masks = self.mask_dir.get()
-
-            # Make sure some kind of filetype is specified.
-            if len(selected_images) < 3 or len(selected_masks) < 3:
-                tk.messagebox.showerror("Information", "Specified directories invalid.")
-                self.should_stop = False
-                self.is_running = False
-                self.do_break()
-                return
-
-            gui_helpers.image_augmentation(selected_images, selected_masks, self)
-
-        # Error handling
-        except ValueError:
-            tk.messagebox.showerror(
-                "Information",
-                "Check input parameters"
-                + "\nPotential error source: Invalid directories",
-            )
-            self.do_break()
-            self.should_stop = False
-            self.is_running = False
+            if hasattr(self, "depth"):
+                self.depth_label.grid_remove()
+                self.depth_entry.grid_remove()
 
     # ---------------------------------------------------------------------------------------------------
     # Methods to run the code
@@ -1026,10 +497,10 @@ class DeepACSA(ctk.CTk):
 
             selected_input_dir = self.input.get()
             selected_model_path = self.model.get()
-            selected_loss = self.loss_function.get()
+            # selected_loss = self.loss_function.get()
             selected_muscle = self.muscle.get()
             selected_scaling = self.scaling.get()
-            selected_volume_calculation = self.muscle_volume_calculation_wanted.get()
+            selected_volume_calculation = self.volume_calc_wanted.get()
 
             # Use distance for volumne only if selected
             if selected_volume_calculation == "Yes":
@@ -1059,17 +530,6 @@ class DeepACSA(ctk.CTk):
                 self.do_break()
                 return
 
-            elif selected_loss == "Loss Function":
-                tk.messagebox.showerror(
-                    "Information",
-                    "Check model loss function."
-                    + "\nPotential error source:  Invalid specified loss",
-                )
-                self.should_stop = False
-                self.is_running = False
-                self.do_break()
-                return
-
             if selected_scaling == "Line":
                 selected_depth = float(self.depth.get())
 
@@ -1090,7 +550,6 @@ class DeepACSA(ctk.CTk):
                     args=(
                         selected_input_dir,
                         selected_model_path,
-                        selected_loss,
                         selected_depth,
                         selected_muscle,
                         selected_volume_calculation,
@@ -1108,7 +567,6 @@ class DeepACSA(ctk.CTk):
                     args=(
                         selected_input_dir,
                         selected_model_path,
-                        selected_loss,
                         selected_spacing,
                         selected_muscle,
                         selected_scaling,
@@ -1125,6 +583,16 @@ class DeepACSA(ctk.CTk):
                 "Information",
                 "Check input parameters."
                 + "\nPotential error source:  Invalid specified depth, distance or volume",
+            )
+            self.should_stop = False
+            self.is_running = False
+            self.do_break()
+
+        except AttributeError:
+            tk.messagebox.showerror(
+                "Information",
+                "Check input parameters."
+                + "\nPotential error source:  No scaling type or spacing value specified",
             )
             self.should_stop = False
             self.is_running = False

@@ -5,7 +5,10 @@ dependencies:
   - python=3.9
   - pip=21.0.1
   - pip:
+    - customtkinter==5.2.2
+    - CTkToolTip==0.8
     - Keras==2.9.0
+    - keras-unet-collection==0.1.13
     - matplotlib==3.5.2
     - numpy==1.21.2
     - opencv-contrib-python==4.5.3.56

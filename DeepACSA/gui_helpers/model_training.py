@@ -61,6 +61,7 @@ from keras.models import Model
 from keras.optimizers import Adam
 from skimage.transform import resize
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 from tensorflow.keras.applications import VGG16
 
 # from keras.preprocessing.image import img_to_array, load_img
@@ -294,14 +295,24 @@ def IoU(y_true, y_pred, smooth: int = 1) -> float:
             smooth=1)
     Tensor("truediv:0", shape=(1, 512, 512), dtype=float32)
     """
-    # Caclulate Intersection
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    # Calculate Union
-    union = K.sum(y_true, -1) + K.sum(y_pred, -1) - intersection
-    # Calculate IoU
-    iou = (intersection + smooth) / (union + smooth)
+    dtype = tf.float32
+    y_pred = tf.cast(y_pred, dtype)
+    y_true = tf.cast(y_true, y_pred.dtype)
 
-    return iou
+    y_pred = tf.squeeze(y_pred)
+    y_true = tf.squeeze(y_true)
+
+    y_true_pos = tf.reshape(y_true, [-1])
+    y_pred_pos = tf.reshape(y_pred, [-1])
+
+    area_intersect = tf.reduce_sum(tf.multiply(y_true_pos, y_pred_pos))
+
+    area_true = tf.reduce_sum(y_true_pos)
+    area_pred = tf.reduce_sum(y_pred_pos)
+    area_union = area_true + area_pred - area_intersect
+
+    # Return the IoU score
+    return tf.math.divide_no_nan(area_intersect, area_union)
 
 
 def dice_score(y_true, y_pred, smooth=1e-6) -> float:
@@ -340,11 +351,22 @@ def dice_score(y_true, y_pred, smooth=1e-6) -> float:
             smooth=1)
     Tensor("dice_score/truediv:0", shape=(1, 512, 512), dtype=float32)
     """
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    dice = (2 * intersection + smooth) / (
-        K.sum(y_pred, -1) + K.sum(y_true, -1) + smooth
+    y_true_f = tf.reshape(y_true, [-1])
+    y_pred_f = tf.reshape(y_pred, [-1])
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    score = (2.0 * intersection + smooth) / (
+        tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth
     )
-    return 1 - dice
+    return score
+
+
+def dice_bce_loss(y_true, y_pred, smooth=1):
+
+    Dice_BCE = 0.5 * K.binary_crossentropy(y_true, y_pred) + 0.5 * dice_score(
+        y_true, y_pred
+    )
+
+    return Dice_BCE
 
 
 def focal_loss(y_true, y_pred, alpha: float = 0.8, gamma: float = 2) -> float:

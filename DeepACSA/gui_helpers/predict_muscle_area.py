@@ -131,19 +131,22 @@ def import_image_efov(path_to_image: str):
     height = img.shape[0]
     weight = img.shape[1]
     img = np.reshape(img, [-1, height, weight, 3])
-    img = resize(img, (1, 256, 256, 3), mode="constant", preserve_range=True)
-    img = img / 255.0
+    img = cv2.resize(img, (256, 256), interpolation=cv2.INTER_AREA)
+    img = img.astype(np.float32) / 255.0
+    img = np.expand_dims(img, axis=0)
 
     return filename, img_copy, img, height, weight
 
 
-def import_image(path_to_image: str):
+def import_image(path_to_image: str, modelpath: str):
     """Define the image to analyse, import and reshape the image.
 
     Parameters
     ----------
     path_to_image : str
         The file path to the image that should be analyzed.
+    modelpath : str
+        The file path to the model that should be used for the analysis.
 
     Returns
     -------
@@ -160,25 +163,36 @@ def import_image(path_to_image: str):
 
     Example
     -------
-        >>> import_image(C:/Desktop/Test/Img1.tif)
+        >>> import_image(C:/Desktop/Test/Img1.tif, C:/Desktop/Test/model.h5)
         (Img1.tif, array[[[[...]]]],
         <PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550>,
         <PIL.Image.Image image mode=L size=1152x864 at 0x1FF843A2550>,
         864, 1152)
     """
-    image_add = path_to_image
-    filename = os.path.splitext(os.path.basename(image_add))[0]
-    img = cv2.imread(path_to_image, 1)
+    filename = os.path.splitext(os.path.basename(path_to_image))[0]
+    img = cv2.imread(path_to_image, cv2.IMREAD_COLOR)
+
+    if img is None:
+        raise FileNotFoundError(f"[ERROR] Failed to load image: {path_to_image}")
+
     nonflipped_img = img.copy()
+    original_height, original_width = img.shape[:2]
 
-    img = img_to_array(img)
-    height = img.shape[0]
-    weight = img.shape[1]
-    img = np.reshape(img, [-1, height, weight, 3])
-    img = resize(img, (1, 256, 256, 3), mode="constant", preserve_range=True)
-    img = img / 255.0
+    # Determine input size based on model type
+    model_path_lower = modelpath.lower()
+    if "swinunet" in model_path_lower:
+        target_size = (224, 224)
+    else:  # fallback to VGG/UNet
+        target_size = (256, 256)
 
-    return filename, img, nonflipped_img, height, weight
+    # Resize for model input
+    img_resized = cv2.resize(img, target_size, interpolation=cv2.INTER_AREA)
+    img_resized = img_resized.astype(np.float32) / 255.0
+    img_resized = np.expand_dims(img_resized, axis=0)
+
+    return filename, img_resized, nonflipped_img, original_height, original_width
+
+    # return filename, img, nonflipped_img, height, weight
 
 
 def calc_area_efov(depth: float, scalingline_length: int, img: np.ndarray):
@@ -263,7 +277,6 @@ def compile_save_results(rootpath: str, dataframe: pd.DataFrame):
 def calculate_batch_efov(
     rootpath: str,
     modelpath: str,
-    loss_function: str,
     depth: float,
     muscle: str,
     volume_wanted: str,
@@ -282,8 +295,6 @@ def calculate_batch_efov(
         The root path where the eFOV images are located.
     modelpath : str
         The path to the pre-trained aponeurosis detection model.
-    loss_function : str
-        The loss function used during model training (e.g., "BCE" for binary cross-entropy).
     depth : float
         The depth (in centimeters) of the eFOV ultrasound image.
     muscle : str
@@ -318,7 +329,7 @@ def calculate_batch_efov(
     >>> volume_wanted = "Yes"
     >>> distance_acsa = 2.0
     >>> gui = ...  # Your Tkinter root window
-    >>> calculate_batch_efov(rootpath, filetype, modelpath, loss_function, depth, muscle, volume_wanted, distance_acsa, gui)
+    >>> calculate_batch_efov(rootpath, filetype, modelpath, depth, muscle, volume_wanted, distance_acsa, gui)
     # The function will process the eFOV images in the specified directory, predict the aponeurosis areas,
     # calculate echo intensity, and optionally calculate muscle volume based on the predicted areas.
     # The results will be compiled into a DataFrame and saved to an Excel file.
@@ -343,7 +354,7 @@ def calculate_batch_efov(
         gui.do_break()
         return
 
-    apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
+    apo_model = ApoModel(gui, model_path=modelpath)
 
     dataframe = pd.DataFrame(
         columns=[
@@ -365,7 +376,13 @@ def calculate_batch_efov(
         try:
             start_time = time.time()
 
-            for imagepath in list_of_files:
+            # Show progress bar and reset value
+            gui.progress_label.grid()
+            gui.progress_bar.grid()
+            gui.progress_var.set(0)
+            gui.progress_bar.update_idletasks()
+
+            for i, imagepath in enumerate(list_of_files):
 
                 if gui.should_stop:
                     # there was an input to stop the calculations
@@ -422,6 +439,14 @@ def calculate_batch_efov(
                 duration = time.time() - start_time
                 print(f"duration: {duration}")
 
+                # Update progress
+                gui.progress_label.configure(
+                    text=f"Predicting image {i+1}/{len(list_of_files)}"
+                )
+                progress = (i + 1) / len(list_of_files)
+                gui.progress_var.set(progress)
+                gui.progress_bar.update_idletasks()
+
             # musclevolume calculation with the calculated areas
             if volume_wanted == "Yes":
 
@@ -467,12 +492,13 @@ def calculate_batch_efov(
             # clean up
             gui.should_stop = False
             gui.is_running = False
+            gui.progress_bar.grid_remove()
+            gui.progress_label.grid_remove()
 
 
 def calculate_batch(
     rootpath: str,
     modelpath: str,
-    loss_function: str,
     spacing: str,
     muscle: str,
     scaling: str,
@@ -492,8 +518,6 @@ def calculate_batch(
         The root path where the ultrasound images are located.
     modelpath : str
         The path to the pre-trained aponeurosis detection model.
-    loss_function : str
-        The loss function used during model training (e.g., "BCE" for binary cross-entropy).
     spacing : str
         The spacing between reference markers on the image (used for scaling calibration).
     muscle : str
@@ -532,7 +556,7 @@ def calculate_batch(
     >>> volume_wanted = "Yes"
     >>> distance_acsa = 2.0
     >>> gui = ...  # Your Tkinter root window
-    >>> calculate_batch(rootpath, filetype, modelpath, loss_function, spacing, muscle, scaling, volume_wanted, distance_acsa, gui)
+    >>> calculate_batch(rootpath, filetype, modelpath, spacing, muscle, scaling, volume_wanted, distance_acsa, gui)
     # The function will process the ultrasound images in the specified directory, predict the aponeurosis areas,
     # calculate echo intensity, and optionally calculate muscle volume based on the predicted areas.
     # The results will be compiled into a DataFrame and saved to an Excel file.
@@ -557,7 +581,7 @@ def calculate_batch(
         gui.do_break()
         return
 
-    apo_model = ApoModel(gui, model_path=modelpath, loss_function=loss_function)
+    apo_model = ApoModel(gui, model_path=modelpath)
 
     dataframe = pd.DataFrame(
         columns=[
@@ -579,13 +603,19 @@ def calculate_batch(
         try:
             start_time = time.time()
 
-            for imagepath in list_of_files:
+            # Show progress bar and reset value
+            gui.progress_label.grid()
+            gui.progress_bar.grid()
+            gui.progress_var.set(0)
+            gui.progress_bar.update_idletasks()
+
+            for i, imagepath in enumerate(list_of_files):
                 if gui.should_stop:
                     # there was an input to stop the calculations
                     break
 
                 # load image
-                imported = import_image(imagepath)
+                imported = import_image(imagepath, modelpath)
                 filename, img, nonflipped_img, height, width = imported
 
                 if scaling == "Bar":
@@ -606,11 +636,17 @@ def calculate_batch(
                         gui, img, imgscale, filename, scale_statement, width, height
                     )
 
-                else:
+                elif scaling == "Manual":
                     calibrate_fn = calibrate_distance_manually
                     calib_dist = calibrate_fn(nonflipped_img, spacing)
 
                     # predict area on image
+                    circum, pred_apo_t, fig = apo_model.predict_m(
+                        gui, img, width, filename, height
+                    )
+
+                elif scaling == "No Scaling":
+                    calib_dist = 1
                     circum, pred_apo_t, fig = apo_model.predict_m(
                         gui, img, width, filename, height
                     )
@@ -647,6 +683,14 @@ def calculate_batch(
                 duration = time.time() - start_time
                 print(f"duration: {duration}")
 
+                # Update progress
+                gui.progress_label.configure(
+                    text=f"Predicting image {i+1}/{len(list_of_files)}"
+                )
+                progress = (i + 1) / len(list_of_files)
+                gui.progress_var.set(progress)
+                gui.progress_bar.update_idletasks()
+
             if volume_wanted == "Yes":
 
                 # musclevolume calculation with the calculated areas
@@ -681,6 +725,7 @@ def calculate_batch(
             gui.is_running = False
 
         finally:
+
             # save predicted area results
             compile_save_results(rootpath, dataframe)
             # write failed images in file
@@ -692,3 +737,5 @@ def calculate_batch(
             # clean up
             gui.should_stop = False
             gui.is_running = False
+            gui.progress_bar.grid_remove()
+            gui.progress_label.grid_remove()

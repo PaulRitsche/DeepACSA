@@ -29,7 +29,15 @@ from keras.models import load_model
 from skimage import measure, morphology
 from skimage.transform import resize
 
-from DeepACSA.gui_helpers.model_training import IoU, dice_score, focal_loss
+from keras_unet_collection.transformer_layers import (
+    patch_extract,
+    patch_embedding,
+    SwinTransformerBlock,
+    patch_merging,
+    patch_expanding,
+)
+
+from DeepACSA.gui_helpers.model_training import IoU, dice_score, dice_bce_loss
 
 matplotlib.use("Agg")
 
@@ -113,9 +121,7 @@ class ApoModel:
     >>> pred_apo_t, fig = apo_model.predict_t(img, width, height, True)
     """
 
-    def __init__(
-        self, gui, model_path: str, loss_function: str, apo_threshold: float = 0.5
-    ):
+    def __init__(self, gui, model_path: str, apo_threshold: float = 0.5):
         """
         Initialize the ApoModel class.
 
@@ -157,34 +163,42 @@ class ApoModel:
         """
         matplotlib.use("Agg")
 
+        self.apo_threshold = apo_threshold
+
         try:
-            self.model_path = model_path
-            self.apo_threshold = apo_threshold
+            model_path_lower = model_path.lower()
 
-            # Check for used loss function
-            if loss_function == "IoU":
-                self.model_apo = load_model(
-                    self.model_path, custom_objects={"IoU": IoU}
+            # Default custom objects
+            custom_objects = {"IoU": IoU, "dice_score": dice_score}
+
+            # Add model-specific custom objects
+            if "vgg16" or "une3plus" in model_path_lower:
+                custom_objects["dice_bce_loss"] = dice_bce_loss
+
+            elif "swinunet" in model_path_lower:
+                custom_objects.update(
+                    {
+                        "dice_bce_loss": dice_bce_loss,
+                        "patch_extract": patch_extract,
+                        "patch_embedding": patch_embedding,
+                        "SwinTransformerBlock": SwinTransformerBlock,
+                        "patch_merging": patch_merging,
+                        "patch_expanding": patch_expanding,
+                    }
                 )
 
-            if loss_function == "Dice Loss":
-                self.model_apo = load_model(
-                    self.model_path,
-                    custom_objects={"dice_score": dice_score, "IoU": IoU},
-                )
+            elif "unet" in model_path_lower:
+                pass  # Nothing to add, default custom_objects are sufficient
 
-            if loss_function == "Focal Loss":
-                self.model_apo = load_model(
-                    self.model_path,
-                    custom_objects={"focal_loss": focal_loss, "IoU": IoU},
-                )
+            else:
+                raise ValueError("Unrecognized model type from path.")
 
-        # Check if model directory is correct
-        except OSError:
+            self.model_apo = load_model(model_path, custom_objects=custom_objects)
+
+        except (OSError, ValueError) as e:
             tk.messagebox.showerror(
-                "Information",
-                "Invalid model path."
-                + "\nPotential error source:  Wrong (model) file selected",
+                "Model Load Error",
+                f"Failed to load model from path:\n{model_path}\n\nError: {str(e)}",
             )
 
     def predict(self, gui, img):
@@ -222,6 +236,8 @@ class ApoModel:
         """
         try:
             pred_apo = self.model_apo.predict(img)
+            if isinstance(pred_apo, list):
+                pred_apo = pred_apo[0]
             return pred_apo
 
         # Model path was specified incorrectly
@@ -518,7 +534,7 @@ class ApoModel:
         """Runs a segmentation model on the input image and
         thresholds the result.
 
-        The input image here was scaled manualy.
+        The input image here was scaled manualy or not at all.
 
         Parameters
         ----------
@@ -591,7 +607,7 @@ class ApoModel:
         )
         ax2.grid(False)
         ax2.set_title(
-            "Normalized and resized image with predicted muscle area (overlay)"
+            f"Normalized and resized image {filename} with predicted muscle area (overlay)"
         )
         plt.close(fig)
         return circum, pred_apo_th, fig

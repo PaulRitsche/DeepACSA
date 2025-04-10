@@ -35,7 +35,7 @@ def select_area(image):
     # Plot image
     fig, ax = plt.subplots()
     fig.set_size_inches(20 / 2.45, 15 / 2.54)
-    fig.set_facecolor("#7ABAA1")
+    fig.set_facecolor("#2A484E")
 
     ax.imshow(image, cmap="gray")
     ax.set_title(
