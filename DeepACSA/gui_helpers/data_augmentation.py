@@ -21,7 +21,7 @@ import tkinter as tk
 
 import matplotlib.pyplot as plt
 import numpy as np
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 def image_augmentation(input_img_folder, input_mask_folder, gui):

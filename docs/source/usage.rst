@@ -202,7 +202,7 @@ The image augmentation process starts and the images will be augmented three-fol
 Model Training
 """"""""""""""
 
-1. Start the GUI and click the ``Train Model`` button. The 
+1. Start the GUI and click the ``Train Model`` button.
 2. In the ``Image Directory``, specify the path to your training images by pressing the ``Images`` button.
 3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
 4. In the ``Output Directory``, specify the path to your output directory by pressing the ``Output`` button. Here, all the files from the training process will be saved.

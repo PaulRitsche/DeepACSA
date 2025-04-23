@@ -369,6 +369,20 @@ def dice_bce_loss(y_true, y_pred, smooth=1):
     return Dice_BCE
 
 
+def deep_supervised_loss(y_true, y_preds):
+    # y_preds is a list of tensors from deep supervision outputs
+    if not isinstance(y_preds, (list, tuple)):
+        y_preds = [y_preds]
+
+    # Broadcast y_true to each prediction and compute the loss
+    losses = []
+    for y_pred in y_preds:
+        loss = dice_bce_loss(y_true, y_pred)
+        losses.append(loss)
+
+    return tf.reduce_mean(losses)
+
+
 def focal_loss(y_true, y_pred, alpha: float = 0.8, gamma: float = 2) -> float:
     """
     Function to compute the focal loss, a measure of prediction accuracy.

@@ -37,7 +37,12 @@ from keras_unet_collection.transformer_layers import (
     patch_expanding,
 )
 
-from DeepACSA.gui_helpers.model_training import IoU, dice_score, dice_bce_loss
+from DeepACSA.gui_helpers.model_training import (
+    IoU,
+    dice_score,
+    dice_bce_loss,
+    deep_supervised_loss,
+)
 
 matplotlib.use("Agg")
 
@@ -172,8 +177,19 @@ class ApoModel:
             custom_objects = {"IoU": IoU, "dice_score": dice_score}
 
             # Add model-specific custom objects
-            if "vgg16" or "une3plus" in model_path_lower:
-                custom_objects["dice_bce_loss"] = dice_bce_loss
+            if "vgg16" in model_path_lower:
+                custom_objects.update(
+                    {
+                        "dice_bce_loss": dice_bce_loss,
+                    }
+                )
+
+            elif "unet3plus" in model_path_lower:
+                custom_objects.update(
+                    {
+                        "deep_supervised_loss": deep_supervised_loss,
+                    }
+                )
 
             elif "swinunet" in model_path_lower:
                 custom_objects.update(

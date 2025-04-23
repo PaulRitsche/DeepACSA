@@ -172,10 +172,7 @@ class AdvancedAnalysis:
                     self.advanced_window_frame,
                     text="Mask Dir",
                     command=lambda: (
-                        self.mask_image_dir.set(filedialog.askdirectory()),
-                        ctk.CTkLabel(
-                            self.advanced_window_frame, text=f"{self.mask_image_dir}"
-                        ).grid(column=0, row=3),
+                        self.mask_image_dir.set(filedialog.askdirectory())
                     ),
                 )
                 self.dir2_button.grid(column=1, row=2, sticky=(W, E))
@@ -487,15 +484,14 @@ class AdvancedAnalysis:
             text="Remove Parts",
             command=self.remove_image_parts,
         )
-        remove_button.grid(column=1, row=6, sticky=W, padx=5, pady=5)
-        tooltip_remove = CTkToolTip(
-            remove_button,
-            message="Select region to be cropped with left mouse drag. \nSelect new region to remove old region. \nPress button to save the image.",
-            delay=0.5,
-            bg_color="#A8D8CD",
+        remove_button.grid(column=0, row=6, sticky=W, padx=5, pady=5)
+
+        ctk.CTlabel(
+            self.advanced_window_frame,
+            text="*Select region to be cropped with left mouse drag. \nSelect new region to remove old region. \nPress button to save the image. \nParts are removed from all images in the selected folder",
+            font=("Verdana", 10, "bold"),
             text_color="#000000",
-            alpha=0.7,
-        )
+        ).grid(column=1, row=6, columnspan=2, sticky=W)
 
     def on_button_press(self, event):
         self.selection = (event.x, event.y, event.x, event.y)
@@ -560,6 +556,12 @@ class AdvancedAnalysis:
                 # Save result
                 save_path = os.path.join(output_path, filename)
                 cv2.imwrite(save_path, img)
+
+                ctk.CTkLabel(
+                    self.advanced_window_frame,
+                    text=f"Masked image saved to\n{save_path}",
+                    font=("Verdana", 10, "italic"),
+                ).grid(column=0, row=7, columnspan=2, sticky=(W, E))
 
             print(f"Masked images saved to: {output_path}")
 

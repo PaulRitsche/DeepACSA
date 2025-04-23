@@ -13,9 +13,9 @@ sys.path.insert(0, os.path.abspath("../.."))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "DeepACSA"
-copyright = "2023, Paul Ritsche"
+copyright = "2023-2025, Paul Ritsche"
 author = "Paul Ritsche"
-release = "0.3.1"
+release = "0.4.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -24,7 +24,6 @@ extensions = ["sphinx.ext.autodoc"]
 
 
 pygments_style = "sphinx"
-
 
 
 # -- Options for HTML output -------------------------------------------------
