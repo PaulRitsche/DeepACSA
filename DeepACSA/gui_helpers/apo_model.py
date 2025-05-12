@@ -306,6 +306,12 @@ class ApoModel:
                [0, 0, 1, 0, 0]])
 
         """
+        if np.sum(img) == 0:
+            return 0.0, img.astype(np.uint8)
+
+        # Pre erosion to break thin connections
+        erosion_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (4, 4))
+        img = cv2.erode(img.astype(np.uint8), erosion_kernel, iterations=1)
 
         # Find pixel regions and label them
         label_img = measure.label(img)
@@ -328,8 +334,8 @@ class ApoModel:
         ).astype(int)
 
         # Smooth the edges
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10))
-        pred_apo_th = cv2.dilate(pred_apo_th.astype(np.uint8), kernel, iterations=2)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        pred_apo_th = cv2.dilate(pred_apo_th.astype(np.uint8), kernel, iterations=3)
         pred_apo_th = cv2.erode(pred_apo_th, kernel, iterations=2)
 
         # Calculate circumference
