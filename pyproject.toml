@@ -18,7 +18,7 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
 ]
 dependencies = [
-    "Keras==2.9.0",
+    "Keras==3.9.0",
     "matplotlib==3.5.2",
     "numpy==1.21.2",
     "opencv-contrib-python==4.5.3.56",
