@@ -2,6 +2,6 @@ docs/build
 dist/
 DeepACSA/__pycache__
 DeepACSA/gui_helpers/__pycache__
-build/
+build/doctrees
 .vscode/
 .sync*
