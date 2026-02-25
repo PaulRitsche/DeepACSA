@@ -8,25 +8,28 @@ except ImportError:
     from distutils.core import setup
 
 INSTALL_REQUIRES = [
-    "Keras==2.9.0",
-    "matplotlib==3.5.2",
-    "numpy==1.21.2",
-    "opencv-contrib-python==4.5.3.56",
-    "pandas==1.3.3",
-    "Pillow==8.3.2",
-    "scikit-image==0.18.3",
-    "scikit-learn==0.24.2",
-    "tensorflow==2.9.0",
-    "tqdm==4.62.2",
-    "openpyxl==3.0.9",
-    "h5py==3.4.0",
+    "customtkinter==5.2.2",
+    "CTKToolTip=0.8",
+    "Keras==2.10.0",
+    "matplotlib==3.6.1",
+    "numpy==1.23.4",
+    "opencv-contrib-python==4.6.0.66",
+    "openpyxl==3.0.10",
+    "pandas==1.5.1",
+    "Pillow==9.2.0",
+    "pre-commit==2.17.0",
+    "scikit-image==0.19.3",
+    "scikit-learn==1.1.2",
+    "sewar==0.4.5",
+    "shapely==2.0.5",
+    "tensorflow==2.10.0",
+    "tqdm==4.64.1",
 ]
 
 CLASSIFIERS = [
     "Intended Audience :: Science/Research",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Operating System :: Microsoft :: Windows",
-    "License :: OSI Approved :: Apache Software License",
 ]
 
 
@@ -36,7 +39,7 @@ long_descr = (this_directory / "README_Pypi.md").read_text()
 if __name__ == "__main__":
     setup(
         name="DeepACSA",
-        version="0.3.1",
+        version="0.3.2",
         author="Paul Ritsche",
         author_email="paul.ritsche@unibas.ch",
         long_description=long_descr,
@@ -45,6 +48,6 @@ if __name__ == "__main__":
         packages=find_packages(),
         package_data={"DeepACSA": ["*"]},
         classifiers=CLASSIFIERS,
-        python_requires=">=3.9",
+        python_requires=">=3.10",
         install_requires=INSTALL_REQUIRES,
     )

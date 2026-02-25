@@ -55,8 +55,8 @@
     "corner_radius": 0,
     "fg_color": "transparent",
     "text_color": [
-      "#FFFFFF",
-      "#FFFFFF"
+      "#000000",
+      "#000000"
     ]
   },
   "CTkEntry": {
@@ -71,8 +71,8 @@
       "#565B5E"
     ],
     "text_color": [
-      "white",
-      "white"
+      "black",
+      "black"
     ],
     "placeholder_text_color": [
       "gray52",

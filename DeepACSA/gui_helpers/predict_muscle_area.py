@@ -127,15 +127,14 @@ def import_image_efov(path_to_image: str):
     img = img[75:rows, 20 : cols - 10]
     img_copy = img.copy()
 
-    img = img_to_array(img)
     height = img.shape[0]
-    weight = img.shape[1]
-    img = np.reshape(img, [-1, height, weight, 3])
+    width = img.shape[1]
+    
     img = cv2.resize(img, (256, 256), interpolation=cv2.INTER_AREA)
     img = img.astype(np.float32) / 255.0
     img = np.expand_dims(img, axis=0)
 
-    return filename, img_copy, img, height, weight
+    return filename, img_copy, img, height, width
 
 
 def import_image(path_to_image: str, modelpath: str):

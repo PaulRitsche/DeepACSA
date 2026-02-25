@@ -13,9 +13,9 @@ sys.path.insert(0, os.path.abspath("../.."))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "DeepACSA"
-copyright = "2023-2025, Paul Ritsche"
+copyright = "2023-2026, Paul Ritsche"
 author = "Paul Ritsche"
-release = "0.4.0"
+release = "0.3.2"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -41,3 +41,15 @@ html_theme_options = {
 
 html_logo = "deep_acsa.jpg"
 html_favicon = "icon.ico"
+
+# -- Static files (such as style sheets and scripts) ------------------------
+html_static_path = ["_static"]
+
+# Include our custom CSS/JS for the GitHub repo bar on the landing page
+html_css_files = [
+    "github_bar.css",
+]
+
+html_js_files = [
+    "github_bar.js",
+]

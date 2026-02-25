@@ -32,12 +32,15 @@ DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., 
 """
 
 import os
+import sys
+import webbrowser
 import customtkinter as ctk
 import tkinter as tk
 from threading import Lock, Thread
 from tkinter import E, N, S, StringVar, Tk, W, filedialog, ttk
 
 import matplotlib
+from PIL import Image, ImageTk
 
 from DeepACSA import gui_helpers
 from DeepACSA.gui_modules import AdvancedAnalysis
@@ -211,24 +214,84 @@ class DeepACSA(ctk.CTk):
 
         self.main = ctk.CTkFrame(self)
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))
-        # Configure resizing of user interface
-        self.main.columnconfigure(0, weight=1)
-        self.main.columnconfigure(1, weight=1)
-        self.main.columnconfigure(2, weight=1)
-        self.main.columnconfigure(3, weight=1)
-        self.main.columnconfigure(4, weight=1)
-        self.main.columnconfigure(5, weight=1)
-        # root.columnconfigure(0, weight=1)
-        # root.rowconfigure(0, weight=1)
+
+        # Ensure the root window/resizable container gives space to `self.main`
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+
+
+        for row in range(21):
+            self.main.rowconfigure(row, weight=1)
+        for column in range(4):
+            self.main.columnconfigure(column, weight=1)
+
+        # Docs reference button
+        info_path = self.resource_path("gui_helpers/gui_files/Info.png")
+        # Get info button path
+        self.info = ctk.CTkImage(
+            light_image=Image.open(info_path),
+            size=(20, 20),
+        )
+        info_button = ctk.CTkButton(
+            self.main,
+            image=self.info,
+            text="Docs",
+            width=20,
+            height=20,
+            bg_color="#2A484E",
+            fg_color="#2A484E",
+            border_width=0,
+            command=lambda: (
+                (webbrowser.open("https://deepacsa.readthedocs.io/"))
+            ),
+        )
+        info_button.grid(
+            row=1,
+            column=5,
+            sticky=(
+                W,
+                E,
+            ),
+        )
+
+        # citation button
+        cite_path = self.resource_path("gui_helpers/gui_files/Cite.png")
+        # Get info button path
+        self.info = ctk.CTkImage(
+            light_image=Image.open(cite_path),
+            size=(20, 20),
+        )
+        cite_button = ctk.CTkButton(
+            self.main,
+            image=self.info,
+            text="Cite us",
+            width=20,
+            height=20,
+            bg_color="#2A484E",
+            fg_color="#2A484E",
+            border_width=0,
+            command=lambda: (
+                (webbrowser.open("https://journals.lww.com/acsm-msse/Fulltext/2022/12000/DeepACSA__Automatic_Segmentation_of.21.aspx"))
+            ),
+        )
+        cite_button.grid(
+            row=1,
+            column=3,
+            sticky=(
+                W,
+                E,
+            ),
+        )
 
         # Paths
         # Input directory
         self.input = ctk.StringVar()
         input_entry = ctk.CTkEntry(self.main, width=30, textvariable=self.input)
         input_entry.grid(column=2, row=2, columnspan=3, sticky=(W, E))
-        self.input.set(
-            "C:/Users/admin/Desktop/DeepACSA_example_v0.3.1/DeepACSA_example_v0.3.1/images_test"
-        )
+        # self.input.set(
+        #     "C:/Users/admin/Desktop/DeepACSA_example_v0.3.1/DeepACSA_example_v0.3.1/images_test"
+        # )
+        
         # Model path
         self.model = ctk.StringVar()
         model_entry = ctk.CTkEntry(self.main, width=30, textvariable=self.model)
@@ -348,7 +411,7 @@ class DeepACSA(ctk.CTk):
         )
         self.progress_bar.set(0)
         self.progress_bar.configure(mode="determinate")
-        self.after(100, self.progress_bar.grid_remove())
+        self.after(100, self.progress_bar.grid_remove)
 
         self.bind("<Return>", self.run_code)  # execute by pressing return
 
@@ -373,6 +436,14 @@ class DeepACSA(ctk.CTk):
         model_dir = filedialog.askopenfilename()
         self.model.set(model_dir)
         return model_dir
+    
+    def resource_path(self, relative_path):
+        """Get absolute path to resource (for dev and PyInstaller)"""
+        try:
+            base_path = sys._MEIPASS
+        except AttributeError:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(base_path, relative_path)
 
     def on_volume_change(self, *args):
         """
@@ -381,14 +452,14 @@ class DeepACSA(ctk.CTk):
         """
         if self.volume_calc_wanted.get() == "Yes":
             # Distance between ACSA for Volume Calculation
-            self.volume_label = ttk.Label(self.main, text="Slice Distance (cm)")
+            self.volume_label = ctk.CTkLabel(self.main, text="Slice Distance (cm)")
             self.volume_label.grid(column=1, row=15)
 
             self.distance = StringVar()
-            self.distance_entry = ttk.Entry(
+            self.distance_entry = ctk.CTkEntry(
                 self.main, width=10, textvariable=self.distance
             )
-            self.distance_entry.grid(column=2, row=15, sticky=(W, E))
+            self.distance_entry.grid(column=3, row=15, sticky=(W, E))
             self.distance.set(7)
 
         if self.volume_calc_wanted.get() == "No":
@@ -407,7 +478,7 @@ class DeepACSA(ctk.CTk):
             self.spacing_label = ctk.CTkLabel(self.main, text="Spacing (mm)")
             self.spacing_label.grid(column=1, row=10)
             self.spacing = StringVar()
-            spacing = [5, 10, 15, 20]
+            spacing = [str(s) for s in [5, 10, 15, 20]]
             self.spacing_entry = ctk.CTkComboBox(
                 self.main,
                 width=10,
@@ -427,8 +498,8 @@ class DeepACSA(ctk.CTk):
             self.depth_label = ctk.CTkLabel(self.main, text="Depth (cm)")
             self.depth_label.grid(column=1, row=9)
             self.depth = StringVar()
-            depth = [2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8]
-            self.depth_entry = ctk.CTkombobox(
+            depth = [str(d) for d in [2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8]]
+            self.depth_entry = ctk.CTkComboBox(
                 self.main, width=10, variable=self.depth, values=depth
             )
             self.depth_entry.grid(column=2, row=9, sticky=(W, E))

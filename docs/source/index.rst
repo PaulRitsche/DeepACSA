@@ -3,6 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. raw:: html
+   
+    <div id="gh-bar">
+       <br>
+       <a id="gh-link" href="https://github.com/PaulRitsche/DeepACSA" target="_blank" rel="noopener noreferrer">GitHub</a>
+       <span id="gh-stars">Loading…</span>
+    </div>
+
+
 Welcome to DeepACSA's documentation!
 ====================================
 *DeepACSA: Automated analysis of human lower limb ultrasonography images*

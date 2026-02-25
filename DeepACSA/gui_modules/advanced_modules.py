@@ -49,9 +49,8 @@ class AdvancedAnalysis:
 
         self.advanced_window.columnconfigure(0, weight=1)
         self.advanced_window.columnconfigure(1, weight=5)
-        self.advanced_window.rowconfigure(0, weight=1)
-        self.advanced_window.minsize(width=600, height=400)
-
+        self.advanced_window.minsize(width=400, height=100)
+        
         self.advanced_window.grab_set()
 
         ctk.CTkLabel(self.advanced_window, text="Select Method").grid(column=1, row=0)
@@ -147,10 +146,12 @@ class AdvancedAnalysis:
 
             self.advanced_window_frame = ctk.CTkFrame(self.advanced_window)
             self.advanced_window_frame.grid(column=1, row=2, sticky=(N, S, W, E))
+            self.advanced_window_frame.rowconfigure(0, weight=1)  # or appropriate row
+            self.advanced_window_frame.columnconfigure(0, weight=1)  # or appropriate column
 
             # Set the desired window size
-            self.desired_width = 800
-            self.desired_height = 600
+            self.desired_width = 1800
+            self.desired_height = 1200
 
             if self.advanced_option.get() == "Inspect Masks":
 
@@ -221,7 +222,7 @@ class AdvancedAnalysis:
 
                 if hasattr(self, "dir2_button"):
                     self.dir2_button.destroy()
-                    self.mask_image_entry.destroy()
+                    #self.mask_image_entry.destroy()
                     self.inspect_button.destroy()
                     self.idx.destroy()
                     self.start_label.destroy()
@@ -233,7 +234,7 @@ class AdvancedAnalysis:
                     width=100,
                     textvariable=self.raw_image_dir,
                 )
-                image_entry.grid(column=1, row=1, columnspan=2, sticky=(W, E))
+                image_entry.grid(column=0, row=0, columnspan=2, sticky=(W, E))
                 self.raw_image_dir.set("Select Input Image Directory")
 
                 dir1_button = ctk.CTkButton(
@@ -241,22 +242,22 @@ class AdvancedAnalysis:
                     text="Image Dir",
                     command=lambda: (self.raw_image_dir.set(filedialog.askdirectory())),
                 )
-                dir1_button.grid(column=3, row=1, sticky=(W, E))
+                dir1_button.grid(column=3, row=0, sticky=(W, E))
 
                 self.mask_button = ctk.CTkButton(
                     self.advanced_window_frame,
                     text="Create Masks",
                     command=self._start_mask_interaction,
                 )
-                self.mask_button.grid(column=2, row=2, sticky=(W, E))
-                tooltip_remove = CTkToolTip(
-                    self.mask_button,
-                    message="Click to start manual analysis/labelling. \nThis creates binary masks of the selected area. \nResulting masks and images can be used for model training.",
-                    delay=0.5,
-                    bg_color="#A8D8CD",
-                    text_color="#000000",
-                    alpha=0.7,
-                )
+                self.mask_button.grid(column=3, row=1, sticky=(W, E))
+                # tooltip_remove = CTkToolTip(
+                #     self.mask_button,
+                #     message="Click to start manual analysis/labelling. \nThis creates binary masks of the selected area. \nResulting masks and images can be used for model training.",
+                #     delay=0.5,
+                #     bg_color="#A8D8CD",
+                #     text_color="#000000",
+                #     alpha=0.7,
+                # )
 
             elif self.advanced_option.get() == "Train Model":
                 # Labels
@@ -278,7 +279,7 @@ class AdvancedAnalysis:
                 mask_button = ctk.CTkButton(
                     self.advanced_window_frame, text="Masks", command=self.get_mask_dir
                 )
-                mask_button.grid(column=1, row=3, sticky=(W, E))
+                mask_button.grid(column=1, row=2, sticky=(W, E))
 
                 # Input directory
                 out_button = ctk.CTkButton(
@@ -486,7 +487,7 @@ class AdvancedAnalysis:
         )
         remove_button.grid(column=0, row=6, sticky=W, padx=5, pady=5)
 
-        ctk.CTlabel(
+        ctk.CTkLabel(
             self.advanced_window_frame,
             text="*Select region to be cropped with left mouse drag. \nSelect new region to remove old region. \nPress button to save the image. \nParts are removed from all images in the selected folder",
             font=("Verdana", 10, "bold"),
@@ -602,7 +603,7 @@ class AdvancedAnalysis:
             height=self.desired_height,
             cursor="crosshair",
         )
-        self.canvas.grid(column=0, row=1, columnspan=4, sticky=(W, E))
+        self.canvas.grid(column=0, row=1, columnspan=2, sticky=(W,E))
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.frame_image)
 
         self.canvas.bind("<Button-1>", self._on_area_click)
