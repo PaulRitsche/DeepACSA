@@ -5,6 +5,7 @@ import customtkinter as ctk
 from CTkToolTip import *
 import math
 import numpy as np
+import pandas as pd
 from tkinter import ttk, W, E, N, S, StringVar, BooleanVar, filedialog, Canvas
 from DeepACSA import gui_helpers
 import tkinter as tk
@@ -616,6 +617,7 @@ class AdvancedAnalysis:
         """
         x, y = event.x, event.y
         if len(self.calibration_points) < 2:
+
             self.calibration_points.append((x, y))
             self.canvas.create_oval(
                 x - 2, y - 2, x + 2, y + 2, outline="red", fill="red"
@@ -720,6 +722,9 @@ class AdvancedAnalysis:
         os.makedirs(self.image_output_dir, exist_ok=True)
         os.makedirs(self.mask_output_dir, exist_ok=True)
 
+        self.area_results = []  # list of dicts: {"Filename": ..., "Area_cm2": ...}
+        self.results_csv_path = os.path.join(self.image_output_dir, "areas.csv")
+
         self.current_image_index = 0
         self._load_next_image()
 
@@ -757,6 +762,12 @@ class AdvancedAnalysis:
         cv2.imwrite(image_path, full_image)
 
         print(f"Saved: {self.current_filename} | Area: {area:.2f} cm²")
+        self.area_results.append(
+            {"Filename": self.current_filename, "Area_cm2": float(area)}
+        )
+
+        # write/update csv after each image so nothing is lost if user closes the window
+        pd.DataFrame(self.area_results).to_csv(self.results_csv_path, index=False)
         self.current_image_index += 1
         self._load_next_image()
 

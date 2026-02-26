@@ -95,125 +95,342 @@ def preprocess_image(
     return mask
 
 
-def measure_area(image, starting_points, scan_depth=5, num_rays=360):
+import cv2
+import numpy as np
+
+def remove_border_scale_bar(gray_u8: np.ndarray, *, thr=240, min_area_frac=0.0005) -> np.ndarray:
     """
-    Measure the area of the muscle in the preprocessed image by shooting rays from starting points.
-    :param image: The preprocessed binary image (edges detected).
-    :param starting_points: Initial points for outline detection.
-    :param scan_depth: The maximum distance a ray can travel.
-    :param num_rays: Number of rays to shoot outwards from each starting point.
-    :return: The measured area in cm².
+    Remove bright scale-bar/overlays near borders.
+    Works on uint8 grayscale.
     """
+    if gray_u8.ndim != 2:
+        raise ValueError("remove_border_scale_bar expects 2D grayscale uint8")
+    if gray_u8.dtype != np.uint8:
+        gray_u8 = gray_u8.astype(np.uint8)
 
-    # Initialize a list to store detected contour points
-    contour_points = []
+    h, w = gray_u8.shape[:2]
+    min_area = int(min_area_frac * h * w)
 
-    # Loop through each starting point
-    for start_point in starting_points:
-        x0, y0 = start_point
+    # detect very bright pixels
+    bin_img = (gray_u8 >= thr).astype(np.uint8) * 255
 
-        # Shoot rays in multiple directions
-        for angle in np.linspace(0, 2 * np.pi, num_rays):
-            dx = np.cos(angle)
-            dy = np.sin(angle)
+    # connect fragments
+    k = max(3, (min(h, w) // 300) * 2 + 1)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (k, k))
+    bin_img = cv2.morphologyEx(bin_img, cv2.MORPH_CLOSE, kernel, iterations=2)
 
-            for d in range(scan_depth):
-                x = int(x0 + d * dx)
-                y = int(y0 + d * dy)
+    # contours (OpenCV 3/4 compatible)
+    res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = res[0] if len(res) == 2 else res[1]
 
-                # Check if the ray hits an edge
-                if (
-                    x < 0
-                    or y < 0
-                    or x >= image.shape[1]
-                    or y >= image.shape[0]
-                    or image[y, x] > 0
-                ):
-                    contour_points.append((x, y))
-                    break
+    # build mask of border-touching bright rectangles
+    remove = np.zeros((h, w), dtype=np.uint8)
 
-    # Convert the list of points to a numpy array
-    contour_points = np.array(contour_points, dtype=np.int32)
+    def touches_border(x, y, ww, hh, pad=2):
+        return (x <= pad) or (y <= pad) or (x + ww >= w - pad) or (y + hh >= h - pad)
 
-    if len(contour_points) == 0:
-        print("No contour points detected.")
+    for c in contours:
+        area = cv2.contourArea(c)
+        if area < min_area:
+            continue
+        x, y, ww, hh = cv2.boundingRect(c)
+        if touches_border(x, y, ww, hh):
+            cv2.rectangle(remove, (x, y), (x + ww, y + hh), 255, thickness=-1)
+
+    # apply: set removed pixels to 0 (or median background if you prefer)
+    out = gray_u8.copy()
+    out[remove > 0] = 0
+    return out
+
+def detect_candidate_contours(bin_img: np.ndarray, *, min_area_px=300) -> list[np.ndarray]:
+    """
+    Return external contours sorted by descending area.
+    bin_img: 0/255 uint8.
+    """
+    if bin_img.ndim != 2:
+        raise ValueError("detect_candidate_contours expects 2D binary")
+    res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = res[0] if len(res) == 2 else res[1]
+    contours = [c for c in contours if cv2.contourArea(c) >= float(min_area_px)]
+    contours.sort(key=cv2.contourArea, reverse=True)
+    return contours
+
+
+def _find_contours_compat(bin_img: np.ndarray):
+    res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(res) == 2:
+        contours, hier = res
+    elif len(res) == 3:
+        _, contours, hier = res
+    else:
+        raise RuntimeError(f"Unexpected findContours return length: {len(res)}")
+    return contours, hier
+
+import cv2
+import numpy as np
+
+
+def contours_external(bin_img: np.ndarray):
+    res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(res) == 2:
+        contours, hier = res
+    else:
+        _, contours, hier = res
+    return contours, hier
+
+
+def largest_contour(bin_img: np.ndarray, *, min_area_px: int = 50):
+    if bin_img.ndim != 2:
+        raise ValueError("largest_contour expects a 2D binary image")
+    if bin_img.dtype != np.uint8:
+        bin_img = bin_img.astype(np.uint8)
+
+    contours, _ = contours_external(bin_img)
+    if not contours:
+        return None
+
+    cnt = max(contours, key=cv2.contourArea)
+    if cv2.contourArea(cnt) < float(min_area_px):
+        return None
+    return cnt
+
+
+def fill_contour_mask(shape_hw: tuple[int, int], contour: np.ndarray) -> np.ndarray:
+    h, w = shape_hw
+    m = np.zeros((h, w), dtype=np.uint8)
+    cv2.fillPoly(m, [contour.astype(np.int32)], 255)
+    return m
+
+
+def area_cm2_from_mask(mask_u8: np.ndarray, *, scan_depth_cm: float, px_per_cm: float | None = None) -> float:
+    """
+    Convert a filled mask (255 inside) to cm².
+
+    If px_per_cm is provided (manual scaling), use it.
+    Else assume scan_depth_cm corresponds to full image height.
+    """
+    if mask_u8.ndim != 2:
+        raise ValueError("area_cm2_from_mask expects 2D mask")
+    area_px = int(np.count_nonzero(mask_u8))
+    if area_px <= 0:
         return 0.0
 
-    # Create a blank mask and draw the contour on it
-    mask = np.zeros_like(image)
-    if len(contour_points) > 2:  # Need at least 3 points to form a contour
-        cv2.polylines(mask, [contour_points], isClosed=True, color=255, thickness=1)
-        cv2.fillPoly(mask, [contour_points], color=255)
+    h = int(mask_u8.shape[0])
 
-        # Measure the area in pixels
-        area_in_pixels = np.sum(mask > 0)
-
-        # Convert pixel area to real area based on scan depth (assuming 1 pixel = 1 unit length)
-        cm_area = area_in_pixels / (scan_depth**2)
+    if px_per_cm is not None and px_per_cm > 0:
+        cm_per_px = 1.0 / float(px_per_cm)
     else:
-        cm_area = 0.0
+        # None
+        cm_per_px = 1
 
-    # Plot the contour on the original image
-    output_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-    cv2.polylines(
-        output_image, [contour_points], isClosed=True, color=(0, 255, 0), thickness=2
-    )
-
-    plt.figure(figsize=(10, 10))
-    plt.title("Detected Muscle Contour")
-    plt.imshow(cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB))
-    plt.axis("off")
-    plt.show()
-
-    print(f"Measured area: {cm_area:.2f} cm²")
-    return cm_area
+    return float(area_px) * (cm_per_px ** 2)
 
 
-def find_starting_points(image, method="Automatic"):
+def detect_contour_from_preprocessed_mask(pre_mask_u8: np.ndarray) -> tuple[np.ndarray | None, np.ndarray]:
     """
-    Find starting points for outline detection and draw them on the image.
-    :param image: The preprocessed image.
-    :param method: The method for finding starting points ("Manual", "Automatic", "Fixed Pixels").
-    :return: A list of starting points and the image with the points drawn.
+    Input: your preprocess_image() output (a filled-ish mask).
+    Output: (largest_contour or None, cleaned_binary_mask)
     """
-    starting_points = []
+    if pre_mask_u8.ndim == 3:
+        pre_mask_u8 = cv2.cvtColor(pre_mask_u8, cv2.COLOR_BGR2GRAY)
+    if pre_mask_u8.dtype != np.uint8:
+        pre_mask_u8 = pre_mask_u8.astype(np.uint8)
+
+    # Ensure binary
+    _, bin_img = cv2.threshold(pre_mask_u8, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Cleanup (small gaps)
+    k = max(3, (min(bin_img.shape[:2]) // 200) * 2 + 1)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))
+    bin_img = cv2.morphologyEx(bin_img, cv2.MORPH_CLOSE, kernel, iterations=2)
+
+    cnt = largest_contour(bin_img, min_area_px=200)
+    return cnt, bin_img
+
+def measure_area(image, starting_points=None, scan_depth=5, num_rays=360, *, return_mask=False):
+    """
+    Robust area measurement:
+    - Converts input to grayscale uint8
+    - Creates a binary region mask via Otsu threshold + morphology
+    - Takes the largest external contour and fills it
+    - Computes area in pixels and converts using scan_depth**2 (keeps your original scaling behavior)
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Preprocessed image (can be grayscale or BGR).
+    starting_points : ignored (kept for API compatibility)
+        Present only to maintain core interface.
+    scan_depth : float|int
+        Used for conversion factor (and clamped to int pixels).
+    return_mask : bool
+        If True, returns (cm_area, filled_mask, contour_points)
+
+    Returns
+    -------
+    cm_area : float
+        Area in "cm^2" using your original conversion scheme.
+    """
+    scan_depth_px = int(round(float(scan_depth)))
+    if scan_depth_px <= 0:
+        return (0.0, None, None) if return_mask else 0.0
+
+    # ---- ensure grayscale uint8 ----
+    if image is None:
+        return (0.0, None, None) if return_mask else 0.0
+
+    if image.ndim == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image
+
+    if gray.dtype != np.uint8:
+        gmin, gmax = float(np.min(gray)), float(np.max(gray))
+        if gmax > gmin:
+            gray = ((gray - gmin) * (255.0 / (gmax - gmin))).astype(np.uint8)
+        else:
+            gray = np.zeros_like(gray, dtype=np.uint8)
+
+    # ---- binarize (Otsu) ----
+    # Otsu chooses foreground vs background automatically.
+    _, bin_img = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # If Otsu picked the wrong polarity (common), flip so "muscle region" is white
+    # Heuristic: prefer fewer white pixels than black pixels? actually muscle often occupies mid/large.
+    white = int(np.count_nonzero(bin_img))
+    total = int(bin_img.size)
+    if white < total * 0.05 or white > total * 0.95:
+        bin_img = cv2.bitwise_not(bin_img)
+
+    # ---- cleanup ----
+    k = max(3, (min(gray.shape[:2]) // 200) * 2 + 1)  # odd kernel, scale with image size
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))
+    bin_img = cv2.morphologyEx(bin_img, cv2.MORPH_OPEN, kernel, iterations=1)
+    bin_img = cv2.morphologyEx(bin_img, cv2.MORPH_CLOSE, kernel, iterations=2)
+
+    # ---- contours ----
+    contours, _ = _find_contours_compat(bin_img)
+    if not contours:
+        return (0.0, bin_img if return_mask else None, None) if return_mask else 0.0
+
+    # pick largest contour by area
+    contour = max(contours, key=cv2.contourArea)
+    if cv2.contourArea(contour) <= 1:
+        return (0.0, bin_img if return_mask else None, None) if return_mask else 0.0
+
+    # ---- fill contour ----
+    filled = np.zeros_like(gray, dtype=np.uint8)
+    cv2.fillPoly(filled, [contour.astype(np.int32)], 255)
+
+    area_px = int(np.count_nonzero(filled))
+    cm_area = area_px / float(scan_depth_px ** 2)
+
+    if return_mask:
+        return float(cm_area), filled, contour
+    return float(cm_area)
+
+def _ensure_binary_u8(img: np.ndarray) -> np.ndarray:
+    """
+    Ensure a single-channel uint8 binary-ish image suitable for findContours.
+    - If 3-channel: convert to gray
+    - If float: normalize to uint8
+    - If non-binary: Otsu threshold to get contours
+    """
+    if img is None:
+        raise ValueError("find_starting_points: image is None")
+
+    if img.ndim == 3:
+        # treat as BGR
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    if img.dtype != np.uint8:
+        # robust conversion to uint8
+        img_min = float(np.min(img))
+        img_max = float(np.max(img))
+        if img_max > img_min:
+            img = ((img - img_min) * (255.0 / (img_max - img_min))).astype(np.uint8)
+        else:
+            img = np.zeros_like(img, dtype=np.uint8)
+
+    # ensure we have a binary image for contours
+    # (works even if already binary)
+    _, bin_img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return bin_img
+
+
+def _find_contours_compat(bin_img: np.ndarray):
+    """
+    OpenCV 3/4 compatibility: findContours may return (img, contours, hierarchy) or (contours, hierarchy)
+    """
+    res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(res) == 2:
+        contours, hierarchy = res
+    elif len(res) == 3:
+        _, contours, hierarchy = res
+    else:
+        raise RuntimeError(f"Unexpected findContours return length: {len(res)}")
+    return contours, hierarchy
+
+
+def find_starting_points(image: np.ndarray, method: str = "Automatic"):
+    """
+    Find starting points for outline detection.
+
+    Returns
+    -------
+    starting_points : list[tuple[int,int]]
+    overlay : np.ndarray
+        RGB overlay image with points drawn (safe for display).
+        NOTE: analysis 'image' is NOT modified.
+    """
+    starting_points: list[tuple[int, int]] = []
+
+    # For contour detection: use a single-channel binary uint8 image
+    bin_img = _ensure_binary_u8(image)
+    contours, _ = _find_contours_compat(bin_img)
+
+    # Create an RGB overlay for drawing (never draw on analysis input)
+    if image.ndim == 2:
+        overlay = cv2.cvtColor(image.astype(np.uint8, copy=False), cv2.COLOR_GRAY2RGB)
+    else:
+        # assume BGR if 3ch
+        overlay = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     if method == "Automatic":
-        # Automatically detect points using some heuristic (e.g., contour centroids)
-        contours, _ = cv2.findContours(
-            image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
-
         for contour in contours:
             M = cv2.moments(contour)
-            if M["m00"] != 0:
+            if M.get("m00", 0) != 0:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
                 starting_points.append((cX, cY))
-                # Draw the starting point on the image
-                cv2.circle(image, (cX, cY), 5, (255, 0, 255), -1)
+                cv2.circle(overlay, (cX, cY), 5, (255, 0, 255), -1)
+
+    elif method == "Fixed Pixels":
+        # Example fallback: center point (adjust if you have a defined rule)
+        h, w = bin_img.shape[:2]
+        cX, cY = w // 2, h // 2
+        starting_points.append((cX, cY))
+        cv2.circle(overlay, (cX, cY), 5, (255, 0, 255), -1)
 
     elif method == "Manual":
-        # Manually select starting points using mouse clicks
+        # NOTE: OpenCV GUI; if you want full CustomTkinter integration, don’t use this.
         def click_event(event, x, y, flags, params):
             if event == cv2.EVENT_LBUTTONDOWN:
                 starting_points.append((x, y))
-                cv2.circle(image, (x, y), 5, (0, 255, 0), -1)
-                cv2.imshow("Select Starting Points", image)
+                cv2.circle(overlay_bgr, (x, y), 5, (255, 0, 255), -1)
+                cv2.imshow("Select Starting Points", overlay_bgr)
 
         print("Click to select starting points. Press ESC when done.")
-        cv2.imshow("Select Starting Points", image)
+        overlay_bgr = cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR)
+        cv2.imshow("Select Starting Points", overlay_bgr)
         cv2.setMouseCallback("Select Starting Points", click_event)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    elif method == "Fixed Pixels":
-        # Return fixed points
-        starting_points = [(50, 50), (150, 150), (200, 200)]
-        for point in starting_points:
-            cv2.circle(image, point, 5, (0, 255, 0), -1)
+    else:
+        raise ValueError(f"Unknown method: {method}")
 
-    return starting_points, image
+    return starting_points, overlay
 
 
 def draw_outline(image, contours):
