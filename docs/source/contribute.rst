@@ -18,7 +18,7 @@ Pull request process for contributing own material
 
 1. Describe the changes you made as detailled as possible in the pull request.
 2. Add a changelog to the changelog.d folder describing exactly what you changed in the project and the environment.
-3. When adding new functions, please follow the code and docstring styles used throughout the code. FYI, we used the `Numpy styleguide <https://numpydoc.readthedocs.io/en/latest/format.html>`_. (However, code documentation is not completed for all our functions yet.)
+3. When adding new functions, please follow the code and docstring styles used throughout the code. FYI, we used the `Numpy style guide <https://numpydoc.readthedocs.io/en/latest/format.html>`_. (However, code documentation is not completed for all our functions yet.)
 4. Create a new branch (named yourchange_yourinitials) and a Pull Request to merge your work on the **main** branch of the project.
 
 Report a bug

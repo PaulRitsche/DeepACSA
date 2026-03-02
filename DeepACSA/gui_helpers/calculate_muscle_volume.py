@@ -3,55 +3,61 @@ Description
 -----------
 This module contains a function to automatically calculate the volume
 of the analyzed muscle. Note that this can only be done across several
-images of the same muscle, at least 3. The truncated cone formula is used,
-modelling the muscle as a cone. The higher the number of images per muscle,
-the higher the accuracy of the volume calculation, as distances between images
-are extrapolated. Thus, the distance must be known and must be equal.
-
-Functions scope
----------------
-muscle_volume_calculation
-    Function to calcualte the echo intensity of muscle area.
+images of the same muscle, and that you need at least 3 images.
+The truncated cone formula is used, modelling the muscle as a cone.
+The higher the number of images per muscle, the higher the accuracy
+of the volume calculation, as distances between images are extrapolated.
+Thus, the distance between images in centimeters must be known and constant.
 """
 
 import math
 
+
 def muscle_volume_calculation(scan_area: list, dist: float):
     """
-    Fuction to calculate muscle volume on the basis of the predicted
-    muscle areas. Several images of the same muscle are needed to
-    calculate the muscle muscle volume with known distances between
-    the images.
+    Muscle volume calculation utilities.
 
-    The truncated cone formula is used to calculate the volume,
-    where the muscle is modelled as a cone.
+    This module provides functionality to estimate muscle volume from
+    a sequence of predicted anatomical cross-sectional areas (ACSA).
+    The volume is computed using the truncated cone formula between
+    adjacent scans with constant spacing.
 
     Parameters
     ----------
-    scan_area : list
-        List variable containing the predicted muscle areas.
-        Should be at least 3 predicted areas.
+    scan_area : list of floats
+        List variable containing the predicted muscle areas as floats.
     dist : float
-        Float variable contianing the distance between the images
-        in cm. Needs to be constant.
+        Float variable containing the distance between the images
+        in cm.
 
     Returns
     -------
     total_volume : float
         Float variable containing the total predicted muscle
-        volume in cm^3.
+        volume in cubic centimeters (cm^3).
 
     Notes
     -----
+    The truncated cone formula is given by:
+
+    .. math::
+
+        V = \\frac{h}{3} (A1 + A2 + \\sqrt{A1 A2})
+
+    where `h` is the distance between scans. A1 and A2 are the predicted areas
+    of two adjacent scans.
+
+    The function makes a few assumptions without checking for them.
+
     - The `scan_area` list should contain at least three elements representing
-      the predicted muscle areas from different scans or images of the same
+      the predicted muscle areas from 3 different scans or images of the same
       muscle.
     - The `dist` parameter should be the known distance between the images in
-      centimeters (cm). It must be constant for accurate volume calculation.
-    - The returned volume is in cubic centimeters (cm^3).
+      centimeters (cm). It must be constant and positive for accurate volume 
+      calculation.
 
-    Example
-    -------
+    Examples
+    --------
     >>>muscle_volume = muscle_volume_calculation([2, 3, 5, 4, 2, 2], 3.75)
     11.3276276145058
     """
@@ -65,7 +71,7 @@ def muscle_volume_calculation(scan_area: list, dist: float):
         a = scan_area[scan_nr]
         b = scan_area[scan_nr + 1]
 
-        partial_volume = 1/3 * (a + math.sqrt((a * b) + b)) * dist
+        partial_volume = 1/3 * (a + b + math.sqrt((a * b))) * dist
         total_volume = total_volume + partial_volume
 
     return total_volume

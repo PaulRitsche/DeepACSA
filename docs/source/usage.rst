@@ -180,6 +180,7 @@ Continuing with our example, assume that you have augmented your dataset and are
 9. Select a ``Loss Function`` from the drop-down menu. Currently, the only implemented option is **binary cross-entropy (BCE)**.
 10. Click ``Start Training`` and follow the instructions provided in the pop-up messages. Once training has started, a live preview of the training metrics will be displayed in the terminal.
 11. Once the training is complete, three files will appear in the specified ``Output Directory``:
+
   * ``Test_apo.csv`` - contains the following metrics recorded per epoch: IoU, accuracy, loss, learning rate *(lr)*, validation IoU *(val_IoU)*, validation accuracy *(val_accuracy)*, and validation loss *(val_loss)*.
   * ``Test_Apo.h5`` – the trained model file.
   * ``Training_Results.tif`` – a plot of the training and validation curves across epochs.
