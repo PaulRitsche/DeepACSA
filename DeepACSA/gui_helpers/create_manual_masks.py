@@ -138,7 +138,7 @@ def select_area(image):
 
 def create_acsa_masks(
     input_dir,
-    muscle_name: str = "bf_img_",
+    muscle_name: str = "rf_img_",
     output_imgs_dir: str = None,
     output_masks_dir: str = None,
 ):
@@ -151,7 +151,7 @@ def create_acsa_masks(
     input_dir : str
         Directory containing the input images.
     muscle_name : str, optional
-        Prefix for the output filenames. Default is "rf_img_".
+        Prefix for the output filenames. Default is ``"rf_img_"``.
     output_imgs_dir: str, optional
         Directory to save the output images. If not provided, a 'train_images' folder will be created inside input_dir.
     output_masks_dir: str, optional

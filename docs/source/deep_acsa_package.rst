@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   Deep_ACSA.gui_helpers
+   DeepACSA.gui_helpers
 
 Submodules
 ----------
@@ -15,7 +15,7 @@ Submodules
 Deep_ACSA.deep_acsa_gui module
 """"""""""""""""""""""""""""""
 
-.. automodule:: Deep_ACSA.deep_acsa_gui
+.. automodule:: DeepACSA.deep_acsa_gui
    :members:
    :undoc-members:
    :show-inheritance:

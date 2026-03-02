@@ -3,12 +3,17 @@
 Contributing
 ============
 
-We are happy whenever you decide to contribute to DeepACSA. However, when contributing to DeepACSA, please first file an issue in our Github `issue section <https://github.com/PaulRitsche/DeepACSA/issues>`_. Label the issue with "improvement" and describe your suggestion. Please formulate the title of the issue similar to this: Contribution - Your contribution idea. Please also state in the issue wheter you want to implement it yourself / already implemented it in your code or if you would like us to implement it. We will be in touch with you.
+We are happy whenever you decide to contribute to DeepACSA. However, when contributing to DeepACSA, please first file an issue in our Github `issue section <https://github.com/PaulRitsche/DeepACSA/issues>`_. 
+
+Label the issue with *"improvement"* and provide a clear description of your suggestion. Please formulate the title of the issue similar to this: *Contribution - Your contribution idea*. 
+
+In the issue, also indicate whether you plan to implement the contribution yourself, have already implemented it locally, or would prefer that we implement it. We will review your proposal and get back to you as soon as possible.
+
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
 In case you have decided to implement your suggestion yourself and we agreed that you should file a pull request, take a look at the steps listed below.
 
-Pull Request Process for contributing own material
+Pull request process for contributing own material
 --------------------------------------------------
 
 1. Describe the changes you made as detailled as possible in the pull request.
@@ -35,10 +40,10 @@ Getting Support
 If you have any questions about the project, encountered problems / need help during the installation procedure or encountered problems / need help during the usage of DeepACSA not related to bugs, don't hesitate to report this in the Github `Q&A section <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_. This is the space to have conversations, ask questions and post answers without opening issues.
 
 Code of Conduct
-===============
+---------------
 
 Our Pledge
-----------
+""""""""""
 
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to make participation in our project and
@@ -48,7 +53,7 @@ level of experience, education, socio-economic status, nationality, personal
 appearance, race, religion, or sexual identity and orientation.
 
 Our Standards
--------------
+"""""""""""""
 
 Examples of behavior that contributes to creating a positive environment
 include:
@@ -71,7 +76,7 @@ Examples of unacceptable behavior by participants include:
   professional setting
 
 Our Responsibilities
---------------------
+""""""""""""""""""""
 
 Project maintainers are responsible for clarifying the standards of acceptable
 behavior and are expected to take appropriate and fair corrective action in
@@ -84,7 +89,7 @@ permanently any contributor for other behaviors that they deem inappropriate,
 threatening, offensive, or harmful.
 
 Scope
------
+"""""
 
 This Code of Conduct applies within all project spaces, and it also applies when
 an individual is representing the project or its community in public spaces.
@@ -94,7 +99,7 @@ as an appointed representative at an online or offline event. Representation of
 a project may be further defined and clarified by project maintainers.
 
 Enforcement
------------
+"""""""""""
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported by contacting the project team at paul.ritsche@unibas.ch. All
@@ -108,7 +113,7 @@ faith may face temporary or permanent repercussions as determined by other
 members of the project's leadership.
 
 Attribution
------------
+"""""""""""
 
 This Code of Conduct is adapted from the Contributor Covenant homepage, version 1.4,
 available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html.

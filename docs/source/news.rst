@@ -1,10 +1,19 @@
 News
 ==========
 
+v0.3.2:
+-------
+We introduced a model for the automatic segmentation of the anatomical cross-sectional area of the patellar tendon and updated the documentation and usage examples accordingly.
+
+Patellar tendon models
+----------------------
+1. Data:
+We provide models for the automatic segmentation of the patellar tendon anatomical cross-sectional area at 25%, 50%, and 75% of tendon length in healthy subjects. Further information is available in the `DeepACSA repository <https://github.com/PaulRitsche/DeepACSA/tree/main>`_, and the models together with reliability data can be downloaded from `OSF <https://osf.io/x5jtz/>`_.
+
 Hamstring models
 ----------------
 1. Data:
-    We provide, together with `ORBlab Michigan <https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory>`_, models for the automatic segmentation of the biceps femoris long head at several muscle length in male, female young and adult people. More information can be found in the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA/tree/main>`_. The models can be downloaded from `OSF <https://osf.io/a3u4v/>`_.
+    We provide, together with `ORBlab Michigan <https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory>`_, models for the automatic segmentation of the biceps femoris long head at several muscle length in male, female young and adult people. More information can be found in the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA/tree/main>`_. The models and further informations on them can be downloaded from the `respective OSF <https://osf.io/a3u4v/>`_.
 
 v0.3.1: 
 -------

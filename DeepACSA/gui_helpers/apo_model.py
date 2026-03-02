@@ -16,7 +16,9 @@ Function scopes
 ---------------
 _resize
     Resizes an input image to the specified height and width.
+
 For scope of the functions used in the class ApoModel see class documentation.
+
 """
 
 import tkinter as tk
@@ -80,6 +82,7 @@ def _resize(img, width: int, height: int):
            [3, 4, 3]])
 
     """
+
     img = resize(img, (1, height, width, 1))
     img = np.reshape(img, (height, width))
     return img
@@ -124,6 +127,7 @@ class ApoModel:
     >>> # get predictions and plot (the following two are identical)
     >>> pred_apo_t, fig = apo_model.predict_t(img, width, height)
     >>> pred_apo_t, fig = apo_model.predict_t(img, width, height, True)
+
     """
 
     def __init__(self, gui, model_path: str, apo_threshold: float = 0.5):
@@ -166,6 +170,7 @@ class ApoModel:
         >>> instance = ApoModel(gui, model_path, loss_function, apo_threshold)
 
         """
+
         matplotlib.use("Agg")
 
         self.apo_threshold = apo_threshold
@@ -250,6 +255,7 @@ class ApoModel:
             [0.7, 0.6]])
 
         """
+
         try:
             pred_apo = self.model_apo.predict(img)
             if isinstance(pred_apo, list):
@@ -264,8 +270,7 @@ class ApoModel:
             return
 
     def postprocess_image(self, img):
-        """Deletes unnecessary areas, fills holes and calculates the length
-           of the detected largest contour.
+        """Deletes unnecessary areas, fills holes, and calculates the length of the detected largest contour.
 
         Parameters
         ----------
@@ -283,29 +288,30 @@ class ApoModel:
         This method takes an input image and performs the following steps:
         1. Finds pixel regions and labels them using `measure.label`.
         2. Sorts the regions by area in descending order.
-        3. Removes all regions except the one with the largest area, effectively
-           keeping only the largest area in the image.
+        3. Removes all regions except the one with the largest area, effectively keeping only the largest area in the image.
         4. Fills holes in the largest area using `morphology.remove_small_holes`.
         5. Smooths the edges of the predicted area.
         6. Calculates the circumference of the largest contour in the image.
 
         Example
         -------
-        >>> img = np.array([[0, 0, 1, 0, 0],
-                            [0, 1, 1, 1, 0],
-                            [0, 1, 1, 1, 0],
-                            [0, 0, 1, 0, 0]])
-        >>> model = ApoModel()
-        >>> circumference, processed_img = model.postprocess_image(img)
-        >>> print(circumference)
-        16.0
-        >>> print(processed_img)
-        array([[0, 0, 1, 0, 0],
-               [0, 1, 1, 1, 0],
-               [0, 1, 1, 1, 0],
-               [0, 0, 1, 0, 0]])
+        ::
 
+            >>> img = np.array([[0, 0, 1, 0, 0],
+            ...                 [0, 1, 1, 1, 0],
+            ...                 [0, 1, 1, 1, 0],
+            ...                 [0, 0, 1, 0, 0]])
+            >>> model = ApoModel()
+            >>> circumference, processed_img = model.postprocess_image(img)
+            >>> print(circumference)
+            16.0
+            >>> print(processed_img)
+            array([[0, 0, 1, 0, 0],
+                   [0, 1, 1, 1, 0],
+                   [0, 1, 1, 1, 0],
+                   [0, 0, 1, 0, 0]])
         """
+
         if np.sum(img) == 0:
             return 0.0, img.astype(np.uint8)
 
@@ -415,7 +421,9 @@ class ApoModel:
               [False, False]])
         >>> print(fig)
         <matplotlib.figure.Figure object at 0x...>
+
         """
+
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
 
@@ -516,7 +524,9 @@ class ApoModel:
                [False, False]])
         >>> print(fig)
         <matplotlib.figure.Figure object at 0x...>
+
         """
+
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
 
@@ -606,7 +616,9 @@ class ApoModel:
                [False, False]])
         >>> print(fig)
         <matplotlib.figure.Figure object at 0x...>
+
         """
+
         pred_apo = self.predict(gui, img)
         pred_apo_t = pred_apo > self.apo_threshold
 

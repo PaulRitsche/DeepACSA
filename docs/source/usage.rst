@@ -5,228 +5,369 @@ Usage
 
 Welcome to the DeepACSA tutorial. 
 Here you will learn how to automatically analyse ultrasonography images of human lower limb muscles. 
-You will do so by making extensive use of the graphical user interface provided by DeepACSA. 
-The basics on how to use the GUI are demonstrated in this `video <https://www.youtube.com/watch?v=It9CqVSNc9M>`_. 
-You can find the details on how to start the graphical user interface, how to train your own neural networks and how to calculate muscle volume below. 
-Have fun!
+You will do so by making extensive use of the graphical user interface (GUI) provided by DeepACSA. 
 
-Not included in the video:
---------------------------
+| The basic functionality of the GUI is demonstrated in the following sections. We guide you through a logical, practice-oriented example that illustrates how each feature can be implemented within a typical laboratory workflow.
+| You will find detailed instructions below on how to analyze ultrasound images manually, train your own neural networks, perform automated analysis, and calculate muscle volume as part of this structured example. 
+| Have fun!
 
-- Loss Function: In the new version of the GUI, you can find a ``Loss Function`` dropdown under the ``Model Path`` textentry. Here you need to specify the loss function used during model training. So far, we implemented *IoU*, *Focal Loss* and *Dice Loss*. When using our pre-trained models, simply select *IoU*. 
-- Model Training (see :ref:`trainlabel`)
-- Image Labelling (see :ref:`datalabel`)
-- Mask Inspection (see :ref:`masklabel`)
-- Image Augmentation (see :ref:`augmentlabel`)
-- Volume Calculation (see :ref:`volumelabel`)
+What is covered on this page:
+-----------------------------
 
-**Please note that the video is using an older version of DeepACSA. The GUI has been updated since then, but the overall workflow remains the same.**
+* :ref:`Image preprocessing and anonymization <removeparts>`
+* :ref:`Manual data labeling and mask creation <datalabel>`
+* :ref:`Image augmentation <augmentlabel>`
+* :ref:`Training your own model <trainlabel>`
+* :ref:`Automatic image analysis with models <automatic_analysis_label>`
+* :ref:`Mask inspection and quality control <masklabel>`
+* :ref:`Muscle volume calculation <volumelabel>`
 
-**Attention MacOS users:**
-The DeepACSA package is only fully functional on windows OS and was not properly tested on MacOS. However, with restricted functionality macOS users can employ the DeepACSA as well. With macOS, the manual scaling option for image analysis is not functional. Therefore, images cannot be scaled this way in the GUI. A possible solution is to scale the analysis results subsequent to completion of the analysis. Therefore, the pixel per centimeter must be calculated elsewhere. One option is to use `FIJI <https://imagej.net/software/fiji/downloads>`_. By drawing a line on the image, it is possible to see the length of the line in pixel units. Open the respective image in FIJI by drag and drop. Draw a line on the image with a known distance of one centimetre, click `cmd + m` and get the length of the line in pixel unit from the result window. Do that for every image with varying scanning depth. Divide the analysis results for muscle thickness and fascicle length by the linelength in pixel units. The result will be the muscle thickness and fascicle length in centimeter units.
+**Attention macOS users:**
+
+| The DeepACSA package is only fully functional on Windows OS and was not properly tested on macOS. However, with restricted functionality macOS users can use DeepACSA as well. 
+| With macOS, the manual scaling option for image analysis is not functional. Therefore, images cannot be scaled this way in the GUI. A possible solution is to scale the analysis results subsequent to completion of the analysis. 
+| Therefore, the pixels per centimeter must be calculated elsewhere. One option is to use `FIJI <https://imagej.net/software/fiji/downloads>`_. By drawing a line on the image, it is possible to see the length of the line in pixel units. Open the respective image in FIJI by drag and drop. Draw a line on the image with a known distance of one centimetre, click ``cmd + m`` and get the length of the line in pixel units from the result window. 
+| Repeat this procedure for images acquired at different scanning depths. Determine the pixel-to-centimeter conversion factor (pixels per centimeter) for each image. To convert ACSA values from pixels to cm², divide the predicted area (in pixels) by the square of the pixel-per-centimeter value.
 
 Good to know
 ------------
 
-All relevant instructions and guidelines for the installation of the DeepACSA software are described in the installation section, so please take a look there if anything is unclear. We have also provided information on what to do when you encounter problems during the installation process, encounter errors during the analysis process that are not caught by the GUI (no error message pop ups and advises you what to do), if you want to contribute to the DeepACSA software package, and how you can reach us.
+All relevant instructions and guidelines for the installation of the DeepACSA software are described in the :ref:`installation section <installation>`, so please take a look there if anything is unclear. We have also provided information on what to do when you encounter problems during the installation process; encounter errors during the analysis process that are not caught by the GUI (no error message pop ups and advises you what to do); want to :ref:`contribute <contributelabel>` to the DeepACSA software package, and how you can reach us.
 
 Before we start with this tutorial, here are some important tips:
 
-- In case you plan an analysis on images taken from different muscles, we strongly advise to 
-  test the algorithm first and in case of bad performance, train your own models. We have provided 
-  extensive documentation on how to do so in the section “Training your own network” in this tutorial.
+* In case you plan an analysis on images taken from different muscles, we strongly advise to test the algorithm first and in case of bad performance, train your own models. We have provided extensive documentation on how to do so in the :ref:`Training your own network section <trainlabel>` in this tutorial.
 
-- Although we used extensive data augmentation during the model training process, we must 
-  caution you about the generalizability of our models. Deep learning is no magic! Even though our model demonstrated good performance on unseen images during testing, we cannot confidently claim that they will work fine on all lower limb ultrasonography images.
-  It is possible that even for images of muscles represented in our training data set, different device types, different muscle regions and even different settings of ultrasonography devices during image acquisition might offset model performance. 
+* Bad model performance can be detected. The first and easiest step to take is to :ref:`visually inspect <masklabel>` the output of the models. If the segmentation results and the actual aponeuroses overlap on most of the analysed images, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good, if not, train a separate model.
 
-- Quality matters! Please pay attention that the images you want to analyse with DeepACSA are 
-  of high quality. High quality means good image contrast, appropriate image brightness, clearly visible fascicles and aponeurosis and clear alignment of the probe with the fascicle plain. If the quality of the images you want to analyse is bad, the results will be as well.
+* Although we used extensive data augmentation during the model training process, we caution users about the generalizability of our models. Deep learning is no magic! Even though our model demonstrated good performance on unseen images during testing, we cannot confidently claim that they will work fine on all lower limb ultrasonography images. Model performance may be affected by variations in device type, anatomical region, or ultrasound acquisition settings; even when analyzing muscles that were included in the training dataset. 
 
-- Bad model performance can be detected. The first and easiest step to take is to visually 
-  inspect the output of the models. If the segmentation results and the actual aponeuroses overlap on most of the analysed images, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good. If not, train a separate model.
+* Quality matters! Ensure that the images you intend to analyse with DeepACSA are of high quality. High quality implies good image contrast, appropriate brightness, clearly visible aponeuroses, and proper probe alignment perpendicular to the muscle plane. If the quality of the images you want to analyse is bad, the results will be as well.
 
-Starting the interface
-----------------------
+Using the GUI
+-------------
 
-In the very first step of this tutorial, we will take a look at how to start the graphical user interface (GUI) once it was installed. We have provided three different installation procedures: 
-
-1. downloading the DeepACSA.exe `file <https://doi.org/10.5281/zenodo.8419487>`_
-
-2. installing the DeepACSA python package with pip, Pypi or locally.
-
-Let's begin with 1., how to start the GUI when you downloaded the DeepACSA.exe: 
-It doesn't get any easier than this. Navigate to the downloads folder and place the DeepACSA.exe file somewhere you can easily find it again. Done so, you just have to double click the DeepACSA.exe file with your left mouse button to start the GUI. Once you’ve done that, the GUI should open and you are ready to start an analysis.
-
-Now to 2., how to start the GUI when you installed the DeepACSA python package via Pip, Github and Pypi:
-There are essentially two ways you can start the GUI. But first lets make sure that DeepACSA was correctly installed. The package should be included in the conda virtual environment, as you probably installed it locally in your machine. Therefore, open a prompt and activate the environment by typing 
-
-``conda activate DeepACSA``
-
-If this does not work, go back to the Installation section (see :ref:`installlabel`).
-You should see the activated environment now in the left round brackets. Next type
-
-``conda list``
-
-to see all packages installed in the DeepACSA environment. When DeepACSA is included, you are good to go. If this is not the case, navigate to the source folder of DeepACSA (with the pyproject.toml file) in your prompt. Type
-
-``python -m pip install -e .``
-
-to install the package locally (for more information, see section Installation (see :ref:`installlabel`))
-Check again if the package is listed inside the environment now. If you still encounter a problem, ask a question in the Q&A discussion section of DLTrack on Github and add the Label “Problem”.
-
-However, if DeepACSA is included in the conda environment, type 
-
-``python -m Deep_ACSA`` 
-
-to start the GUI. The location of you prompt is irrelevant, as long as the DeepACSA conda environment is activated. The main GUI window should open now.
+This section assumes that you have completed the steps in the :ref:`installation section <installation>` and can launch the GUI using one of the two methods described there. After launching, the following screen should appear:
 
 .. figure:: main.png
-    :scale: 50 %
-    :alt: main_gui_figure
+  :scale: 75 %
+  :alt: main_gui_figure
 
-    Main GUI Window
+  Main GUI Window
 
-.. _trainlabel:
+In the following sections, the functionalities of DeepACSA are presented using a single, consistent example. This example serves as a common thread and is referenced throughout the sections.
 
-Train your own networks
------------------------
+.. _removeparts:
 
-It is advantageous to have a working GPU setup, otherwise model training will take much longer. 
-How to setup you GUI for DeepACSA is described above and in the installation section. 
-Although you can adapt a number of parameters during training, you cannot change the neural network architecture from the GUI (of course you could modify source code to do so). 
-To explain the parameters used during model that are adaptable from the GUI is out of the scope of this tutorial. However, we would like to refer you to `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_ in case you are a deep learning beginner.
-Training your own networks for muscle architecture analysis requires pairs of original images and manually labelled masks. Examples are provided for you in the “DeepACSA_example/model_training” folder. If you haven't downloaded this folder, please do so now (`link <https://doi.org/10.5281/zenodo.8419487>`_). Unzip the folder and put it somewhere accessible, for example on your desktop.
+Removing image parts
+""""""""""""""""""""
+Assume that, in your laboratory, you have acquired transverse ultrasound images of the rectus femoris muscle at different percentages of femur length in 60 subjects. Before proceeding with further analysis, it may be useful to crop or mask additional information displayed by the ultrasound machine that could mislead automated processing. This step is also recommended for data anonymization, particularly when filenames or patient information are consistently displayed in the same image location. 
+
+| If you plan to delegate the analysis or prepare the data for publication, working in a blinded manner with anonymized images is strongly advised to reduce potential bias.
+| DeepACSA provides a dedicated functionality to remove such regions, allowing you to work with cleaner and anonymized data. The example below illustrates the use of this feature:
+
+.. figure:: removed_parts.png
+  :scale: 20 %
+  :alt: removed_parts
+
+  Left: original image containing non-relevant and personal overlay information. Right: cleaned image with superfluous information removed.
+  
+1. Before starting, ensure that the region you intend to remove is consistently located across all images to be edited. Only one selection can be made and it will be applied to every image in the directory. 
+2. Launch the GUI and select ``Remove Image Parts`` from the ``Advanced Methods`` menu.
+3. In the newly opened window, click ``Load Image`` to select the directory containing the images you wish to clean or anonymize.
+4. After selecting the directory, a new window will open displaying the first image.
+5. Left-click and drag to select the area you wish to cover with a black rectangle. If you misclick, simply click and drag again; the previously selected area will be replaced.
+
+.. figure:: remove_gui.png
+  :scale: 40 %
+  :alt: remove_gui
+
+  GUI for removing image parts, with the selected region highlighted in red.
+
+6. After selecting the desired area, click ``Remove Parts`` to remove the selected pixel region **from all images in the directory**.
+7. Once the process is complete, close the ``Remove Image Parts`` window by clicking the **X** in the upper-right corner.
+8. A new folder named ``Processed`` will appear in the input directory, containing the edited images.
+9. Multiple regions cannot be selected within a single run. To remove an additional area, close the ``Remove Image Parts`` window, reopen it, select the newly created ``Processed`` folder as the input directory, and repeat the procedure.
 
 .. _datalabel:
 
 Data labelling
 """"""""""""""
 
-The most important part for model training is data preparation and labelling.
-We have provided a functionality inside DeepACSA that allows you to label your images and create the masks.
-1. Start the GUI and click the ``Advanced Methods`` button.
+After preprocessing and anonymizing your images, the next step is to prepare your dataset for model development.
+If no trained model is available, the first step is to manually identify and segment the anatomical cross-sectional area (ACSA) in each image. This process allows you to determine the ACSA of the subject's rectus femoris, with the output reported in cm².
+
+This step is called data labelling and, together with data preparation, is the most important stage of model training.
+
+DeepACSA provides a dedicated functionality that enables manual labeling of images and the creation of corresponding segmentation masks.
+
+1. After launching the GUI click the ``Advanced Methods`` button.
 2. Select the ``Create Masks`` option. The ``Create Masks Winow`` will open. 
 
 .. figure:: create_masks.png
-  :scale: 50 %
+  :scale: 100 %
   :alt: create_masks_figure
 
   Create Masks Window.
 
-2. In the ``Image Dir``, specify the path to the images you want to label by clicking the ``Image Dir`` button. These images should be contained in a single folder with no subfolders.
-3. Start the mask creation by clicking the ``Create Masks`` button. Two folders will be created in the ``Image Dir`` folder: *train_images* and *train_masks*. The original images will be copied to *train_images* and the masks will be saved in *train_masks* with the same filename but a ".tif" extension.
-4. An information window opens telling you to scale the images. Click ``OK`` to continue.
-  
-.. figure:: mask_info.png
+3. Click the ``Image Dir`` button to select the folder containing the images you want to label. All images must be stored in a single folder without subfolders.
+4. Start the mask creation process by clicking the ``Create Masks`` button. Two folders will be created in the directory specified under ``Image Dir``: **_images** and **_masks**. The original images are copied to *_images*, and the corresponding binary masks are saved in *_masks* using the same filename with a *.tif* extension.
+5. The first image will open automatically. After completing the analysis of one image, the next image in the directory will open sequentially.
+6. The first thing to do is scaling the image. Left-click on two points that are exactly 1 cm apart **(red points)**. If you misclick, remove the most recent point by right-clicking on the image. After selecting the two scaling points, the scaling factor will be displayed in the terminal. 
+7. You will then be prompted to segment the muscle ACSA by repeatedly left-clicking around the muscle boundary **(blue points)**. Incorrect points can be removed by right-clicking.
+
+.. figure:: masked_image.png
   :scale: 50 %
-  :alt: mask_info_figure
+  :alt: masked_image
 
-  Mask Scaling Info.
-  
-5. Another GUI will open. Create the mask by clicking on the image. Follow the instructions in the GUI. Repeat this process for all images in the selected ``Image Dir``.
+  Scaled image (red dots) being segmented (blue dots).
 
-.. figure:: make_mask.png
-  :scale: 50 %
-  :alt: make_mask_figure
+8. Once segmentation is complete, press ``Enter`` to finalize the labeling and proceed to the next image. Image filenames are incremented automatically based on the number of files already present in these folders. The calculated ACSA expressed in cm² will be displayed in the terminal. To interrupt the analysis at any time, press ``Esc``.
+9. After each successfully analyzed image, the renamed image and corresponding mask are saved in their respective folders. In addition, the filename and calculated ACSA are appended to the **Areas.csv** file. Because the results are reported in cm², accurate scaling is essential.
+10. If you stop the analysis before processing all images in the selected ``Image Dir``, move any already analyzed images (**_images** folder), masks (**_masks** folder), and the generated **Areas.csv** file before restarting the procedure.
+11. Do not delete the **_images**, **_masks** or **Areas.csv** files, as they contain the labeled images and corresponding masks. Moving them is only necessary to avoid labeling duplicates.
 
-  Mask Creation GUI.
-
-All images in the selected folder will be used during mask creation. Please remeber to remove already labelled images from the seleccted ``Image Dir`` to not label them twice. *DO NOT* delete the ``train_images`` and ``train_masks`` folder as those contain your labelled images and leave the masks and renamed images in those folders as well as the image names will be incrementally increased based on the number of images contained in the folders.
-In addtion to the renamed images, the analysis results (ACSA) are saved to an excel file which is why the scaling step is necessary. Thus, the *mask creation can also be used for manual image analysis*.
-
-**It might be necessary to restart the GUI subsequent to the labelling process in case of non-responsiveness**
-
-.. _masklabel:
-
-Mask / label inspection
-"""""""""""""""""""""""
-
-1. Start the GUI and click the ``Advanced Methods`` button.
-2. Select the ``Inspect Masks`` option. The ``Inspect Masks Winow`` will open.
-
-.. figure:: inspect.png
-  :scale: 50 %
-  :alt: inspect_figure
-
-  Inspect Masks Window.
-
-3. In the ``Image Dir``, specify the path to the images you want to label by clicking the ``Image Dir`` button. These images should be contained in a single folder with no subfolders.
-4. In the ``Mask Dir``, specify the path to the images you want to label by clicking the ``Mask Dir`` button. These masks should be contained in a single folder with no subfolders.
-5. Change the ``Start Index``, in case you don't want to start at the first image.
-6. Clik the ``Inspect Masks`` button to check you training images and masks. Another GUI will open.
-
-.. figure:: inspect.png
-  :scale: 50 %
-  :alt: inspect_figure
-
-  Inspect Masks Window.
-
-7. An Information window will appear telling you if a similar amount of images / files are in the image and mask directories as well as whether they are names similarly. **Images and respective masks must have the same filename for proper pairing during training.**
-
-.. figure:: inspect_info.png
-  :scale: 50 %
-  :alt: inspect_figure
-
-  Inspection Information.
-  
-8. By clicking ``OK``, the inspection window will open. Here you can scroll through all your images with overlays masks and check for any errors. Please ensure masks cover muscle area completely and do not overlap with other muscles /aponeuroses or exclude muscle regions. 
-If errors are found, relabel images using create masks functionality or simply delete the image / label pair using the ``Delete`` button.
-
-.. figure:: inspect_correct.png
-  :scale: 50 %
-  :alt: inspect_figure
-
-  Correctly labelled image.
-
-.. figure:: Inspect_incorrect.png
-  :scale: 50 %
-  :alt: inspect_figure
-
-  Incorrectly labelled image.
+**If the GUI becomes unresponsive after the labeling process, restart the application before continuing.**
 
 .. _augmentlabel:
 
 Image Augmentation
 """"""""""""""""""
+Assume that you have completed the manual labeling process for 30 participants. With an additional 30 participants remaining to be analyzed, you decide to train a custom model to make the analysis faster and more objective.
+Training a model at this stage using data from only 30 participants may result in limited generalization performance, as the dataset size is relatively small.
 
-Prior to model training, it is possible to augment your images. The main goal is to enlarge the training data size.
-For detailded information about the augmentation process take a look at our `paper <https://journals.lww.com/acsm-msse/Abstract/2022/12000/DeepACSA__Automatic_Segmentation_of.21.aspx>`_ or at the respective functions in the docs. 
-1. Start the GUI and click the ``Advanced Methods`` button.
-2. Select the ``Train Model`` option.
-2. In the ``Image Directory``, specify the path to your training images by pressing the ``Images`` button.
-3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
-4. Click the ``Augment Images`` button and the augmentation process starts. 
-The image augmentation process starts and the images will be augmented three-fold.
+To address this challenge, you can apply **image augmentation**. This process artificially increases the size of the training dataset by generating additional image–mask pairs through operations such as **flipping, rotation, and translation** of original images.
 
-Model Training
-""""""""""""""
+The purpose of image augmentation is to improve model robustness and generalization by exposing the model to a greater variety of training examples.
 
-1. Start the GUI and click the ``Train Model`` button.
-2. In the ``Image Directory``, specify the path to your training images by pressing the ``Images`` button.
-3. In the ``Mask Directory``, specify the path to your training masks by pressing the ``Masks`` button. 
-4. In the ``Output Directory``, specify the path to your output directory by pressing the ``Output`` button. Here, all the files from the training process will be saved.
-5. Specify a ``Batch Size``. You can enter a value you like, but be cautioned to keep it proportional to your available computing power (i.e., smaller available RAM or no GPU = smaller ``Batch Size``).
-6. Specify the ``Learning Rate``. Enter a value if you prefer a different learning rate than the default.
-7. Choose a number of ``Epochs``. *Please pay attention to user MORE than 3 ``Epochs`` during actual model training*. We entered 3 as default for testing purposes, otherwise testing would take forever.
-8. Define a ``Loss Function``. So far, you can choose binary cross-entropy (BCE), focal loss (FL) and dice loss (Dice).
-9. Press the ``Start Training`` button and follow the instructions given by the pop-up messages. As stated above, the trained model will be in the ``Output Directory`` once the traing is completed.
+For more detailed information about the augmentation procedure, please refer to our `paper <https://journals.lww.com/acsm-msse/Abstract/2022/12000/DeepACSA__Automatic_Segmentation_of.21.aspx>`_ or to the corresponding functions described in the documentation.
 
-**Restart the GUI when model training is completed to sucessfully use the trained models.**
+1. After launching the GUI click the ``Advanced Methods`` button and select the ``Train Model`` option.
+2. Before starting the augmentation process, make sure to create a backup copy of your original images and masks.
+
+.. figure:: GUI_augmentation.png
+  :scale: 75 %
+  :alt: GUI_augmentation
+
+  GUI seetings to augment the dataset.
+
+3. Click the ``Images`` button to select the directory containing the images you want to augment. 
+4. Click the ``Masks`` button to select the corresponding masks directory. 
+5. Click ``Augment Images``. The process may take a couple of minutes, depending on the number of image–mask pairs being augmented.
+6. Once the augmentation process is complete, a pop-up window will indicate successful execution. The augmented images and masks (augmented threefold) are saved in the same directories that were selected as input.
+
+.. _trainlabel:
+
+Train your own networks
+"""""""""""""""""""""""
+
+| *At this stage, having a functional GPU setup is advantageous, otherwise model training will take much longer. as model training can otherwise take considerably longer. Instructions for setting up the DeepACSA GUI are provided in the* :ref:`installation section <gui_setup_ref>`.
+| *While several training parameters can be adjusted from the GUI, the neural network architecture itself cannot be modified without editing the source code.*
+
+*Explaining the adjustable training parameters in detail is beyond the scope of this tutorial. If you are new to deep learning, we recommend* `this excellent introductory course <https://deeplizard.com/learn/video/gZmobeGL0Yg>`_.
+*Training a custom network for muscle ACSA analysis requires paired original images and manually labeled binary masks. Example data are available in the* ``DeepACSA_example_v0.3.2/model_training`` *folder. If you have not yet downloaded this folder, please do so from this* `link <https://doi.org/10.5281/zenodo.8419487>`_, *extract the archive, and place it on your desktop.*
+
+Continuing with our example, assume that you have augmented your dataset and are now ready to train your own model. This will allow the images from the remaining 30 subjects to be analyzed objectively and more efficiently.
+
+1. Organize your data so that all training images are stored in one folder and the corresponding binary masks *(with identical filenames and a* **.tif** *extension)* are stored in a separate folder.
+2. Launch the GUI and select ``Train Model`` in the ``Advanced Methods`` menu.
+3. Click ``Images`` to specify the directory containing your training images.
+4. Click ``Masks`` to specify the directory containing the corresponding training masks. 
+5. Click ``Output`` to specify the directory where all training outputs will be saved.
+6. Specify the ``Batch Size`` manually or using the drop-down menu. Keep in mind that the batch size should be proportional to your available computational resources (e.g., limited RAM or no GPU requires a smaller batch size).
+7. Specify the ``Learning Rate`` manually or using the drop-down menu if you wish to modify the default value.
+8. Choose the number of ``Epochs`` manually or using the drop-down menu. For actual model training, **use more than 3 epochs**. The default value of 3 is intended for testing purposes only.
+9. Select a ``Loss Function`` from the drop-down menu. Currently, the only implemented option is **binary cross-entropy (BCE)**.
+10. Click ``Start Training`` and follow the instructions provided in the pop-up messages. Once training has started, a live preview of the training metrics will be displayed in the terminal.
+11. Once the training is complete, three files will appear in the specified ``Output Directory``:
+  * ``Test_apo.csv`` - contains the following metrics recorded per epoch: IoU, accuracy, loss, learning rate *(lr)*, validation IoU *(val_IoU)*, validation accuracy *(val_accuracy)*, and validation loss *(val_loss)*.
+  * ``Test_Apo.h5`` – the trained model file.
+  * ``Training_Results.tif`` – a plot of the training and validation curves across epochs.
+
+**Restart the GUI when model training is completed to successfully use the trained models.**
+
+.. _automatic_analysis_label:
+
+Analyzing images with a model
+"""""""""""""""""""""""""""""
+
+**Disclaimer:** Before applying your own trained model, its validity and reliability should be evaluated.
+Now that you have trained your own model, you are ready to apply it to analyze the images from the remaining 30 participants.
+
+1. After launching the GUI, the main window will open. This is the window used for image analysis.
+2. First, click ``Input`` to select the root directory containing the images to be analyzed.
+3. Then, click ``Model`` to select the trained model file that will be used for analysis.
+4. Select the anatomical ``Structure`` to be analyzed from the drop-down menu. The currently implemented structures are rectus femoris, vastus lateralis, vastus medialis, gastrocnemius lateralis, gastrocnemius medialis, biceps femoris, and patellar tendon.
+5. DeepACSA provides four ``Scaling Types``, each designed for a specific image type. Select the most appropriate option based on your image characteristics:
+
+  **A.** ``Line Scaling``:
+
+  You should use this scaling type when the image contains a continuous straight reference line with markers at regular intervals, as shown in the example below.
+
+    .. figure:: RF_line_scale.png
+      :scale: 60 %
+      :alt: RF_line_scale
+
+      Rectus femoris image with line scaling and highlighted intervals.
+
+  To ensure proper scaling, you will be prompted to enter the ``Depth (cm)`` at which the image was acquired. This information is required to convert pixel values to cm² and it should always be recorded during image acquisition.
+
+  All images analyzed within a single run must have been acquired at the same depth. If your dataset includes images acquired at different depths, organize them into separate folders and repeat the analysis process for each folder using the corresponding depth value.
+
+  **B.** ``Bar Scaling``:
+
+  This scaling type is used when multiple scaling bars are present at regular intervals instead of a continuous reference line, as shown in the image below.
+
+    .. figure:: RF_bar_scale.png
+      :scale: 47 %
+      :alt: RF_line_scale
+
+      Rectus femoris image with bar scaling.
+
+  For this analysis type, you will be prompted to specify the ``Spacing (mm)``, i.e. the distance in millimiters, between two horizontal scaling bars. As in the previous example, this information is required to convert pixel values to cm² and should always be recorded during image acquisition.
+
+  As described above, images with different spacing values must be analyzed in separate runs, since the spacing can only be specified once per run.
+
+  **C.** ``Manual Scaling``:
+
+  For the manual scaling type, the scale must be defined individually for each image to be analyzed. This option is useful when the automatic scaling methods fail to correctly detect the scale, or when certain images cannot be processed using the other scaling types. 
+  Whenever possible, we recommend using one of the fully automatic scaling types instead.
+
+  Once the analysis is started, you will be prompted to left-click on two points in the image that are exactly 1 cm apart. After placing the two points, press the **q key** to continue.
+  If you misclick, simply click again to reset the scaling points. The scaling factor is always calculated based on the last two points placed. Although only one point is visible at a time, the scale is still computed correctly.
+
+    .. figure:: manual_scale.png
+      :scale: 50 %
+      :alt: manual_scale
+
+      Rectus femoris image with one white manual scaling point on the scaling line.
+
+  After placing two points and pressing the **q key**, a pop-up window will appear displaying the scaling factor used to convert pixels to cm, as shown in the example below.
+    
+    .. figure:: scale_result.png
+      :scale: 100 %
+      :alt: scale_result
+      
+      Pop-up window displaying the scaling factor used to convert pixels in cm.
+  
+  After clicking ``OK``, the process will repeat for each image in the selected root directory.
+  If you interrupt the analysis before processing all images, move the already analyzed images, the ``Analyzed_images.pdf`` file, and the ``Results.xlsx`` file to a different directory before restarting the procedure. This prevents duplicate processing and unintended overwriting of data.
+
+  **D.** ``No scaling``:
+
+  The final option is to run the analysis without applying any scaling. In this case, the ACSA values will be returned in pixels rather than in cm.
+  
+  This approach is useful when the scale factor is already known and consistent across multiple images but cannot be automatically detected by the other scaling methods. It may also be suitable for quick exploratory comparisons where absolute area values are not required, or when images have already been calibrated or preprocessed externally prior to being loaded into DeepACSA.
+
+6. Click ``Run``.
+7. After the analysis is complete, two files will appear in the directory containing your images.
+
+* ``Analyzed_images.pdf`` contains the normalized and resized images with the predicted muscle area overlaid, as shown in the example below. This file allows you to visually assess the quality and validity of the model predictions.
+.. figure:: image_overlay.png
+  :scale: 100 %
+  :alt: image_overlay
+  
+  Original image with the predicted ACSA boundary overlaid in light blue.
+
+* | ``Results.xlsx`` provides, for each image, the filename, selected anatomical structure, predicted area (in cm² or pixels if no scaling was applied), echo intensity, area-to-circumference ratio, circumference, and, if selected, the calculated muscle volume in cm³.
+  | It is important to note that the current models have been validated only for ACSA measurements. All other reported metrics are provided for additional information and should be interpreted with caution.    
+
+8. For the line and bar scaling types, the ``Analyzed_images.pdf`` file also includes a visual representation of the applied scaling. This allows you to verify that the scaling has been correctly detected, as shown in the example below.
+
+.. figure:: scale_check.png
+  :scale: 30 %
+  :alt: scale_check
+  
+  **Left:** correctly detected line scaling, with a green line spanning the full reference scale in the image.
+  **Right:** correctly detected bar scaling, showing the pixel scale on one side and the distance between two bars on the other.
+
+9. If you select an automatic scaling method, it may fail for certain images. In such cases, an additional file named ``failed_images.txt`` will appear in the image directory. This file lists the images for which scaling was unsuccessful. Each line corresponds to one failed image, for example ``Scaling line not found in C:/path/to/your/image/image.tif``
+
+.. _masklabel:
+
+Mask / label inspection
+"""""""""""""""""""""""
+Assume that you have completed the analysis of all 60 subjects and now wish to verify that the ACSA segmentation of the rectus femoris is correct for each image.
+DeepACSA allows you to visualize the binary mask overlaid on the original image to identify clearly erroneous segmentations or predictions. Based on this assessment, inaccurate segmentations can be discarded and, if necessary, the image can be reanalyzed manually.
+
+1. For this inspection, organize all images in a single folder without subfolders. Store the corresponding binary masks (**with identical filenames**) in a separate folder, also without subfolders.
+2. After launching the GUI, select the ``Inspect Mask`` option from the ``Advanced Methods`` menu to open the mask inspection window.
+3. Click ``Image Dir`` to specify the directory containing your images, then click ``Mask Dir`` to select the directory containing the corresponding binary masks.
+4. Optionally, you can choose the image from which to begin the inspection by specifying its zero-based index in the ``Start at Image:`` field. By default, inspection starts from the first image.
+
+.. figure:: inspect_masks.png
+  :scale: 80 %
+  :alt: inspect_figure
+
+  Inspect Masks Window.
+
+5. Click ``Inspect Masks`` to verify your image–mask pairs. An information window will appear indicating whether the image and mask directories are correctly organized. Specifically, it checks that both directories contain the same number of files and that corresponding images and masks share identical filenames. If inconsistencies are detected, they will be reported in a pop-up window similar to the example shown below.
+
+.. figure:: outliers.png
+  :scale: 25 %
+  :alt: outliers
+
+  Information window displayed when two masks are found without corresponding images in the image folder. The table indicates the files that have no matching counterpart in the complementary directory.
+
+6. After clicking ``OK``, a new window will open displaying the first image–mask pair.
+
+.. figure:: inspect_gui.png
+  :scale: 30 %
+  :alt: inspect_gui
+
+  Inspect Masks Window.
+
+7. Here, you can scroll through all images with the overlaid masks using the **left and right arrow keys** and inspect them for potential errors. Ensure that the masks fully cover the muscle area and do not overlap with adjacent muscles or aponeuroses, nor exclude portions of the muscle region. To facilitate inspection, DeepACSA provides a navigation menu in the bottom-left corner of the window.
+  
+  * The **Save** button (1) allows you to save a screenshot of the current GUI setup, with or without zoom.
+  * The **Configure Subplots** button (2) allows you to adjust the image position within the GUI for improved visualization.
+  * The **Zoom** button (3) allows you to zoom into a specific area by drawing a rectangle. Left-click and drag to zoom in; right-click and drag to zoom out.
+  * The **Pan** button (*four arrows icon*) (4) allows you to move the image and zoom locally. Left-click and drag to move the current view; right-click and drag to zoom in or out around the selected point.
+  * The **Back** and **Forward** arrows (5) allow you to navigate between previous visualization states.
+  * The **Home** button (6) restores the original view of the image.
+
+8. If errors are detected, you can relabel images using the ``Create Masks`` functionality or delete the image–mask pair using the ``Delete`` button. Note that clicking ``Delete`` permanently removes the image–mask pair from both directories; therefore, always keep a backup copy of your original images.
+9. Below is an example of a correctly predicted ACSA and an erroneous prediction that was clearly missegmented.
+
+.. figure:: inspect_correct.png
+  :scale: 60 %
+  :alt: inspect_figure
+
+  Correctly labelled image.
+
+
+.. figure:: inspect_incorrect.png
+  :scale: 60 %
+  :alt: inspect_figure
+
+  Incorrectly labelled image.
 
 .. _volumelabel:
 
 Calculate muscle volume
------------------------
+"""""""""""""""""""""""
 
-Here we employ the truncated cone formula to calculate the muscle volume. To calculate the volume of a muscle using DeepACSA, several prerequisites are important:
+Now that you have verified that all acquired images have been correctly analyzed and that the ACSA values are accurate, you may proceed to calculate an approximation of the rectus femoris muscle volume for each one of your subjects.
 
-- Muscle volume calculation can only be done when several images of the same muscle across several muscle regions are available and stored in the same folder.
-- The images **must** be named in order from proximal to distal (i.e, img0.tif, img1.tif, img2.tif, ..., imgN.tif).
-- The distance between the images of different muscle regions is knwon and constant.
-- The higher the number of images, the more accurate the volume calculation.
+DeepACSA employs the truncated cone formula to estimate muscle volume. Before performing volume calculations using DeepACSA, several important considerations should be kept in mind:
 
-1. Once all prerequisites are fullfilled, select the folder conatining the images of the same muscle and different regions as ``Root Directory``.
-2. Choose a ``Model Path`` to the model you wish to use and specify all other parameters in the GUI accordingly. 
-3. In the ``Muscle Volume`` section, select the checkbox ``Yes`` for ``Volume Calculation`` and specify the ``Distance`` as the distance between the images you collected.
-4. Proceed to press the button ``Run`` and the muscle volume will be calculated combining all ACSA measurements of the images in the ``Root Directory`` and will be displayed in the .xlsx result file. 
+* Muscle volume calculation can only be performed when multiple images of the same muscle from the same participant, acquired at different muscle regions, are available and stored in a single folder.
+* The images **must** be named in order from proximal to distal (i.e., ``img0.tif``, ``img1.tif``, ``img2.tif``, ..., ``imgN.tif``).
+
+.. figure:: volume_info.png
+  :scale: 20 %
+  :alt: volume_info
+
+  File naming in the correct proximal-to-distal order.
+
+* The distance (**in cm**) between consecutive images must be known and constant.
+* Increasing the number of images improves the accuracy of the volume estimation.
+
+1. To calculate muscle volume, launch the main GUI and select the folder containing images of the same muscle from the same participant, acquired at different regions, as the ``Root Directory``.
+2. Select the ``Model Path`` corresponding to the trained model you wish to use.
+3. Specify the ``Scaling Type`` and ``Structure`` as described in the :ref:`automatic analysis section <automatic_analysis_label>`.
+4. In the muscle volume section, select ``Yes`` from the ``Volume Calculation`` drop-down menu 
+5. Enter the ``Slice Distance (cm)`` corresponding to the **costant** distance between the acquired images.
+5. Click ``Run``. The muscle volume will be calculated by combining all ACSA measurements from the images in the ``Root Directory`` and will be displayed at the bottom of the ``Results.xlsx`` table.
+
+
