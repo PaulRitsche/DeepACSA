@@ -1,3 +1,22 @@
+"""
+Description
+-----------
+Ultrasound image preprocessing and area measurement pipeline.
+
+This module provides functions for preprocessing muscle ultrasound images,
+detecting anatomical contours, and estimating cross-sectional area.
+The processing workflow includes contrast enhancement, denoising,
+edge detection, contour filtering, and mask-based area computation.
+
+Both automatic and interactive components are supported. Users may
+manually remove unwanted structures, select starting points for
+outline detection, and process entire directories of images.
+Measurement results can be exported to Excel files.
+
+The functions in this module form the core image analysis pipeline
+used for muscle cross-sectional area estimation.
+"""
+
 import os
 import time
 
@@ -20,15 +39,47 @@ def preprocess_image(
     min_length_fac=0.1,
 ):
     """
-    Preprocess the image based on the selected muscle type and options.
-    :param image: The input image to preprocess.
-    :param muscle_type: The type of muscle to process (e.g., "Rectus femoris").
-    :param flip_horizontal: Whether to flip the image horizontally.
-    :param flip_vertical: Whether to flip the image vertically.
-    :param tubeness_sigma: Sigma value for tubeness filtering.
-    :param gaussian_sigma: Sigma value for Gaussian blur.
-    :param min_length_fac: Minimum length factor to remove small objects.
-    :return: The preprocessed image.
+    Preprocess an ultrasound image and return a binary region mask.
+
+    The preprocessing pipeline includes optional image flipping,
+    contrast enhancement (CLAHE), denoising, smoothing, edge detection,
+    and contour filtering. Small contours are removed based on a
+    minimum length threshold relative to image width. The output is a
+    binary mask highlighting the retained regions.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Input ultrasound image in BGR or grayscale format.
+    muscle_type : str
+        Name of the muscle being analyzed. Currently not used to alter
+        preprocessing logic but retained for API compatibility.
+    flip_horizontal : bool
+        If True, flip the image horizontally before processing.
+    flip_vertical : bool
+        If True, flip the image vertically before processing.
+    tubeness_sigma : float
+        Standard deviation used for Gaussian-based tubeness smoothing.
+        If 0 or less, this step is skipped.
+    gaussian_sigma : float
+        Standard deviation for Gaussian blur applied prior to tubeness
+        filtering. If 0 or less, this step is skipped.
+    min_length_fac : float, optional
+        Minimum contour length threshold expressed as a fraction of
+        image width. Contours with arc length below this threshold
+        are removed. Default is 0.1.
+
+    Returns
+    -------
+    np.ndarray
+        Binary mask (uint8) where retained regions are 255 and
+        background pixels are 0.
+
+    Notes
+    -----
+    The function assumes the input image is a valid OpenCV-readable image.
+    The returned mask can be used for subsequent contour detection or
+    area measurement steps.
     """
 
     start = time.time()
@@ -100,8 +151,43 @@ import numpy as np
 
 def remove_border_scale_bar(gray_u8: np.ndarray, *, thr=240, min_area_frac=0.0005) -> np.ndarray:
     """
-    Remove bright scale-bar/overlays near borders.
-    Works on uint8 grayscale.
+    Remove bright scale bars or overlays touching image borders.
+
+    The function detects very bright connected components in a grayscale
+    image, identifies those that touch the image borders, and removes them
+    by setting the corresponding pixels to zero. This is primarily intended
+    to eliminate scale bars or overlay artifacts commonly present near
+    image edges.
+
+    Parameters
+    ----------
+    gray_u8 : np.ndarray
+        Input 2D grayscale image of dtype ``uint8``.
+    thr : int, optional
+        Intensity threshold used to classify pixels as "bright".
+        Pixels with values greater than or equal to this threshold
+        are considered candidate overlay regions. Default is 240.
+    min_area_frac : float, optional
+        Minimum area of detected bright regions expressed as a fraction
+        of total image area. Regions smaller than this threshold are
+        ignored. Default is 0.0005.
+
+    Returns
+    -------
+    np.ndarray
+        Grayscale image with detected border-touching bright regions
+        removed (set to 0).
+
+    Raises
+    ------
+    ValueError
+        If the input image is not a 2D array.
+
+    Notes
+    -----
+    The function performs morphological closing to connect fragmented
+    bright regions before contour detection. Only contours exceeding
+    the specified minimum area and touching the image border are removed.
     """
     if gray_u8.ndim != 2:
         raise ValueError("remove_border_scale_bar expects 2D grayscale uint8")
@@ -144,8 +230,32 @@ def remove_border_scale_bar(gray_u8: np.ndarray, *, thr=240, min_area_frac=0.000
 
 def detect_candidate_contours(bin_img: np.ndarray, *, min_area_px=300) -> list[np.ndarray]:
     """
-    Return external contours sorted by descending area.
-    bin_img: 0/255 uint8.
+    Detect and rank external contours by area.
+
+    Parameters
+    ----------
+    bin_img : np.ndarray
+        2D binary image (uint8) where foreground pixels are 255
+        and background pixels are 0.
+    min_area_px : int, optional
+        Minimum contour area in pixels. Contours with an area
+        smaller than this threshold are discarded. Default is 300.
+
+    Returns
+    -------
+    list of np.ndarray
+        List of external contours sorted in descending order
+        by contour area.
+
+    Raises
+    ------
+    ValueError
+        If the input image is not 2D.
+
+    Notes
+    -----
+    Contours are extracted using ``cv2.findContours`` with
+    ``RETR_EXTERNAL`` and ``CHAIN_APPROX_SIMPLE``.
     """
     if bin_img.ndim != 2:
         raise ValueError("detect_candidate_contours expects 2D binary")
@@ -157,6 +267,31 @@ def detect_candidate_contours(bin_img: np.ndarray, *, min_area_px=300) -> list[n
 
 
 def _find_contours_compat(bin_img: np.ndarray):
+    """
+    OpenCV-compatible contour extraction.
+
+    Parameters
+    ----------
+    bin_img : np.ndarray
+        2D binary image (uint8).
+
+    Returns
+    -------
+    contours : list of np.ndarray
+        Detected external contours.
+    hierarchy : np.ndarray
+        Contour hierarchy information returned by OpenCV.
+
+    Raises
+    ------
+    RuntimeError
+        If ``cv2.findContours`` returns an unexpected number of values.
+
+    Notes
+    -----
+    Handles differences between OpenCV 3 and OpenCV 4 return
+    signatures of ``cv2.findContours``.
+    """
     res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if len(res) == 2:
         contours, hier = res
@@ -171,6 +306,28 @@ import numpy as np
 
 
 def contours_external(bin_img: np.ndarray):
+    """
+    Extract external contours from a binary image.
+
+    Parameters
+    ----------
+    bin_img : np.ndarray
+        2D binary image (uint8) from which contours should be
+        extracted.
+
+    Returns
+    -------
+    contours : list of np.ndarray
+        List of detected external contours.
+    hierarchy : np.ndarray
+        Contour hierarchy information returned by OpenCV.
+
+    Notes
+    -----
+    Uses ``cv2.findContours`` with ``RETR_EXTERNAL`` and
+    ``CHAIN_APPROX_SIMPLE``. Handles differences in return
+    format between OpenCV versions.
+    """
     res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if len(res) == 2:
         contours, hier = res
@@ -180,6 +337,33 @@ def contours_external(bin_img: np.ndarray):
 
 
 def largest_contour(bin_img: np.ndarray, *, min_area_px: int = 50):
+    """
+    Return the largest external contour above a minimum area threshold.
+
+    Parameters
+    ----------
+    bin_img : np.ndarray
+        2D binary image (uint8) from which contours are extracted.
+    min_area_px : int, optional
+        Minimum contour area in pixels. Contours smaller than this
+        threshold are ignored. Default is 50.
+
+    Returns
+    -------
+    np.ndarray or None
+        The largest contour satisfying the area constraint,
+        or ``None`` if no valid contour is found.
+
+    Raises
+    ------
+    ValueError
+        If the input image is not 2D.
+
+    Notes
+    -----
+    The image is converted to ``uint8`` if necessary before
+    contour extraction.
+    """
     if bin_img.ndim != 2:
         raise ValueError("largest_contour expects a 2D binary image")
     if bin_img.dtype != np.uint8:
@@ -196,6 +380,27 @@ def largest_contour(bin_img: np.ndarray, *, min_area_px: int = 50):
 
 
 def fill_contour_mask(shape_hw: tuple[int, int], contour: np.ndarray) -> np.ndarray:
+    """
+    Create a filled binary mask from a contour.
+
+    Parameters
+    ----------
+    shape_hw : tuple of int
+        Tuple ``(height, width)`` specifying the mask dimensions.
+    contour : np.ndarray
+        Contour points defining the region to fill.
+
+    Returns
+    -------
+    np.ndarray
+        Binary mask (uint8) with the contour region filled
+        (255 inside, 0 outside).
+
+    Notes
+    -----
+    The contour is cast to ``int32`` before filling to ensure
+    OpenCV compatibility.
+    """
     h, w = shape_hw
     m = np.zeros((h, w), dtype=np.uint8)
     cv2.fillPoly(m, [contour.astype(np.int32)], 255)
@@ -204,10 +409,36 @@ def fill_contour_mask(shape_hw: tuple[int, int], contour: np.ndarray) -> np.ndar
 
 def area_cm2_from_mask(mask_u8: np.ndarray, *, scan_depth_cm: float, px_per_cm: float | None = None) -> float:
     """
-    Convert a filled mask (255 inside) to cm².
+    Compute area in square centimeters from a filled mask.
 
-    If px_per_cm is provided (manual scaling), use it.
-    Else assume scan_depth_cm corresponds to full image height.
+    Parameters
+    ----------
+    mask_u8 : np.ndarray
+        2D binary mask (uint8) where foreground pixels are 255.
+    scan_depth_cm : float
+        Scan depth in centimeters. Currently unused but retained
+        for API compatibility.
+    px_per_cm : float or None, optional
+        Pixel-to-centimeter scaling factor (pixels per centimeter).
+        If provided and positive, area is converted using this value.
+        If ``None`` or non-positive, pixel units are treated as
+        centimeters (no scaling applied).
+
+    Returns
+    -------
+    float
+        Estimated area in square centimeters.
+
+    Raises
+    ------
+    ValueError
+        If the input mask is not 2D.
+
+    Notes
+    -----
+    Area is computed as the number of non-zero pixels multiplied by
+    ``(cm_per_px)^2``. If no scaling factor is provided, the function
+    assumes one pixel equals one centimeter.
     """
     if mask_u8.ndim != 2:
         raise ValueError("area_cm2_from_mask expects 2D mask")
@@ -228,8 +459,30 @@ def area_cm2_from_mask(mask_u8: np.ndarray, *, scan_depth_cm: float, px_per_cm: 
 
 def detect_contour_from_preprocessed_mask(pre_mask_u8: np.ndarray) -> tuple[np.ndarray | None, np.ndarray]:
     """
-    Input: your preprocess_image() output (a filled-ish mask).
-    Output: (largest_contour or None, cleaned_binary_mask)
+    Extract the largest contour from a preprocessed mask.
+    
+    The function converts the input mask to grayscale (if necessary),
+    ensures a binary representation using Otsu thresholding, performs
+    morphological cleanup, and returns the largest external contour.
+    
+    Parameters
+    ----------
+    pre_mask_u8 : np.ndarray
+        Preprocessed mask image (typically the output of
+        ``preprocess_image``). Can be grayscale or BGR.
+    
+    Returns
+    -------
+    tuple of (np.ndarray or None, np.ndarray)
+        - Largest contour satisfying the area threshold, or ``None`` if
+          no valid contour is found.
+        - Cleaned binary mask used for contour detection.
+    
+    Notes
+    -----
+    Morphological closing is applied to reduce small gaps before
+    contour extraction. The minimum area threshold for contour
+    selection is fixed internally.
     """
     if pre_mask_u8.ndim == 3:
         pre_mask_u8 = cv2.cvtColor(pre_mask_u8, cv2.COLOR_BGR2GRAY)
@@ -249,27 +502,51 @@ def detect_contour_from_preprocessed_mask(pre_mask_u8: np.ndarray) -> tuple[np.n
 
 def measure_area(image, starting_points=None, scan_depth=5, num_rays=360, *, return_mask=False):
     """
-    Robust area measurement:
-    - Converts input to grayscale uint8
-    - Creates a binary region mask via Otsu threshold + morphology
-    - Takes the largest external contour and fills it
-    - Computes area in pixels and converts using scan_depth**2 (keeps your original scaling behavior)
+    Estimate cross-sectional area from a segmented image.
+
+    The function converts the input image to grayscale, applies Otsu
+    thresholding and morphological cleanup to obtain a binary mask,
+    selects the largest external contour, fills it, and computes the
+    area in pixel units. The result is scaled using ``scan_depth``.
 
     Parameters
     ----------
     image : np.ndarray
-        Preprocessed image (can be grayscale or BGR).
-    starting_points : ignored (kept for API compatibility)
-        Present only to maintain core interface.
-    scan_depth : float|int
-        Used for conversion factor (and clamped to int pixels).
-    return_mask : bool
-        If True, returns (cm_area, filled_mask, contour_points)
+        Input image (grayscale or BGR) representing a segmented or
+        preprocessed muscle region.
+    starting_points : optional
+        Present for API compatibility. Not used in the current
+        implementation.
+    scan_depth : float or int, optional
+        Scaling factor used to convert pixel area. The value is
+        rounded to an integer and used as ``area_px / scan_depth**2``.
+    num_rays : int, optional
+        Retained for API compatibility. Not used in the current
+        implementation.
+    return_mask : bool, optional
+        If True, returns a tuple ``(area_cm2, filled_mask, contour)``.
+        Otherwise, returns only the computed area.
 
     Returns
     -------
-    cm_area : float
-        Area in "cm^2" using your original conversion scheme.
+    float or tuple
+        If ``return_mask`` is False:
+            Estimated area value.
+        If ``return_mask`` is True:
+            Tuple containing:
+            - Area value (float)
+            - Filled binary mask (np.ndarray)
+            - Selected contour (np.ndarray)
+
+    Notes
+    -----
+    The scaling behavior follows the original implementation,
+    where area is computed as::
+
+        area_px / scan_depth**2
+
+    This assumes a specific pixel-to-centimeter relationship and
+    does not use physical calibration directly.
     """
     scan_depth_px = int(round(float(scan_depth)))
     if scan_depth_px <= 0:
@@ -331,10 +608,29 @@ def measure_area(image, starting_points=None, scan_depth=5, num_rays=360, *, ret
 
 def _ensure_binary_u8(img: np.ndarray) -> np.ndarray:
     """
-    Ensure a single-channel uint8 binary-ish image suitable for findContours.
-    - If 3-channel: convert to gray
-    - If float: normalize to uint8
-    - If non-binary: Otsu threshold to get contours
+    Convert an image to a binary uint8 representation.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image (grayscale, BGR, or numeric array).
+
+    Returns
+    -------
+    np.ndarray
+        Single-channel binary image (uint8) obtained using
+        Otsu thresholding.
+
+    Raises
+    ------
+    ValueError
+        If the input image is None.
+
+    Notes
+    -----
+    The function converts multi-channel images to grayscale,
+    normalizes non-uint8 arrays to uint8, and applies Otsu
+    thresholding to produce a contour-ready binary image.
     """
     if img is None:
         raise ValueError("find_starting_points: image is None")
@@ -360,7 +656,29 @@ def _ensure_binary_u8(img: np.ndarray) -> np.ndarray:
 
 def _find_contours_compat(bin_img: np.ndarray):
     """
-    OpenCV 3/4 compatibility: findContours may return (img, contours, hierarchy) or (contours, hierarchy)
+    Extract contours with OpenCV version compatibility.
+
+    Parameters
+    ----------
+    bin_img : np.ndarray
+        2D binary image (uint8).
+
+    Returns
+    -------
+    contours : list of np.ndarray
+        Detected external contours.
+    hierarchy : np.ndarray
+        Contour hierarchy information returned by OpenCV.
+
+    Raises
+    ------
+    RuntimeError
+        If ``cv2.findContours`` returns an unexpected number of values.
+
+    Notes
+    -----
+    Handles differences between OpenCV 3 and OpenCV 4 return
+    signatures of ``cv2.findContours``.
     """
     res = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if len(res) == 2:
@@ -376,12 +694,41 @@ def find_starting_points(image: np.ndarray, method: str = "Automatic"):
     """
     Find starting points for outline detection.
 
+    Depending on the selected method, starting points are determined from
+    the centroids of detected contours, a fixed pixel location, or manual
+    mouse clicks in an OpenCV window. An RGB overlay image is returned with
+    the selected points drawn for visualization.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Input image (grayscale or BGR). The image is used for contour
+        detection and for generating an overlay for display.
+    method : {'Automatic', 'Fixed Pixels', 'Manual'}, optional
+        Strategy used to generate starting points:
+
+        - ``'Automatic'``: compute contour centroids from a binary mask.
+        - ``'Fixed Pixels'``: use the image center as a single point.
+        - ``'Manual'``: collect points via mouse clicks in an OpenCV window.
+
     Returns
     -------
-    starting_points : list[tuple[int,int]]
+    starting_points : list of tuple[int, int]
+        List of ``(x, y)`` starting point coordinates in pixel units.
     overlay : np.ndarray
-        RGB overlay image with points drawn (safe for display).
-        NOTE: analysis 'image' is NOT modified.
+        RGB overlay image with the selected points drawn. The input
+        ``image`` is not modified.
+
+    Raises
+    ------
+    ValueError
+        If `method` is not one of the supported options.
+
+    Notes
+    -----
+    When ``method='Manual'``, this function opens an OpenCV GUI window and
+    blocks until a key is pressed. This may not work in headless
+    environments.
     """
     starting_points: list[tuple[int, int]] = []
 
@@ -435,10 +782,24 @@ def find_starting_points(image: np.ndarray, method: str = "Automatic"):
 
 def draw_outline(image, contours):
     """
-    Draw the detected outline on the image.
-    :param image: The image on which to draw.
-    :param contours: The contours detected in the image.
-    :return: The image with the outline drawn.
+    Draw contours on an image.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Image on which to draw. This array is modified in place.
+    contours : list of np.ndarray
+        Contours to draw (as returned by ``cv2.findContours``).
+
+    Returns
+    -------
+    np.ndarray
+        The same image array with contours drawn.
+
+    Notes
+    -----
+    This function uses ``cv2.drawContours`` and therefore draws directly
+    into the provided `image` array.
     """
     cv2.drawContours(image, contours, -1, (255, 0, 0), 2)
     return image
@@ -446,27 +807,62 @@ def draw_outline(image, contours):
 
 def flip_image(image, axis):
     """
-    Flip the image horizontally (axis=0) or vertically (axis=1).
-    :param image: The image to flip.
-    :param axis: The axis to flip on (0 for horizontal, 1 for vertical).
-    :return: The flipped image.
+    Flip an image along a specified axis.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Input image to flip.
+    axis : int
+        Flip code passed to ``cv2.flip``:
+
+        - ``0``: vertical flip (top/bottom)
+        - ``1``: horizontal flip (left/right)
+        - ``-1``: both axes
+
+    Returns
+    -------
+    np.ndarray
+        Flipped image.
     """
     return cv2.flip(image, axis)
 
 
 def clear_display():
     """
-    Placeholder function to mimic the clearing of ROI manager and other displays.
+    Clear interactive displays (placeholder).
+
+    This function currently acts as a placeholder and only prints a message.
+    It is intended to mimic clearing UI elements such as ROI managers or
+    display windows.
     """
     print("Clearing display...")
 
 
 def remove_structures(image):
     """
-    Allows the user to manually draw violet circles around structures to remove them from the image.
-    The circles can be removed by pressing the "Delete" key.
-    :param image: The input image from which structures should be removed.
-    :return: The image with the specified structures removed.
+    Interactively remove unwanted structures by masking user-drawn circles.
+
+    An OpenCV window is opened where the user can draw circles over regions
+    to remove. The selected regions are excluded from the image by applying
+    a binary mask. The last circle can be removed with the Delete key, and
+    the interaction ends when the user presses ESC.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        Input image from which structures should be removed. This function
+        does not modify `image` in place.
+
+    Returns
+    -------
+    np.ndarray
+        Image with the user-selected circular regions removed (masked out).
+
+    Notes
+    -----
+    This function requires an interactive OpenCV GUI environment. It will
+    block execution until the user exits the window (ESC).
     """
 
     # Create a copy of the image for drawing and a mask for removal
@@ -554,9 +950,25 @@ def remove_structures(image):
 
 def excel_expo(results, output_path):
     """
-    Export the results to an Excel file.
-    :param results: Dictionary of results to export.
-    :param output_path: Path to save the Excel file.
+    Export results to an Excel file.
+
+    Parameters
+    ----------
+    results : dict or pandas.DataFrame
+        Results to export. If a dict is provided, it must be compatible with
+        ``pandas.DataFrame(results)`` (e.g., keys as column names and values
+        as equal-length lists).
+    output_path : str or os.PathLike
+        File path where the Excel file will be written.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The file is written using ``pandas.DataFrame.to_excel`` with
+    ``index=False``.
     """
     df = pd.DataFrame(results)
     df.to_excel(output_path, index=False)
@@ -574,15 +986,46 @@ def process_images(
     scan_depth,
 ):
     """
-    Process all images in the specified directory.
-    :param input_dir: Directory of images to process.
-    :param output_dir: Directory to save processed images.
-    :param settings: Preprocessing settings.
-    :param muscle_type: Muscle type to analyze.
-    :param flip_horizontal: Whether to flip the image horizontally.
-    :param flip_vertical: Whether to flip the image vertically.
-    :param outline_strategy: Outline finder strategy.
-    :param scan_depth: Scan depth for measurements.
+    Process a directory of images and compute cross-sectional area estimates.
+    
+    Images with extensions ``.jpg``, ``.png``, and ``.tif`` are loaded from
+    `input_dir`, preprocessed into a mask, optionally cleaned via an
+    interactive removal step, and analyzed to estimate area. Intermediate
+    results are displayed using OpenCV windows. The resulting mask images are
+    written to `output_dir`, and a summary dictionary of filenames and area
+    values is returned.
+    
+    Parameters
+    ----------
+    input_dir : str or os.PathLike
+        Directory containing input images.
+    output_dir : str or os.PathLike
+        Directory where processed output images will be saved.
+    settings : dict
+        Preprocessing settings. Must contain keys ``'tubeness_sigma'`` and
+        ``'gaussian_sigma'``.
+    muscle_type : str
+        Muscle type label passed through to preprocessing.
+    flip_horizontal : bool
+        If True, flip images horizontally before preprocessing.
+    flip_vertical : bool
+        If True, flip images vertically before preprocessing.
+    outline_strategy : {'Automatic', 'Fixed Pixels', 'Manual'}
+        Strategy passed to ``find_starting_points``.
+    scan_depth : float or int
+        Scan depth passed to ``measure_area`` for scaling.
+    
+    Returns
+    -------
+    dict
+        Dictionary with keys ``'Filename'`` and ``'Area (cm²)'`` containing
+        per-image results.
+    
+    Notes
+    -----
+    This function uses multiple OpenCV GUI windows and may block execution
+    awaiting user input. It also calls ``remove_structures``, which is
+    interactive and requires a display environment.
     """
     file_list = [
         f for f in os.listdir(input_dir) if f.endswith((".jpg", ".png", ".tif"))

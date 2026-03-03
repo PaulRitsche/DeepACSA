@@ -38,7 +38,7 @@ Before we start with this tutorial, here are some important tips:
 
 * In case you plan an analysis on images taken from different muscles, we strongly advise to test the algorithm first and in case of bad performance, train your own models. We have provided extensive documentation on how to do so in the :ref:`Training your own network section <trainlabel>` in this tutorial.
 
-* Bad model performance can be detected. The first and easiest step to take is to :ref:`visually inspect <masklabel>` the output of the models. If the segmentation results and the actual aponeuroses overlap on most of the analysed images, model performance is good. If not, adapt the analysis parameters (how to do so is covered in the tutorials) or train a separate model. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good, if not, train a separate model.
+* Bad model performance can be detected. The first and easiest step to take is to :ref:`visually inspect <masklabel>` the output of the models. If the segmentation results and the actual aponeuroses overlap on most of the analysed images, model performance is good. Secondly, you should manually analyse a few of your images and compare the model results to your manual results. If both results are similar, model performance is good, if not, train a separate model.
 
 * Although we used extensive data augmentation during the model training process, we caution users about the generalizability of our models. Deep learning is no magic! Even though our model demonstrated good performance on unseen images during testing, we cannot confidently claim that they will work fine on all lower limb ultrasonography images. Model performance may be affected by variations in device type, anatomical region, or ultrasound acquisition settings; even when analyzing muscles that were included in the training dataset. 
 
@@ -261,9 +261,10 @@ Now that you have trained your own model, you are ready to apply it to analyze t
   This approach is useful when the scale factor is already known and consistent across multiple images but cannot be automatically detected by the other scaling methods. It may also be suitable for quick exploratory comparisons where absolute area values are not required, or when images have already been calibrated or preprocessed externally prior to being loaded into DeepACSA.
 
 6. Click ``Run``.
-7. After the analysis is complete, two files will appear in the directory containing your images.
+7. After the analysis is complete, two files will appear in the directory containing your images:
 
 * ``Analyzed_images.pdf`` contains the normalized and resized images with the predicted muscle area overlaid, as shown in the example below. This file allows you to visually assess the quality and validity of the model predictions.
+
 .. figure:: image_overlay.png
   :scale: 100 %
   :alt: image_overlay
@@ -367,8 +368,8 @@ DeepACSA employs the truncated cone formula to estimate muscle volume. Before pe
 1. To calculate muscle volume, launch the main GUI and select the folder containing images of the same muscle from the same participant, acquired at different regions, as the ``Root Directory``.
 2. Select the ``Model Path`` corresponding to the trained model you wish to use.
 3. Specify the ``Scaling Type`` and ``Structure`` as described in the :ref:`automatic analysis section <automatic_analysis_label>`.
-4. In the muscle volume section, select ``Yes`` from the ``Volume Calculation`` drop-down menu 
+4. In the muscle volume section, select ``Yes`` from the ``Volume Calculation`` drop-down menu. 
 5. Enter the ``Slice Distance (cm)`` corresponding to the **costant** distance between the acquired images.
-5. Click ``Run``. The muscle volume will be calculated by combining all ACSA measurements from the images in the ``Root Directory`` and will be displayed at the bottom of the ``Results.xlsx`` table.
+6. Click ``Run``. The muscle volume will be calculated by combining all ACSA measurements from the images in the ``Root Directory`` and will be displayed at the bottom of the ``Results.xlsx`` table.
 
 

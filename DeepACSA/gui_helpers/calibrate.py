@@ -1,30 +1,13 @@
 """
 Description
 -----------
-This module contains functions to automatically or manually
-scale images.
-The scope of the automatic method is limited to scaling bars being
-present in the right side of the image. The scope of the manual method
-is not limited to specific scaling types in images. However, the distance
-between two selected points in the image required for the scaling must be known.
+Image scaling utilities.
 
-Functions scope
----------------
-region_of_interest
-    Function to crop the images according to a specified
-    region of interest.
-mclick
-    Function to detect mouse click coordinates in image.
-draw_the_lines
-    Function to mark the detected lines.
-calibrate_distance_efov
-    Function to calibrate EFOV ultrasonography images automatically. 
-calibrate_distance_manually
-    Function to manually calibrate an image to convert measurements
-    in pixel units to centimeters.
-calibrate_distance_static
-    Function to calibrate an image to convert measurements
-    in pixel units to centimeters.
+This module contains functions to automatically or manually scale
+ultrasound images. The automatic method requires scaling bars to be
+present on the right side of the image. The manual method allows
+scaling based on user-selected points, provided that the real-world
+distance between those points is known.
 """
 
 import math
@@ -68,8 +51,8 @@ def region_of_interest(img: np.ndarray, vertices: np.ndarray):
     - The function does not modify the original image; instead, it returns a cropped
       version containing the region of interest.
 
-    Example
-    -------
+    Examples
+    --------
     >>> region_of_interest(preprocessed_image,
                         ([(0,1), (0,2), (4,2), (4,7)], np.int32),)
     """
@@ -265,7 +248,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
         image_with_lines = draw_the_lines(image, lines[0])
 
     # For VL
-    if muscle == "VL":
+    elif muscle == "VL":
         lines = cv2.HoughLinesP(
             cropped_image,
             rho=1,  # Distance of pixels in accumulator
@@ -281,7 +264,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
         image_with_lines = draw_the_lines(image, lines[0])
 
     # For GM / GL
-    if muscle == "GL":
+    elif muscle == "GL":
         lines = cv2.HoughLinesP(
             cropped_image,
             rho=1,  # Distance of pixels in accumulator
@@ -297,7 +280,7 @@ def calibrate_distance_efov(path_to_image: str, arg_muscle: str):
         image_with_lines = draw_the_lines(image, lines[0])
 
     # For BF
-    if muscle == "BF":
+    elif muscle == "BF":
         lines = cv2.HoughLinesP(
             cropped_image,
             rho=1,

@@ -1,15 +1,18 @@
 """
 Description
 -----------
-This module contains a function to automatically calculate the echo intensity
-(mean grayscale value) of the predicted mask. The correctness of the calculated
-echo intensity depends on the correctess of the predicton.
+Echo intensity computation utilities.
 
-Functions scope
----------------
-calculate_echo_int
-    Function to calculate the echo intensity of muscle area.
+This module provides functionality to calculate the echo intensity
+(mean grayscale value) within a segmented muscle region. The echo
+intensity is computed from the original ultrasound image using a
+binary mask representing the predicted anatomical cross-sectional
+area (ACSA).
+
+The accuracy of the calculated echo intensity depends directly on
+the correctness of the provided segmentation mask.
 """
+
 import cv2
 import numpy as np
 

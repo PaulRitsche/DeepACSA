@@ -1,44 +1,20 @@
 """
 Description
 -----------
-This module contains functions to train a VGG16 encoder U-net decoder CNN.
-The module was specifically designed to be executed from a GUI.
-When used from the GUI, the module saves the trained model and weights to
-a given directory. The user needs to provide paths to the image and label/
-mask directories. Instructions for correct image labelling can be found
-in the Labelling directory.
+Model training utilities for VGG16 U-Net segmentation.
 
+This module provides functions to train a convolutional neural
+network using a VGG16 encoder and U-Net decoder architecture.
+It is primarily designed to be executed through the graphical
+user interface (GUI).
 
-Functions scope
----------------
-conv_block
-    Function to build a convolutional block for the U-net decoder path of the network.
-    The block is built using several keras.layers functionalities.
-decoder_block
-    Function to build a decoder block for the U-net decoder path of the network.
-    The block is built using several keras.layers functionalities.
-build_vgg16_model
-    Function that builds a convolutional network consisting of an VGG16 encoder path
-    and a U-net decoder path.
-IoU
-    Function to compute the intersection over union score (IoU),
-    a measure of prediction accuracy. This is sometimes also called Jaccard score.
-dice_score
-    Function to compute the Dice score, a measure of prediction accuracy.
-focal_loss
-     Function to compute the focal loss, a measure of prediction accuracy.
-load_images
-    Function to load images and manually labeled masks from a specified
-    directory.
-train_model
-    Function to train a convolutional neural network with VGG16 encoder and
-    U-net decoder. All the steps necessary to properly train a neural
-    network are included in this function.
+When used via the GUI, the trained model and corresponding
+weights are saved to a user-specified directory. The user must
+provide paths to the training image directory and the
+corresponding label (mask) directory.
 
-Notes
------
-Additional information and usage examples can be found at the respective
-functions documentations.
+Instructions for correct image labeling can be found in the
+labelling directory of the project.
 """
 
 import os

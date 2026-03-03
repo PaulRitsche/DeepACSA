@@ -1,5 +1,19 @@
-"""Module to perform analysis of image files used for training model"""
+"""
+Description
+-----------
+Training image file analysis and management utilities.
 
+This module provides interactive and automated tools for managing
+image datasets used for model training. It includes functionality for
+detecting mismatches between image and mask directories, visualizing
+image–mask overlays, collecting images from nested directory
+structures, redacting image regions, and reviewing potential outliers.
+
+Several functions use graphical user interfaces (Tkinter and
+Matplotlib) for interactive inspection, navigation, and deletion of
+image–mask pairs. The module is primarily intended to support dataset
+quality control and preparation prior to model training.
+"""
 import os
 import tkinter as tk
 from tkinter import ttk

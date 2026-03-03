@@ -15,20 +15,11 @@ and improvements of the work presented in Ritsche et al. (2022). There, the core
 of this code are already outlined and the comparability of the model segmentations to
 manual analysis (current gold standard) is described. Here, we have improved the code.
 
-Functions scope
----------------
-For scope of the functions see class documentation.
-
-Notes
------
-Additional information and usage exaples can be found in the video
-tutorials provided for this package.
-
 References
 ----------
-VGG16: Simonyan, K., and Zisserman, A. “Very deep convolutional networks for large-scale image recognition.” arXiv preprint arXiv:1409.1556 (2014)
-U-net: Ronneberger, O., Fischer, P. and Brox, T. "U-Net: Convolutional Networks for Biomedical Image Segmentation." arXiv preprint arXiv:1505.04597 (2015)
-DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., Franchi, M. "DeepACSA: Automatic Segmentation of Cross-Sectional Area in Ultrasound Images of Lower Limb Muscles Using Deep Learning" (2022)
+| VGG16: Simonyan, K., and Zisserman, A. “Very deep convolutional networks for large-scale image recognition.” arXiv preprint arXiv:1409.1556 (2014)
+| U-net: Ronneberger, O., Fischer, P. and Brox, T. "U-Net: Convolutional Networks for Biomedical Image Segmentation." arXiv preprint arXiv:1505.04597 (2015)
+| DeepACSA: Ritsche, P., Wirth, P., Cronin, N., Sarto, F., Narici, M., Faude, O., Franchi, M. "DeepACSA: Automatic Segmentation of Cross-Sectional Area in Ultrasound Images of Lower Limb Muscles Using Deep Learning" (2022)
 """
 
 import os

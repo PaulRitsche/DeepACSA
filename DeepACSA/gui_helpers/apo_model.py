@@ -1,24 +1,22 @@
-"""Python class to predict muscle area
-
+"""
 Description
 -----------
-This module provides a Python class called "ApoModel" for predicting muscle areas
-in ultrasound (US) images. It uses a pre-trained segmentation model to predict the
-probability of each pixel belonging to the foreground (aponeurosis).
-The class supports various image types, such as those with scaling lines,
-scaling bars, or manually scaled images. It also offers post-processing functions
-to remove unnecessary areas, fill holes, and calculate the circumference of the largest contour.
-The module allows users to return the thresholded bit-mask and optionally plot the input
-image with the predicted muscle area overlay. Its purpose is to automate muscle area analysis
-in US images for research and medical purposes.
+Aponeurosis segmentation model interface for ultrasound images.
 
-Function scopes
----------------
-_resize
-    Resizes an input image to the specified height and width.
+This module provides the ``ApoModel`` class for predicting muscle areas
+in ultrasound (US) images using a pre-trained segmentation model. The
+model predicts per-pixel foreground probabilities (aponeurosis), which
+can be thresholded to obtain a binary mask.
 
-For scope of the functions used in the class ApoModel see class documentation.
+The class supports different image types, including images with scaling
+lines, scaling bars, or manual scaling. It also includes post-processing
+utilities to remove unwanted regions, fill holes, and compute the
+circumference of the largest detected contour. Optionally, prediction
+results can be visualized by overlaying the predicted mask on the input
+image.
 
+The purpose of this module is to automate muscle area analysis in US
+images for research and medical purposes.
 """
 
 import tkinter as tk

@@ -52,6 +52,7 @@ In case you want to use this way to install and run DeepACSA, we advise you to s
         .. code-block:: bash
             
             conda create -n DeepACSA python=3.10
+            
     You will have to accept the conda environment conditions by entering "y" into the bash terminal when prompted.
 
 **Step 6: Activate the environment for usage of DeepACSA**.

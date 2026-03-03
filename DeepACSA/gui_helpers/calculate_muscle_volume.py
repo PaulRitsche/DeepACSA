@@ -1,13 +1,13 @@
 """
 Description
 -----------
-This module contains a function to automatically calculate the volume
-of the analyzed muscle. Note that this can only be done across several
-images of the same muscle, and that you need at least 3 images.
-The truncated cone formula is used, modelling the muscle as a cone.
-The higher the number of images per muscle, the higher the accuracy
-of the volume calculation, as distances between images are extrapolated.
-Thus, the distance between images in centimeters must be known and constant.
+Utilities for estimating muscle volume from ultrasound data.
+
+Muscle volume is computed from predicted anatomical cross-sectional
+areas (ACSA) using the truncated cone formula between consecutive
+scans with constant spacing. At least three images of the same muscle
+are required, and the inter-scan distance must be known and provided
+in centimeters.
 """
 
 import math
@@ -15,12 +15,12 @@ import math
 
 def muscle_volume_calculation(scan_area: list, dist: float):
     """
-    Muscle volume calculation utilities.
+    Estimate total muscle volume from predicted cross-sectional areas.
 
-    This module provides functionality to estimate muscle volume from
-    a sequence of predicted anatomical cross-sectional areas (ACSA).
-    The volume is computed using the truncated cone formula between
-    adjacent scans with constant spacing.
+    The function calculates muscle volume by applying the truncated cone
+    formula between consecutive anatomical cross-sectional areas (ACSA)
+    measured from ultrasound images. The individual segment volumes are
+    summed to obtain the total muscle volume.
 
     Parameters
     ----------
@@ -44,7 +44,7 @@ def muscle_volume_calculation(scan_area: list, dist: float):
 
         V = \\frac{h}{3} (A1 + A2 + \\sqrt{A1 A2})
 
-    where `h` is the distance between scans. A1 and A2 are the predicted areas
+    where `h` is the distance between scans. `A1` and `A2` are the predicted areas
     of two adjacent scans.
 
     The function makes a few assumptions without checking for them.
@@ -58,8 +58,8 @@ def muscle_volume_calculation(scan_area: list, dist: float):
 
     Examples
     --------
-    >>>muscle_volume = muscle_volume_calculation([2, 3, 5, 4, 2, 2], 3.75)
-    11.3276276145058
+    >>> muscle_volume_calculation([2, 3, 5, 4, 2, 2], 3.75)
+    59.52879521092045
     """
     total_volume = 0
 

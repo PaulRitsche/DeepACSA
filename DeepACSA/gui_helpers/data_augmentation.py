@@ -9,11 +9,6 @@ This module provides a function, image_augmentation, that performs data augmenta
 input images and their corresponding masks to generate new training data for machine
 learning models. Data augmentation is a common technique used to artificially increase
 the diversity of the training dataset by applying various transformations to the original images.
-
-Functions scope
----------------
-image_augmentation
-    Function, which generates new training data from the input images through data augmentation.
 """
 
 import os

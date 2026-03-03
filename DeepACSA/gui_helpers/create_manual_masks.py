@@ -1,3 +1,24 @@
+"""
+Description
+-----------
+Interactive manual mask creation utilities.
+
+This module provides functionality for manually generating anatomical
+cross-sectional area (ACSA) masks from ultrasound images. Users can
+interactively select regions of interest using a Matplotlib-based GUI,
+after optional distance calibration. The selected regions are converted
+into binary masks and the corresponding muscle area is computed.
+
+The module also supports batch processing of image directories for
+training data generation. Selected images and masks are saved to
+separate output directories, and analysis results are exported in
+tabular form.
+
+The functions in this module are primarily intended for manual
+annotation and dataset preparation for model training.
+"""
+
+
 import os
 from tkinter.messagebox import WARNING, askokcancel, showerror, showinfo
 
