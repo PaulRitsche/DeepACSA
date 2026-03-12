@@ -402,10 +402,13 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
 
     The function calculates the distance in pixel units between two
     points on the input image. The points are determined by clicks of
-    the user. The distance (in milimeters) is determined by the value
-    contained in the spacing variable. Then the ratio of pixel / centimeter
-    is calculated. To get the distance, the euclidean distance between the
-    two points is calculated.
+    the user; only two points may be selected and clicks outside the
+    visible image are ignored to ensure both calibration points remain
+    on the picture. A right mouse click can be used to undo the last
+    point in case of a mistake. The distance (in milimeters) is
+    determined by the value contained in the spacing variable. Then the
+    ratio of pixel / centimeter is calculated. To get the distance, the
+    euclidean distance between the two points is calculated.
 
     Parameters
     ----------
@@ -438,21 +441,67 @@ def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
     global mlocs
     mlocs = []
 
+    # keep an unmodified copy of the original for zooming calculations
+    orig_img = np.uint8(nonflipped_img)
+    zoom_factor = 1.0
+
+    def refresh():
+        """Redraw the image window according to the current zoom and points."""
+        nonlocal zoom_factor
+        h, w = orig_img.shape[:2]
+        disp_w = max(1, int(w * zoom_factor))
+        disp_h = max(1, int(h * zoom_factor))
+        display_img = cv2.resize(orig_img, (disp_w, disp_h), interpolation=cv2.INTER_LINEAR)
+        for (px, py) in mlocs:
+            cv2.circle(
+                display_img,
+                (int(px * zoom_factor), int(py * zoom_factor)),
+                3,
+                (255, 255, 255),
+                2,
+            )
+        cv2.imshow("image", display_img)
+
     def mclick(event, x_val, y_val, flags, param):
+        nonlocal zoom_factor
         global mlocs
-        img_cop = img2.copy()
-        # if the left mouse button was clicked, record the (x, y) coordinates
+
+        # mouse wheel event: adjust zoom
+        if event == cv2.EVENT_MOUSEWHEEL or event == cv2.EVENT_MOUSEHWHEEL:
+            if flags > 0:
+                zoom_factor *= 1.1
+            else:
+                zoom_factor /= 1.1
+            zoom_factor = max(0.2, min(5.0, zoom_factor))
+            refresh()
+            return
+
+        # left click: add a point (only if fewer than 2 points)
         if event == cv2.EVENT_LBUTTONDOWN:
-            mlocs.append((x_val, y_val))
-            # Draw a red dot on the image at the clicked position
-            cv2.circle(img_cop, (x_val, y_val), 3, (255, 255, 255), 2)
-            cv2.imshow("image", img_cop)
+            h, w = orig_img.shape[:2]
+            # map to original coordinates
+            ox = int(x_val / zoom_factor)
+            oy = int(y_val / zoom_factor)
+            if not (0 <= ox < w and 0 <= oy < h):
+                return
+            if len(mlocs) < 2:
+                mlocs.append((ox, oy))
+            else:
+                return
+
+        # right click: remove the last point if present
+        elif event == cv2.EVENT_RBUTTONDOWN and mlocs:
+            mlocs.pop()
+
+        refresh()
 
     # give information for scaling
     tk.messagebox.showinfo(
         "Information",
         "Scale the image before creating a mask."
         + "\nClick on two scaling bars that are EXACTLY 1 CM APART."
+        + "\nUse the mouse wheel to zoom in/out if necessary."
+        + "\nRight‑click on the last point to remove the last point if you make a mistake."
         + "\nClick 'q' to continue.",
     )
     # Edit image

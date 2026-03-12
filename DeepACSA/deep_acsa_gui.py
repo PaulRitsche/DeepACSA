@@ -38,11 +38,6 @@ from DeepACSA.gui_modules import AdvancedAnalysis
 
 matplotlib.use("TkAgg")
 
-# TODO Docs
-# TODO Manual mask creation scaling point removal
-
-
-
 class DeepACSA(ctk.CTk):
     """
     Python class to automatically or manually annotate tranversal muscle

@@ -1,7 +1,6 @@
 """ """
 
 import os
-from DeepACSA.gui_helpers.image_processing import area_cm2_from_mask, fill_contour_mask
 import customtkinter as ctk
 from CTkToolTip import *
 import math
@@ -231,20 +230,21 @@ class AdvancedAnalysis:
 
                 # Train image directory
                 self.raw_image_dir = StringVar()
-                image_entry = ctk.CTkEntry(
+                # keep references so we can remove them later
+                self.image_entry = ctk.CTkEntry(
                     self.advanced_window_frame,
                     width=100,
                     textvariable=self.raw_image_dir,
                 )
-                image_entry.grid(column=0, row=0, columnspan=2, sticky=(W, E))
+                self.image_entry.grid(column=0, row=0, columnspan=2, sticky=(W, E))
                 self.raw_image_dir.set("Select Input Image Directory")
 
-                dir1_button = ctk.CTkButton(
+                self.dir1_button = ctk.CTkButton(
                     self.advanced_window_frame,
                     text="Image Dir",
                     command=lambda: (self.raw_image_dir.set(filedialog.askdirectory())),
                 )
-                dir1_button.grid(column=3, row=0, sticky=(W, E))
+                self.dir1_button.grid(column=3, row=0, sticky=(W, E))
 
                 self.mask_button = ctk.CTkButton(
                     self.advanced_window_frame,
@@ -685,7 +685,7 @@ class AdvancedAnalysis:
 
         self.instruction_label = ctk.CTkLabel(
             self.advanced_window_frame,
-            text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point.",
+            text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point & Scroll = zoom.",
             bg_color="#aac3c3",
             font=("Segoe UI", 14, "bold"),
         )
@@ -741,7 +741,7 @@ class AdvancedAnalysis:
 
                 self.calib_dist = float(np.hypot(x2o - x1o, y2o - y1o))
                 self.instruction_label.configure(
-                    text=f"Calibrated: 1 cm = {self.calib_dist:.1f} px. Now click to outline the area with left-click. \nRight-click = undo last point, Enter = confirm selection."
+                    text=f"Calibrated: 1 cm = {self.calib_dist:.1f} px. Now click to outline the area with left-click. \nRight-click = undo last point, Scroll = zoom, Enter = confirm selection."
                 )
                 print(f"Calibrated: 1 cm = {self.calib_dist:.1f} px")
         else:
@@ -756,7 +756,7 @@ class AdvancedAnalysis:
         """
         if len(self.calibration_points) < 2:
             self.instruction_label.configure(
-                text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point, ENTER = confirm."
+                text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point, Scroll = zoom, ENTER = confirm."
             )
             self.calibration_points.pop()
             self.canvas.delete("all")
@@ -767,7 +767,7 @@ class AdvancedAnalysis:
                 )
         else:
             self.instruction_label.configure(
-                text="Click to outline area.\nRight-click = undo last point, ENTER = confirm."
+                text="Click to outline area.\nRight-click = undo last point, Scroll = zoom, ENTER = confirm."
             )
 
         if self.mask_polygon_points:
@@ -791,7 +791,7 @@ class AdvancedAnalysis:
         """
         if self.calib_dist is None or len(self.mask_polygon_points) < 3:
             self.instruction_label.configure(
-                text="Need 2 calibration points and 3+ polygon points to save mask.\nSelect more points.\nRight-click = undo last point, ENTER = confirm."
+                text="Need 2 calibration points and 3+ polygon points to save mask.\nSelect more points.\nRight-click = undo last point, Scroll = zoom, ENTER = confirm."
             )
             return
 
@@ -806,8 +806,8 @@ class AdvancedAnalysis:
             (int(x * scale_x), int(y * scale_y)) for x, y in self.mask_polygon_points
         ]
         cv2.fillPoly(mask, [np.array(points_scaled, dtype=np.int32)], 255)
-        mask = fill_contour_mask(self.current_image.shape[:2], np.array(points_scaled))
-        muscle_area = area_cm2_from_mask(mask_u8=mask, px_per_cm=self.calib_dist)
+        mask = gui_helpers.fill_contour_mask(self.current_image.shape[:2], np.array(points_scaled))
+        muscle_area = gui_helpers.area_cm2_from_mask(mask_u8=mask, px_per_cm=self.calib_dist)
         
         self.instruction_label.configure(text="Mask confirmed.")
         self.canvas.destroy()
@@ -817,6 +817,14 @@ class AdvancedAnalysis:
         """
         Start the mask interaction process.
         """
+        # clean up the UI: hide controls no longer needed once canvas appears
+        if hasattr(self, "mask_button"):
+            self.mask_button.destroy()
+        if hasattr(self, "image_entry"):
+            self.image_entry.destroy()
+        if hasattr(self, "dir1_button"):
+            self.dir1_button.destroy()
+
         input_dir = self.raw_image_dir.get()
         self.image_files = sorted(
             [
