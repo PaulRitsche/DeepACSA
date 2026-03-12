@@ -407,7 +407,7 @@ def fill_contour_mask(shape_hw: tuple[int, int], contour: np.ndarray) -> np.ndar
     return m
 
 
-def area_cm2_from_mask(mask_u8: np.ndarray, *, scan_depth_cm: float, px_per_cm: float | None = None) -> float:
+def area_cm2_from_mask(mask_u8: np.ndarray, *, px_per_cm: float | None = None) -> float:
     """
     Compute area in square centimeters from a filled mask.
 
@@ -415,9 +415,6 @@ def area_cm2_from_mask(mask_u8: np.ndarray, *, scan_depth_cm: float, px_per_cm: 
     ----------
     mask_u8 : np.ndarray
         2D binary mask (uint8) where foreground pixels are 255.
-    scan_depth_cm : float
-        Scan depth in centimeters. Currently unused but retained
-        for API compatibility.
     px_per_cm : float or None, optional
         Pixel-to-centimeter scaling factor (pixels per centimeter).
         If provided and positive, area is converted using this value.

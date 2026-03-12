@@ -39,6 +39,8 @@ from DeepACSA.gui_modules import AdvancedAnalysis
 matplotlib.use("TkAgg")
 
 # TODO Docs
+# TODO Manual mask creation scaling point removal
+
 
 
 class DeepACSA(ctk.CTk):
@@ -201,7 +203,7 @@ class DeepACSA(ctk.CTk):
             master_path + "/gui_helpers/gui_files/ui_color_theme.json"
         )
         iconpath = master_path + "/gui_helpers/icon.ico"
-        self.iconbitmap(iconpath)
+        # self.iconbitmap(iconpath)
 
         self.main = ctk.CTkFrame(self)
         self.main.grid(column=0, row=0, sticky=(N, S, W, E))

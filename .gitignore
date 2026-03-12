@@ -5,3 +5,6 @@ DeepACSA/gui_helpers/__pycache__
 build/doctrees
 .vscode/
 .sync*
+DeepACSA/dist/
+DeepACSA/build/
+DeepACSA/installer/

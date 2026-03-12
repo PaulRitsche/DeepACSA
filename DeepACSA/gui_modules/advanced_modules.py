@@ -1,6 +1,7 @@
 """ """
 
 import os
+from DeepACSA.gui_helpers.image_processing import area_cm2_from_mask, fill_contour_mask
 import customtkinter as ctk
 from CTkToolTip import *
 import math
@@ -45,8 +46,8 @@ class AdvancedAnalysis:
         # Configure resizing of user interface
         for row in range(21):
             self.advanced_window.rowconfigure(row, weight=1)
-        for column in range(4):
-            self.advanced_window.rowconfigure(column, weight=1)
+        # for column in range(4):
+        #     self.advanced_window.rowconfigure(column, weight=1)
 
         self.advanced_window.columnconfigure(0, weight=1)
         self.advanced_window.columnconfigure(1, weight=5)
@@ -151,8 +152,8 @@ class AdvancedAnalysis:
             self.advanced_window_frame.columnconfigure(0, weight=1)  # or appropriate column
 
             # Set the desired window size
-            self.desired_width = 1800
-            self.desired_height = 1200
+            self.desired_width = 1200
+            self.desired_height = 800
 
             if self.advanced_option.get() == "Inspect Masks":
 
@@ -449,6 +450,8 @@ class AdvancedAnalysis:
         Displays a specific frame on the canvas.
         """
         frame = self.processed_frames[frame_index]
+        # keep original for zooming
+        self.current_image = frame.copy()
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # Resize the frame to the desired dimensions
@@ -467,6 +470,11 @@ class AdvancedAnalysis:
         # Allow user to make a selection on the first frame
         if frame_index == 0:
             self.selection = None
+            # reset zoom state for new sequence
+            self.zoom_factor = 1.0
+            self.min_zoom = 0.2
+            self.max_zoom = 5.0
+
             self.canvas = Canvas(
                 self.advanced_window_frame,
                 width=self.desired_width,
@@ -477,6 +485,7 @@ class AdvancedAnalysis:
             self.canvas.bind("<ButtonPress-1>", self.on_button_press)
             self.canvas.bind("<B1-Motion>", self.on_mouse_drag)
             self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
+            self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
         else:
             self.canvas.create_image(0, 0, anchor=tk.NW, image=frame_tk)
             self.canvas.imgtk = frame_tk  # Keep a reference to avoid garbage collection
@@ -510,6 +519,92 @@ class AdvancedAnalysis:
         x0, y0, x1, y1 = self.selection
         self.selection = (min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1))
 
+    def on_mouse_wheel(self, event):
+        """Zoom in/out when the user scrolls the mouse wheel.
+
+        The handler works for both mask-creation and remove-parts canvases. It
+        resizes the displayed image according to ``self.zoom_factor`` and scales
+        any existing selection or calibration/polygon points so that they stay
+        at the correct relative positions.  A small range limit is applied to
+        avoid excessive zooming.
+        """
+
+        # determine zoom direction (Windows sends delta multiples of 120)
+        if event.delta > 0:
+            factor = 1.1
+        else:
+            factor = 1.0 / 1.1
+
+        new_zoom = self.zoom_factor * factor
+        # clamp zoom level
+        new_zoom = max(self.min_zoom, min(self.max_zoom, new_zoom))
+        # recalculated factor actually applied
+        factor = new_zoom / self.zoom_factor
+        self.zoom_factor = new_zoom
+
+        # resize the underlying image
+        display_w = int(self.desired_width * self.zoom_factor)
+        display_h = int(self.desired_height * self.zoom_factor)
+        frame_rgb = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2RGB)
+        frame_resized = cv2.resize(frame_rgb, (display_w, display_h))
+        self.frame_image = ImageTk.PhotoImage(Image.fromarray(frame_resized))
+
+        # update canvas dimensions and image
+        self.canvas.config(width=display_w, height=display_h)
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.frame_image)
+        self.canvas.imgtk = self.frame_image
+
+        # scale any existing annotations so they remain in place
+        # selection rectangle (used by remove-parts workflow)
+        if hasattr(self, "selection") and self.selection is not None:
+            x0, y0, x1, y1 = self.selection
+            self.selection = (
+                x0 * factor,
+                y0 * factor,
+                x1 * factor,
+                y1 * factor,
+            )
+        # calibration/polygon points (used during mask creation)
+        if hasattr(self, "calibration_points"):
+            self.calibration_points = [
+                (x * factor, y * factor) for x, y in self.calibration_points
+            ]
+        if hasattr(self, "mask_polygon_points"):
+            self.mask_polygon_points = [
+                (x * factor, y * factor) for x, y in self.mask_polygon_points
+            ]
+
+        # redraw overlays (points, rectangle) after scaling
+        self.canvas.delete("all")
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.frame_image)
+        # redraw calibration points if present
+        if hasattr(self, "calibration_points"):
+            for x, y in self.calibration_points:
+                self.canvas.create_oval(
+                    x - 4,
+                    y - 4,
+                    x + 4,
+                    y + 4,
+                    outline="red",
+                    fill="white",
+                )
+        # redraw polygon points if present
+        if hasattr(self, "mask_polygon_points"):
+            for x, y in self.mask_polygon_points:
+                self.canvas.create_oval(
+                    x - 4,
+                    y - 4,
+                    x + 4,
+                    y + 4,
+                    outline="yellow",
+                    fill="green",
+                )
+        # redraw selection rectangle if present
+        if hasattr(self, "selection") and self.selection is not None:
+            x0, y0, x1, y1 = self.selection
+            self.canvas.create_rectangle(
+                x0, y0, x1, y1, outline="red", tag="selection"
+            )
     def remove_image_parts(self):
         """
         Removes the selected rectangular region from all images in a folder
@@ -591,8 +686,8 @@ class AdvancedAnalysis:
         self.instruction_label = ctk.CTkLabel(
             self.advanced_window_frame,
             text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point.",
-            bg_color="#5e7d7d",
-            font=("Segoe UI", 12, "italic"),
+            bg_color="#aac3c3",
+            font=("Segoe UI", 14, "bold"),
         )
         self.instruction_label.grid(
             column=0, row=2, columnspan=4, sticky=(W, E), pady=(5, 2)
@@ -607,8 +702,14 @@ class AdvancedAnalysis:
         self.canvas.grid(column=0, row=1, columnspan=2, sticky=(W,E))
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.frame_image)
 
+        # zoom support
+        self.zoom_factor = 1.0
+        self.min_zoom = 0.2
+        self.max_zoom = 5.0
+
         self.canvas.bind("<Button-1>", self._on_area_click)
         self.canvas.bind("<Button-3>", self._on_right_click)
+        self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
         self.advanced_window_frame.master.bind("<Return>", self._on_confirm_polygon)
 
     def _on_area_click(self, event):
@@ -620,20 +721,33 @@ class AdvancedAnalysis:
 
             self.calibration_points.append((x, y))
             self.canvas.create_oval(
-                x - 2, y - 2, x + 2, y + 2, outline="red", fill="red"
+                x - 4, y - 4, x + 4, y + 4, outline="red", fill="white"
             )
             if len(self.calibration_points) == 2:
-                dx = self.calibration_points[1][0] - self.calibration_points[0][0]
-                dy = self.calibration_points[1][1] - self.calibration_points[0][1]
-                self.calib_dist = math.sqrt(dx**2 + dy**2)
+                # dx = self.calibration_points[1][0] - self.calibration_points[0][0]
+                # dy = self.calibration_points[1][1] - self.calibration_points[0][1]
+                # self.calib_dist = math.sqrt(dx**2 + dy**2)
+                (x1, y1), (x2, y2) = self.calibration_points
+
+                display_w = self.frame_image.width()
+                display_h = self.frame_image.height()
+                h, w = self.current_image.shape[:2]
+
+                scale_x = w / display_w
+                scale_y = h / display_h
+
+                x1o, y1o = x1 * scale_x, y1 * scale_y
+                x2o, y2o = x2 * scale_x, y2 * scale_y
+
+                self.calib_dist = float(np.hypot(x2o - x1o, y2o - y1o))
                 self.instruction_label.configure(
-                    text=f"Calibrated: 1 cm = {self.calib_dist:.1f} px. Now click to outline the area with left-click. \nRight-click = undo last point, Enter = confirm selection, ESC = cancel."
+                    text=f"Calibrated: 1 cm = {self.calib_dist:.1f} px. Now click to outline the area with left-click. \nRight-click = undo last point, Enter = confirm selection."
                 )
                 print(f"Calibrated: 1 cm = {self.calib_dist:.1f} px")
         else:
             self.mask_polygon_points.append((x, y))
             self.canvas.create_oval(
-                x - 2, y - 2, x + 2, y + 2, outline="green", fill="green"
+                x - 4, y - 4, x + 4, y + 4, outline="yellow", fill="green"
             )
 
     def _on_right_click(self, event):
@@ -642,11 +756,18 @@ class AdvancedAnalysis:
         """
         if len(self.calibration_points) < 2:
             self.instruction_label.configure(
-                text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point, ENTER = confirm, ESC = cancel."
+                text="Click 2 points that are exactly 1 cm apart (for calibration).\nRight-click = undo last point, ENTER = confirm."
             )
+            self.calibration_points.pop()
+            self.canvas.delete("all")
+            self.canvas.create_image(0, 0, anchor=tk.NW, image=self.frame_image)
+            for x, y in self.calibration_points:
+                self.canvas.create_oval(
+                    x - 4, y - 4, x + 4, y + 4, outline="red", fill="white"
+                )
         else:
             self.instruction_label.configure(
-                text="Click to outline area.\nRight-click = undo last point, ENTER = confirm, ESC = cancel."
+                text="Click to outline area.\nRight-click = undo last point, ENTER = confirm."
             )
 
         if self.mask_polygon_points:
@@ -656,12 +777,12 @@ class AdvancedAnalysis:
             # Redraw calibration points
             for x, y in self.calibration_points:
                 self.canvas.create_oval(
-                    x - 2, y - 2, x + 2, y + 2, outline="red", fill="red"
+                    x - 4, y - 4, x + 4, y + 4, outline="red", fill="white"
                 )
             # Redraw polygon points
             for x, y in self.mask_polygon_points:
                 self.canvas.create_oval(
-                    x - 2, y - 2, x + 2, y + 2, outline="green", fill="green"
+                    x - 4, y - 4, x + 4, y + 4, outline="yellow", fill="green"
                 )
 
     def _on_confirm_polygon(self, event):
@@ -670,32 +791,25 @@ class AdvancedAnalysis:
         """
         if self.calib_dist is None or len(self.mask_polygon_points) < 3:
             self.instruction_label.configure(
-                text="Need 2 calibration points and 3+ polygon points to save mask.\nSelect more points.\nRight-click = undo last point, ENTER = confirm, ESC = cancel."
+                text="Need 2 calibration points and 3+ polygon points to save mask.\nSelect more points.\nRight-click = undo last point, ENTER = confirm."
             )
             return
 
         h, w = self.current_image.shape[:2]
+        display_w = self.frame_image.width()
+        display_h = self.frame_image.height()
         mask = np.zeros((h, w), dtype=np.uint8)
-        scale_x = self.current_image.shape[1] / self.desired_width
-        scale_y = self.current_image.shape[0] / self.desired_height
+        scale_x = self.current_image.shape[1] / display_w
+        scale_y = self.current_image.shape[0] / display_h
 
         points_scaled = [
             (int(x * scale_x), int(y * scale_y)) for x, y in self.mask_polygon_points
         ]
         cv2.fillPoly(mask, [np.array(points_scaled, dtype=np.int32)], 255)
-
-        muscle_area = cv2.countNonZero(mask) / (self.calib_dist**2)
-
-        if self.calib_dist is None or len(self.mask_polygon_points) < 3:
-            self.instruction_label.configure(
-                text="Need 2 calibration and 3+ area points. Click more or press ESC to cancel.\nRight-click = undo last point, ENTER = confirm, ESC = cancel."
-            )
-            return
-
-        self.instruction_label.configure(text="✔ Mask confirmed.")
-
-        print(f"Area: {muscle_area:.2f} cm²")
-
+        mask = fill_contour_mask(self.current_image.shape[:2], np.array(points_scaled))
+        muscle_area = area_cm2_from_mask(mask_u8=mask, px_per_cm=self.calib_dist)
+        
+        self.instruction_label.configure(text="Mask confirmed.")
         self.canvas.destroy()
         self.callback(mask, muscle_area)
 

@@ -903,7 +903,6 @@ class ACSAutoApp(ctk.CTk):
 
                 area = area_cm2_from_mask(
                     filled,
-                    scan_depth_cm=scan_depth_cm,
                     px_per_cm=self.px_per_cm if self.scaling.get() == "Manual" else None,
                 )
             else:
