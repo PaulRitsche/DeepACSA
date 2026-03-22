@@ -1,110 +1,166 @@
+.. _installation:
+
 Installation
 ============
 
-We offer two possible installation approaches for our DeepACSA software. The first option is to download the DeepACSA executable file. The second option we describe is DeepACSA package installation via Github. We want to inform you that there are more ways to install the package. However, we do not aim to be complete and rather demonstrate an (in our opinion) user friendly way for the installation of DeepACSA. Moreover, we advise users with less programming experience to make use of the first option and download the executable file.
+We offer two possible installation approaches for our DeepACSA software. The first option is to download the DeepACSA Installer. The second option we describe is DeepACSA package installation via Github. We want to inform you that there are more ways to install the package. However, we do not aim to be complete and rather demonstrate an (in our opinion) user friendly way for the installation of DeepACSA. Moreover, we advise users with less programming experience to make use of the first option and download the Installer.
 
-Download the DeepACSA executable
+Download the DeepACSA Installer
 ---------------------------------
 
-1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://doi.org/10.5281/zenodo.8419487>`_.
-2. Download the DeepACSA_example.7z
-3. Find the DeepACSA.exe Executable in the DeepACSA_example/executable folder.
-4. Create a specified DeepACSA directory and put the deep_acsa_gui.exe, the model files and the example file in seperate subfolders (for example "Executable", "Models" and "Example"). Moreover, unpack the DeepACSAv0.3.1_example.7z file.
-5. Open the DeepACSA GUI by double clicking the DeepACSA.exe file and start with the testing procedure to check that everything works properly.
+1. Got to the Zenodo webpage containing the DeepACSA executable, the pre-trained models and the example files using this `link <https://doi.org/10.5281/zenodo.19130694>`_.
+2. Download the ``DeepACSAv0.3.2_Installer`` folder and extract its content on your Desktop. If your system does not support .7z files natively, use a program such as 7-Zip to extract the contents.
+3. Navigate to ``C:/Users/your_user/Desktop/Downloads`` and install DeepACSA v0.3.2 by double clicking the ``DeepACSAv0.3.2_Installer.exe``.
+4. Navigate to ``C:/Users/your_user/Desktop/DeepACSA_example_v0.3.2/``. Start with the :ref:`testing procedure <testlabel>` to check that everything works properly.
 
 .. _installlabel:
 
-Install DeepACSA via Github
+DeepACSA Installation Guide (v0.3.2)
+------------------------------------
+
+.. warning::
+
+   Version **0.3.2 is NOT YET available via pip**.
+   The newest release must be installed from GitHub.
+
+Overview
+--------
+
+DeepACSA can be installed using a Conda environment and a local editable installation.
+This is the recommended approach for both users and developers.
+
+Step 1: Install Anaconda (required)
+-----------------------------------
+
+If you do not have Anaconda or Miniconda installed:
+
+- Download: https://www.anaconda.com/distribution/
+- Choose a Python 3.X version
+- Ensure that *"Add Anaconda to PATH"* is enabled during installation
+
+Step 2: Install Git (recommended)
+---------------------------------
+
+Git is required to clone the repository:
+
+- https://git-scm.com/download
+
+Step 3: Clone the DeepACSA Repository
+-------------------------------------
+
+Open a terminal (or Git Bash) and run:
+
+.. code-block:: bash
+
+   git clone https://github.com/PaulRitsche/DeepACSA.git
+   cd DeepACSA
+
+Step 4: Create the Conda Environment
+------------------------------------
+
+DeepACSA provides an environment file with all dependencies:
+
+.. code-block:: bash
+
+   conda env create -f environment.yml
+
+This will create the environment (typically named ``DeepACSA0.3.2``).
+
+Step 5: Activate the Environment
+--------------------------------
+
+.. code-block:: bash
+
+   conda activate DeepACSA0.3.2
+
+Step 6: Install DeepACSA Locally
+--------------------------------
+
+Install the package in editable mode:
+
+.. code-block:: bash
+
+   python -m pip install -e .
+
+This allows local development and updates.
+
+Step 7: Verify Installation
 ---------------------------
 
-In case you want to use this way to install and run DeepACSA, we advise you to setup conda (see step 1) and download the environment.yml file from the repo (see steps 5-8). If you want to actively contribute to the project or customize the code, it might be usefull to you to do all of the following steps (for more information see :ref:`contributelabel`).
+.. code-block:: bash
 
-1. *Step 1.* Anaconda setup (only before first usage and if Anaconda/minicoda is not already installed).
+   conda list
 
-    Install `Anaconda <https://www.anaconda.com/distribution/>`_ (click 'Download' and be sure to choose 'Python 3.X Version' (where the X represents the latest version being offered. IMPORTANT: Make sure you tick the 'Add Anaconda to my PATH environment variable' box).
+Ensure that ``deepacsa`` appears in the list of installed packages.
 
-2. *Step 2.* **(Only required for MacOS users, contributing or development)** Git setup (only before first usage and if Git is not already installed). This is optional and only required when you want to clone the whole DeepACSA Github repository.
+Step 8: Run DeepACSA
+---------------------
 
-    In case you have never used Git before on you computer, please install it using the instructions provided `here <https://git-scm.com/download>`_.
+Option 1: Run as module (recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3. *Step 3.* **(Only required for MacOS users, contributing or development)** Create a directory for DeepACSA.
+.. code-block:: bash
 
-    On your computer create a specific directory for DeepACSA (for example "DeepACA") and navigate there. You can use Git as a version control system. Once there open a git bash with right click and then "Git Bash Here". In the bash terminal, type the following:
+   python -m DeepACSA
 
-    ``git init``
+This works from any directory as long as the environment is active.
 
-    This will initialize a git repository and allows you to continue. If run into problems, check this `website <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`_.
+Option 2: Run GUI script directly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-4. *Step 4.* **(Only required for MacOS users, contributing or development)** Clone the DeepACSA Github repository into a pre-specified folder (for example "DeepACSA") by typing the following code in your bash window:
+.. code-block:: bash
 
-    ``git clone https://github.com/PaulRitsche/DeepACSA.git``
+   cd DeepACSA
+   python deep_acsa_gui.py
 
-    This will clone the entire repository to your local computer. To make sure that everything worked, see if the files in your local directory match the ones you can find in the Github DeepACSA repository. If you run into problem, check this `website <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`_.
+Alternative: Older Versions (not recommended)
+---------------------------------------------
 
-    Alternatively, you can only download the environment.yml file from the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA.git>`_ and continue to the next step.
+If you explicitly need an older version (e.g. 0.3.1):
 
-5. *Step 5.* Create the virtual environment required for DeepACSA.
+.. code-block:: bash
 
-    DeepACSA is bound to a specific python version (3.9.18). To create an environment for DeepACSA, type the following command in your Git bash terminal:
+   pip install DeepACSA==0.3.1
 
-    ``conda create -n DeepACSA python=3.9``
+.. warning::
 
-6. *Step 6.* Activate the environment for usage of DeepACSA.
-
-    You can now activate the virtual environment by typing:
-    
-    ``conda activate DeepACSA``
-    
-    An active conda environment is visible in () brackets befor your current path in the bash terminal. In this case, this should look something like (DeepACSA) C:/user/.../DeepACSA.Then, download the DeepACSA package by typing:
-
-7. *Step 7.* Install the DeepACSA package **on Windows**.
-
-    ``pip install DeepACSA==0.3.1``
-
-7. *Step 7.* Install the DeepACSA package **on MacOS**.
-
-    Navigate into the folder that you cloned from Github (DeepACSA) with the bash terminal. You can do that by typing "cd" followed by the path to the folder containing the requirements.txt file. This should look something like:
-    
-    ``cd /.../.../DeepACSA/DeepACSA``
-    
-    Then you can install the requirements of DeepACSA with: 
-    
-    ``pip install -r requirements.txt``
-    
-    Install the DeepACSA package locally to make use of its functionalities with:
-    
-    ``python -m pip install -e .``
-
-8. *Step 8.* The First option of running DeepACSA is using the installed DeepACSA package (either by pip or locally installed). You do not need the whole cloned repository for this, only the active DeepACSA environment. You do moreover not need be any specific directory. Type in your bash terminal:
-
-    ``python -m Deep_ACSA``
-    
-    The main GUI should now open. If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem".  For usage of DeepACSA please take a look at :ref:`usagelabel`.
-    
-9. *Step 9.* The second option of running DeepACSA is using the deep_acsa_gui python script. This requires you to clone the whole directory and navigate to the directory where the deep_acsa_gui.py file is located. Moreover, you need the active DeepACSA environment.
-
-    The deep_acsa_gui.py file is located at the `DeepACSA/Deep_ACSA` folder. To execute the module type the following command in your bash terminal.
-    
-    ``python deep_acsa_gui.py``
+   Older versions may not include recent updates and fixes.
+   The older version runs in python 3.9.18. Please consider this when installing the older version.
 
 Whichever option you used, the main GUI should now open. 
 
 .. figure:: main.png
-    :scale: 50 %
+    :scale: 75 %
     :alt: main_gui_figure
 
     Main GUI Window
 
 
-If you run into problems, open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at :ref:`usagelabel`.
+*If you run into problems, open a discussion in the Q&A section of* `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ *and assign the label "Problem". You can find an example discussion there. For usage of DeepACSA please take a look at* :ref:`usagelabel`.
+
+.. _gui_setup_ref:
 
 GPU setup
 ---------
 
-**Attention: The next section is only relevant for windows users!**
+The processing speed of a single image or video frame analyzed with DeepACSA is highly dependent on computing power. While possible, model inference and model training using a CPU only will decrese processing speed and prolong the model training process. Therefore, we advise to use a GPU whenever possible. 
 
-The processing speed of a single image or video frame analyzed with DeepACSA is highly dependent on computing power. While possible, model inference and model training using a CPU only will decrese processing speed and prolong the model training process. Therefore, we advise to use a GPU whenever possible. Prior to using a GPU it needs to be set up. Firstly the GPU drivers must be locally installed on your computer. You can find out which drivers are right for your GPU `here <https://www.nvidia.com/Download/index.aspx?lang=en-us>`_. Subsequent to installing the drivers, you need to install the interdependant CUDA and cuDNN software packages. To use DeepACSA with tensorflow version 2.10 you need to install CUDA version 11.2 from `here <https://developer.nvidia.com/cuda-11.2.0-download-archive>`_ and cuDNN version 8.5 for CUDA version 11.x from `here <https://developer.nvidia.com/rdp/cudnn-archive>`_ (you may need to create an nvidia account). As a next step, you need to be your own installation wizard. We refer to this `video <https://www.youtube.com/watch?v=OEFKlRSd8Ic>`_ (up to date, minute 9 to minute 13) or this `video <https://www.youtube.com/watch?v=IubEtS2JAiY&list=PLZbbT5o_s2xrwRnXk_yCPtnqqo4_u2YGL&index=2>`_ (older, entire video but replace CUDA and cuDNN versions). There are procedures at the end of each video testing whether a GPU is detected by tensorflow or not. If you run into problems with the GPU/CUDA setup, please open a discussion in the Q&A section of `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ and assign the label "Problem".
+**The following instructions are relevant only for Windows users!**
 
-**Attention : The next section is only relevant for MacOS users!**
+Before using a GPU it needs to be properly configured. First, install the appropriate GPU drivers on your system. The correct drivers for your GPU can be found on the `official NVIDIA website <https://www.nvidia.com/Download/index.aspx?lang=en-us>`_.
 
-In case you want to make use of you M1 / M2 chips for model training and / or inference, we refer you to this `tutorial <https://caffeinedev.medium.com/how-to-install-tensorflow-on-m1-mac-8e9b91d93706>`_. There you will find a detailed description of how to enable GPU support for tensorflow. It is not strictly necessary to do that for model training or inference, but will speed up the process.
+After installing the drivers, you must install the required CUDA and cuDNN software packages. To use DeepACSA with TensorFlow version 2.10, install:
+
+* CUDA version 11.2 from the `CUDA 11.2 download archive <https://developer.nvidia.com/cuda-11.2.0-download-archive>`_.
+* cuDNN version 8.5 for CUDA version 11.x from the `cuDNN archive <https://developer.nvidia.com/rdp/cudnn-archive>`_. 
+
+You may need to create an NVIDIA account to access these downloads.
+
+As a next step, you need to be your own installation wizard. We refer to this `video <https://www.youtube.com/watch?v=OEFKlRSd8Ic>`_ (up to date, watch from minute 9 to minute 13) or this `older video <https://www.youtube.com/watch?v=IubEtS2JAiY&list=PLZbbT5o_s2xrwRnXk_yCPtnqqo4_u2YGL&index=2>`_ (watch the entire video, but substitute CUDA and cuDNN versions accordingly). There are procedures at the end of each video testing whether a GPU is detected by tensorflow or not. 
+
+**The following instructions are relevant only for MacOS users!**
+
+If you are using an Apple Silicon device (M1 or M2) and would like to enable GPU acceleration for model training and/or inference, please refer to this `tutorial <https://caffeinedev.medium.com/how-to-install-tensorflow-on-m1-mac-8e9b91d93706>`_. It provides a detailed guide on enabling GPU support for TensorFlow on Apple Silicon devices.
+
+
+*If you run into problems with the GPU/CUDA setup, please open a discussion in the Q&A section of* `DeepACSA discussions <https://github.com/PaulRitsche/DeepACSA/discussions/categories/q-a>`_ *and assign the label "Problem".*

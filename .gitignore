@@ -1,6 +1,10 @@
 docs/build
 dist/
-Deep_ACSA/__pycache__
-Deep_ACSA/gui_helpers/__pycache__
-build/
+DeepACSA/__pycache__
+DeepACSA/gui_helpers/__pycache__
+build/doctrees
 .vscode/
+.sync*
+DeepACSA/dist/
+DeepACSA/build/
+DeepACSA/installer/
