@@ -11,12 +11,12 @@ These files can be used to verify that your setup is functioning correctly. To d
 
 1. Double click the installed ``DeepACSA_v0.3.2`` icon to open the GUI.
 2. Click the **Input** button and select the root directory: ``C:/Users/your_user/Desktop/DeepACSA_example_v0.3.2/images_test/``.
-3. Click the **Model** button and select the model you downloaded from the Zenodo repository: ``VGG16Unet_RectFem_v0.3.1.h5``
+3. Click the **Model** button and select the model you downloaded from the Zenodo repository: ``unet3plus_RectFem_v0.3.1.h5``
 4. Select the Scaling type **Line**, structure **Rectus Femoris**, and an image depth (**Depth (cm)**) of **4.5**.
 5. Set the **Volume Calculation** to **Yes** and keep the **Slice Distance (cm)** at **7**.
 6. Click **Run**
 7. After the analysis (which takes only a few seconds), two new files should appear in the ``C:/Users/your_user/Desktop/DeepACSA_example_v0.3.2/images_test/`` folder: ``Analyzed_images.pdf`` and ``Results.xlsx``.
-8. Compare your results with those in ``Original_Results.xlsx``. If the results are identical, DeepACSA is working correctly. In theory, each pre-trained model should produce similar results.
+8. Compare your results with those in ``Original_Results_v0.3.2.xlsx``. If the results are identical, DeepACSA is working correctly. In theory, each pre-trained model should produce similar results.
 
 .. figure:: GUI_test_images.png
     :scale: 75 %
