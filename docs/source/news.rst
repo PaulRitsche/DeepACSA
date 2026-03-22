@@ -4,6 +4,7 @@ News
 v0.3.2:
 -------
 We introduced a model for the automatic segmentation of the anatomical cross-sectional area of the patellar tendon and updated the documentation and usage examples accordingly.
+All models, the installer and examples can be downloaded from the `DeepACSA repository <https://zenodo.org/uploads/19130694>`_.
 
 Patellar tendon models
 ----------------------
@@ -21,10 +22,12 @@ Patellar tendon models
 
        Figure 1: Comparison of manual segmentation versus VGG16 UNet and UNet 3+ predictions (with and without removal of erroneous predictions).
 
-Hamstring models
-----------------
-1. Data:
-    We provide, together with `ORBlab Michigan <https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory>`_, models for the automatic segmentation of the biceps femoris long head at several muscle length in male, female young and adult people. More information can be found in the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA/tree/main>`_. The models and further informations on them can be downloaded from the `respective OSF <https://osf.io/a3u4v/>`_.
+Vastus medialis model
+---------------------
+1. Data: 
+    We provide a model for the automatic segmentation of the vastus medialis cross-sectional area (ACSA) in healthy participants as well participants with ACL injuries. 
+    
+    A *UNet-VGG16* model was evaluated and compared to manual analysis. Comparability calculations and detailled methodology can be found at `Tayfur et al. 2025 <https://www.sciencedirect.com/science/article/abs/pii/S0301562924004319>`_
 
 v0.3.1: 
 -------
@@ -39,6 +42,8 @@ v0.3.1:
 2. Data:
     We included a new model architecture as pre-trained models in the DeepACSA dataset for the RF and VL muscles. The new dataset can be accessed `here <https://doi.org/10.5281/zenodo.8419487>`_
     These model architectures were: 
+
+    - We provide, together with `ORBlab Michigan <https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory>`_, models for the automatic segmentation of the biceps femoris long head at several muscle length in male, female young and adult people. More information can be found in the `DeepACSA repo <https://github.com/PaulRitsche/DeepACSA/tree/main>`_. The models and further informations on them can be downloaded from the `respective OSF <https://osf.io/a3u4v/>`_.
 
     - **UNet3+** (`Huang et al., 2020 <https://doi.org/10.48550/arXiv.2004.08790>`_) for RF and VL: It uses full-scale skip connections, causing increased skip connections. These additional skip connections in between layers help to preserve data that is needed for further training. Full-scale skip connections incorporate low-level details with high-level semantics from feature maps in different scales, which is beneficial for medical image segmentation.
     

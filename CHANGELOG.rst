@@ -1,4 +1,37 @@
 
+2026-03-22
+==========
+
+Removed
+-------
+
+- GUI advanced modules from main GUI file.
+- Loss function declaration in the main GUI file.
+
+Added
+-----
+
+- GUI advanced modules subdir.
+- Support for more models (swinunet, 3Dunet)
+- No Scaling analysis option,
+
+Changed
+-------
+
+- ALoading of models now based on names
+- GUI graphics and layout.
+- Create masks not has full customtkiner support.
+
+- Updated the documentation and inserted a documentation tree for modules.
+- Provisional version of documentation for functions following the numpy style guide in gui_helpers modules..
+
+- Updated News section for patellar tendon ACSA model including reliability comparison.
+
+Fixed
+-----
+
+- Truncated cone formula for volume calculation.
+
 2023-10-04
 ==========
 

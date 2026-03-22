@@ -10,7 +10,7 @@ except ImportError:
 INSTALL_REQUIRES = [
     "customtkinter==5.2.2",
     "CTKToolTip=0.8",
-    "Keras==2.10.0",
+    "Keras==2.13.1",
     "matplotlib==3.6.1",
     "numpy==1.23.4",
     "opencv-contrib-python==4.6.0.66",
@@ -22,7 +22,7 @@ INSTALL_REQUIRES = [
     "scikit-learn==1.1.2",
     "sewar==0.4.5",
     "shapely==2.0.5",
-    "tensorflow==2.10.0",
+    "tensorflow==2.13.0",
     "tqdm==4.64.1",
 ]
 
