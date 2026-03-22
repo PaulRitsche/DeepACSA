@@ -48,6 +48,7 @@ then run the module or the UI by
 or 
 
 ``cd DeepACSA``
+
 ``python deep_acsa_gui.py``
 
 # Whats new?
@@ -56,10 +57,10 @@ or
 
 With version 0.3.2, we included new models for the 
 
-- patella tendon (taken from [Guzzi et al. 2026](https://link.springer.com/article/10.1007/s10278-026-01846-x)
+- patella tendon (taken from [Guzzi et al. 2026](https://link.springer.com/article/10.1007/s10278-026-01846-x))
 - vastus medialis (taken from [Tayfur et al. 2025](https://www.sciencedirect.com/science/article/abs/pii/S0301562924004319))
 
-Below you can find some overview tables. All models and the newest installer can 
+Below you can find some overview tables. All models and the newest installer can be found here [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19130694.svg)](https://doi.org/10.5281/zenodo.19130694).
 
 ## Patella Tendon Models (Unet3+ best performing)
 We provide a model for the automatic segmentation of the patellar tendon anatomical cross-sectional area (ACSA) at 25%, 50%, and 75% of tendon length in healthy subjects (**UNet 3+**). 
