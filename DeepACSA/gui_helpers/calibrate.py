@@ -13,8 +13,11 @@ distance between those points is known.
 import math
 import tkinter as tk
 
-import cv2
+from tkinter import messagebox
+from PIL import Image, ImageTk
 import numpy as np
+import cv2
+
 
 mlocs = []
 
@@ -395,144 +398,394 @@ def calibrate_distance_static(nonflipped_img: np.ndarray, spacing: int):
     return calib_dist, imgscale, scale_statement
 
 
+# def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
+#     """
+#     Function to manually calibrate an image to convert measurements
+#     in pixel units to centimeters.
+
+#     The function calculates the distance in pixel units between two
+#     points on the input image. The points are determined by clicks of
+#     the user; only two points may be selected and clicks outside the
+#     visible image are ignored to ensure both calibration points remain
+#     on the picture. A right mouse click can be used to undo the last
+#     point in case of a mistake. The distance (in milimeters) is
+#     determined by the value contained in the spacing variable. Then the
+#     ratio of pixel / centimeter is calculated. To get the distance, the
+#     euclidean distance between the two points is calculated.
+
+#     Parameters
+#     ----------
+#     nonflipped_img : np.ndarray
+#         Input image to be analysed as a numpy array. The image must
+#         be loaded prior to calibration, specifying a path
+#         is not valid.
+#     spacing : int
+#         Integer variable containing the known distance in milimeter
+#         between the two placed points by the user. This can be 5, 10,
+#         15 or 20 milimeter.
+
+#     Returns
+#     -------
+#         calib_dist : int
+#             Integer variable containing the distance between the two
+#             specified point in pixel units.
+
+#     Notes
+#     -----
+#     - The function displays the image and waits for the user to click on two points to specify the distance.
+#     - The spacing parameter should be provided as a string, representing the numeric value of the known distance.
+#     - After calibration, the function will return the calibration distance in pixel units.
+
+#     Examples
+#     --------
+#     >>> calibrateDistanceManually(img=([[[[0.22414216 0.19730392 0.22414216] ... [0.2509804  0.2509804  0.2509804 ]]]), 5)
+#     99, 5 mm corresponds to 99 pixels
+#     """
+#     global mlocs
+#     mlocs = []
+
+#     # keep an unmodified copy of the original for zooming calculations
+#     orig_img = np.uint8(nonflipped_img)
+#     zoom_factor = 1.0
+
+#     def refresh():
+#         """Redraw the image window according to the current zoom and points."""
+#         nonlocal zoom_factor
+#         h, w = orig_img.shape[:2]
+#         disp_w = max(1, int(w * zoom_factor))
+#         disp_h = max(1, int(h * zoom_factor))
+#         display_img = cv2.resize(
+#             orig_img, (disp_w, disp_h), interpolation=cv2.INTER_LINEAR
+#         )
+#         for px, py in mlocs:
+#             cv2.circle(
+#                 display_img,
+#                 (int(px * zoom_factor), int(py * zoom_factor)),
+#                 3,
+#                 (255, 255, 255),
+#                 2,
+#             )
+#         cv2.imshow("image", display_img)
+
+#     def mclick(event, x_val, y_val, flags, param):
+#         nonlocal zoom_factor
+#         global mlocs
+
+#         # mouse wheel event: adjust zoom
+#         if event == cv2.EVENT_MOUSEWHEEL or event == cv2.EVENT_MOUSEHWHEEL:
+#             if flags > 0:
+#                 zoom_factor *= 1.1
+#             else:
+#                 zoom_factor /= 1.1
+#             zoom_factor = max(0.2, min(5.0, zoom_factor))
+#             refresh()
+#             return
+
+#         # left click: add a point (only if fewer than 2 points)
+#         if event == cv2.EVENT_LBUTTONDOWN:
+#             h, w = orig_img.shape[:2]
+#             # map to original coordinates
+#             ox = int(x_val / zoom_factor)
+#             oy = int(y_val / zoom_factor)
+#             if not (0 <= ox < w and 0 <= oy < h):
+#                 return
+#             if len(mlocs) < 2:
+#                 mlocs.append((ox, oy))
+#             else:
+#                 return
+
+#         # right click: remove the last point if present
+#         elif event == cv2.EVENT_RBUTTONDOWN and mlocs:
+#             mlocs.pop()
+
+#         refresh()
+
+#     # give information for scaling
+#     tk.messagebox.showinfo(
+#         "Information",
+#         "Scale the image before creating a mask."
+#         + "\nClick on two scaling bars that are EXACTLY 1 CM APART."
+#         + "\nUse the mouse wheel to zoom in/out if necessary."
+#         + "\nRight‑click on the last point to remove the last point if you make a mistake."
+#         + "\nClick 'q' to continue.",
+#     )
+#     # Edit image
+#     img2 = np.uint8(nonflipped_img)
+
+#     # display the image and wait for a keypress
+#     # cv2.imshow("image", img2)
+#     import matplotlib.pyplot as plt
+
+#     plt.imshow(cv2.cvtColor(img2, cv2.COLOR_BGR2RGB))
+#     plt.title("image")
+#     plt.axis("off")
+#     plt.show()
+#     cv2.setMouseCallback("image", mclick)
+#     key = cv2.waitKey(0)
+
+#     # if the 'q' key is pressed, break from the loop
+#     if key == ord("q"):
+#         cv2.destroyAllWindows()
+
+#     calib_dist = 0
+#     if len(mlocs) == 2:
+#         calib_dist = np.abs(
+#             math.sqrt(
+#                 (mlocs[1][0] - mlocs[0][0]) ** 2 + (mlocs[1][1] - mlocs[0][1]) ** 2
+#             )
+#         )
+
+#     mlocs = []
+
+#     if calib_dist == 0:
+#         tk.messagebox.showerror(
+#             "Error",
+#             "Calibration failed. Please click on two points to specify the distance.",
+#         )
+#         return None
+
+#     tk.messagebox.showinfo("Information", f"1 cm corresponds to {calib_dist} pixels")
+
+#     return calib_dist
+
+
 def calibrate_distance_manually(nonflipped_img: np.ndarray, spacing: str):
     """
-    Function to manually calibrate an image to convert measurements
-    in pixel units to centimeters.
+    Manually calibrate pixel-to-centimeter scaling using an interactive GUI.
 
-    The function calculates the distance in pixel units between two
-    points on the input image. The points are determined by clicks of
-    the user; only two points may be selected and clicks outside the
-    visible image are ignored to ensure both calibration points remain
-    on the picture. A right mouse click can be used to undo the last
-    point in case of a mistake. The distance (in milimeters) is
-    determined by the value contained in the spacing variable. Then the
-    ratio of pixel / centimeter is calculated. To get the distance, the
-    euclidean distance between the two points is calculated.
+    This function opens a Tkinter-based calibration window that allows the user
+    to select two points on an image corresponding to a known physical distance
+    (typically 1 cm). The Euclidean distance between the selected points is
+    computed in pixel units and returned as the calibration factor.
+
+    The interface supports zooming, point selection, and undo functionality,
+    enabling precise placement of calibration points directly within the GUI.
 
     Parameters
     ----------
     nonflipped_img : np.ndarray
-        Input image to be analysed as a numpy array. The image must
-        be loaded prior to calibration, specifying a path
-        is not valid.
-    spacing : int
-        Integer variable containing the known distance in milimeter
-        between the two placed points by the user. This can be 5, 10,
-        15 or 20 milimeter.
+        Input image as a NumPy array. The image must be preloaded and is expected
+        to be in either grayscale or BGR format. The image is internally converted
+        to RGB for display purposes.
+
+    spacing : str
+        String representing the known physical distance between the two selected
+        points in millimeters. Typically values such as "5", "10", "15", or "20".
+        Note that the current implementation assumes a 1 cm (10 mm) reference for
+        interpretation of the returned pixel distance.
 
     Returns
     -------
-        calib_dist : int
-            Integer variable containing the distance between the two
-            specified point in pixel units.
+    float or None
+        The Euclidean distance between the two selected points in pixel units,
+        corresponding to 1 cm. Returns None if calibration is aborted or invalid.
 
     Notes
     -----
-    - The function displays the image and waits for the user to click on two points to specify the distance.
-    - The spacing parameter should be provided as a string, representing the numeric value of the known distance.
-    - After calibration, the function will return the calibration distance in pixel units.
+    **User interaction:**
+    - Left-click: Place up to two calibration points.
+    - Right-click: Remove the last placed point.
+    - Mouse wheel: Zoom in/out centered around the cursor.
+    - Enter: Confirm selection and compute calibration.
+    - Escape: Cancel calibration.
+
+    **Behavior:**
+    - The function operates within a Tkinter `Toplevel` window and blocks execution
+      until the window is closed.
+    - The returned value represents pixels per centimeter and can be used to convert
+      pixel-based measurements to real-world units.
+
+    **Important:**
+    - This implementation replaces OpenCV GUI (`cv2.imshow`) functionality to ensure
+      compatibility with macOS and integration with Tkinter/CustomTkinter-based GUIs.
+    - The `spacing` parameter is currently not used in scaling and serves as metadata.
+      If variable scaling is required (e.g., non-1 cm references), the returned value
+      should be adjusted accordingly.
 
     Examples
     --------
-    >>> calibrateDistanceManually(img=([[[[0.22414216 0.19730392 0.22414216] ... [0.2509804  0.2509804  0.2509804 ]]]), 5)
-    99, 5 mm corresponds to 99 pixels
+    >>> import cv2
+    >>> img = cv2.imread("ultrasound.png")
+    >>> px_per_cm = calibrate_distance_manually(img, spacing="10")
+    >>> print(px_per_cm)
+    98.7
+
+    >>> # Convert pixel measurement to centimeters
+    >>> pixel_length = 250
+    >>> length_cm = pixel_length / px_per_cm
+    >>> print(length_cm)
+    2.53
+
+    See Also
+    --------
+    area_cm2_from_mask : Convert segmented pixel areas to cm² using calibration.
+    fill_contour_mask : Utility for generating binary masks from contours.
     """
-    global mlocs
-    mlocs = []
-
-    # keep an unmodified copy of the original for zooming calculations
-    orig_img = np.uint8(nonflipped_img)
-    zoom_factor = 1.0
-
-    def refresh():
-        """Redraw the image window according to the current zoom and points."""
-        nonlocal zoom_factor
-        h, w = orig_img.shape[:2]
-        disp_w = max(1, int(w * zoom_factor))
-        disp_h = max(1, int(h * zoom_factor))
-        display_img = cv2.resize(orig_img, (disp_w, disp_h), interpolation=cv2.INTER_LINEAR)
-        for (px, py) in mlocs:
-            cv2.circle(
-                display_img,
-                (int(px * zoom_factor), int(py * zoom_factor)),
-                3,
-                (255, 255, 255),
-                2,
-            )
-        cv2.imshow("image", display_img)
-
-    def mclick(event, x_val, y_val, flags, param):
-        nonlocal zoom_factor
-        global mlocs
-
-        # mouse wheel event: adjust zoom
-        if event == cv2.EVENT_MOUSEWHEEL or event == cv2.EVENT_MOUSEHWHEEL:
-            if flags > 0:
-                zoom_factor *= 1.1
-            else:
-                zoom_factor /= 1.1
-            zoom_factor = max(0.2, min(5.0, zoom_factor))
-            refresh()
-            return
-
-        # left click: add a point (only if fewer than 2 points)
-        if event == cv2.EVENT_LBUTTONDOWN:
-            h, w = orig_img.shape[:2]
-            # map to original coordinates
-            ox = int(x_val / zoom_factor)
-            oy = int(y_val / zoom_factor)
-            if not (0 <= ox < w and 0 <= oy < h):
-                return
-            if len(mlocs) < 2:
-                mlocs.append((ox, oy))
-            else:
-                return
-
-        # right click: remove the last point if present
-        elif event == cv2.EVENT_RBUTTONDOWN and mlocs:
-            mlocs.pop()
-
-        refresh()
-
-    # give information for scaling
-    tk.messagebox.showinfo(
-        "Information",
-        "Scale the image before creating a mask."
-        + "\nClick on two scaling bars that are EXACTLY 1 CM APART."
-        + "\nUse the mouse wheel to zoom in/out if necessary."
-        + "\nRight‑click on the last point to remove the last point if you make a mistake."
-        + "\nClick 'q' to continue.",
-    )
-    # Edit image
-    img2 = np.uint8(nonflipped_img)
-
-    # display the image and wait for a keypress
-    cv2.imshow("image", img2)
-    cv2.setMouseCallback("image", mclick)
-    key = cv2.waitKey(0)
-
-    # if the 'q' key is pressed, break from the loop
-    if key == ord("q"):
-        cv2.destroyAllWindows()
-
-    calib_dist = 0
-    if len(mlocs) == 2:
-        calib_dist = np.abs(
-            math.sqrt(
-                (mlocs[1][0] - mlocs[0][0]) ** 2 + (mlocs[1][1] - mlocs[0][1]) ** 2
-            )
-        )
-
-    mlocs = []
-
-    if calib_dist == 0:
-        tk.messagebox.showerror(
-            "Error",
-            "Calibration failed. Please click on two points to specify the distance.",
-        )
+    if nonflipped_img is None:
         return None
 
-    tk.messagebox.showinfo("Information", f"1 cm corresponds to {calib_dist} pixels")
+    # Ensure uint8 RGB for display
+    img = np.uint8(nonflipped_img)
+    if img.ndim == 2:
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    else:
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+    orig_img = img_rgb
+    orig_h, orig_w = orig_img.shape[:2]
+
+    messagebox.showinfo(
+        "Information",
+        "Scale the image before creating a mask."
+        "\nClick on two scaling bars that are EXACTLY 1 CM APART."
+        "\nUse the mouse wheel to zoom in/out if necessary."
+        "\nRight-click to remove the last point."
+        "\nPress Enter to confirm, or Esc to cancel.",
+    )
+
+    root = tk._default_root
+    if root is None:
+        root = tk.Tk()
+        root.withdraw()
+
+    top = tk.Toplevel(root)
+    top.title("Calibration")
+    top.geometry("1000x800")
+    top.grab_set()
+
+    canvas = tk.Canvas(top, bg="black", highlightthickness=0)
+    canvas.pack(fill="both", expand=True)
+
+    points = []
+    zoom_factor = 1.0
+    photo_ref = {"img": None}
+    result = {"calib_dist": None}
+    canvas_img_id = {"id": None}
+
+    def redraw():
+        canvas.delete("point")
+
+        disp_w = max(1, int(orig_w * zoom_factor))
+        disp_h = max(1, int(orig_h * zoom_factor))
+
+        pil_img = Image.fromarray(orig_img).resize(
+            (disp_w, disp_h), Image.Resampling.BILINEAR
+        )
+        photo = ImageTk.PhotoImage(pil_img)
+        photo_ref["img"] = photo
+
+        if canvas_img_id["id"] is None:
+            canvas_img_id["id"] = canvas.create_image(0, 0, anchor="nw", image=photo)
+        else:
+            canvas.itemconfig(canvas_img_id["id"], image=photo)
+
+        canvas.config(scrollregion=(0, 0, disp_w, disp_h))
+
+        for px, py in points:
+            x = px * zoom_factor
+            y = py * zoom_factor
+            r = 4
+            canvas.create_oval(
+                x - r, y - r, x + r, y + r, outline="white", width=2, tags="point"
+            )
+
+    def canvas_to_image_coords(x, y):
+        cx = canvas.canvasx(x)
+        cy = canvas.canvasy(y)
+        ox = int(cx / zoom_factor)
+        oy = int(cy / zoom_factor)
+        return ox, oy
+
+    def on_left_click(event):
+        if len(points) >= 2:
+            return
+        ox, oy = canvas_to_image_coords(event.x, event.y)
+        if 0 <= ox < orig_w and 0 <= oy < orig_h:
+            points.append((ox, oy))
+            redraw()
+
+    def on_right_click(event):
+        if points:
+            points.pop()
+            redraw()
+
+    def on_mousewheel(event):
+        nonlocal zoom_factor
+
+        old_zoom = zoom_factor
+
+        # Windows / macOS
+        if event.delta > 0:
+            zoom_factor *= 1.1
+        else:
+            zoom_factor /= 1.1
+
+        zoom_factor = max(0.2, min(8.0, zoom_factor))
+
+        # zoom around cursor
+        mouse_x = canvas.canvasx(event.x)
+        mouse_y = canvas.canvasy(event.y)
+
+        redraw()
+
+        if old_zoom != 0:
+            scale = zoom_factor / old_zoom
+            new_x = mouse_x * scale
+            new_y = mouse_y * scale
+
+            canvas_w = canvas.winfo_width()
+            canvas_h = canvas.winfo_height()
+
+            xview = max(0, new_x - event.x)
+            yview = max(0, new_y - event.y)
+
+            total_w = max(1, int(orig_w * zoom_factor))
+            total_h = max(1, int(orig_h * zoom_factor))
+
+            canvas.xview_moveto(xview / total_w)
+            canvas.yview_moveto(yview / total_h)
+
+    def on_confirm(event=None):
+        if len(points) != 2:
+            messagebox.showerror(
+                "Error",
+                "Calibration failed. Please click on two points to specify the distance.",
+            )
+            return
+
+        dist = math.sqrt(
+            (points[1][0] - points[0][0]) ** 2 + (points[1][1] - points[0][1]) ** 2
+        )
+
+        result["calib_dist"] = dist
+        top.destroy()
+
+    def on_cancel(event=None):
+        result["calib_dist"] = None
+        top.destroy()
+
+    # Optional scrollbars
+    xbar = tk.Scrollbar(top, orient="horizontal", command=canvas.xview)
+    ybar = tk.Scrollbar(top, orient="vertical", command=canvas.yview)
+    canvas.configure(xscrollcommand=xbar.set, yscrollcommand=ybar.set)
+
+    xbar.pack(side="bottom", fill="x")
+    ybar.pack(side="right", fill="y")
+    canvas.pack(side="left", fill="both", expand=True)
+
+    canvas.bind("<Button-1>", on_left_click)
+    canvas.bind("<Button-3>", on_right_click)
+    canvas.bind("<MouseWheel>", on_mousewheel)  # macOS / Windows
+    top.bind("<Return>", on_confirm)
+    top.bind("<Escape>", on_cancel)
+
+    redraw()
+    top.wait_window()
+
+    calib_dist = result["calib_dist"]
+
+    if calib_dist is None or calib_dist == 0:
+        return None
+
+    messagebox.showinfo("Information", f"1 cm corresponds to {calib_dist:.1f} pixels")
     return calib_dist

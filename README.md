@@ -29,7 +29,17 @@ when the DeepACSA environment is activated
 Irrespective of the way the software was started, the GUI should open and is ready to be used.
 
 ## Whats new?
-With version 0.3.1, we included new models for the m. vastus lateralis (VL) and m. rectus femoris (RF) and added manual image labelling and mask inspection to the GUI. Take a look at our [documentation](https://deepacsa.readthedocs.io/en/latest/index.html) to see more details and the result of the model comparisons. Moreover, we have included models for the automatic segmentation of biceps femoris long head panorama and single muscle images which are described below.
+With version 0.3.2, we included new models for the 
+- m. vastus lateralis
+- m. rectus femoris
+- patella tendon (taken from [Guzzi et al. 2026](https://link.springer.com/article/10.1007/s10278-026-01846-x)
+- vastus medialis (taken from [Tayfur et al. 2025](https://www.sciencedirect.com/science/article/abs/pii/S0301562924004319))
+
+For detailled performance overview of the models for patella tendon and vastus medialis, we refer you the respective publications. Below you can find some overview tables. 
+
+## VL & RF models (Unet3+ best performing)
+
+
 
 ### Hamstring models
 In collaboration with the [ORB Michigan](https://www.kines.umich.edu/research/labs-centers/orthopedic-rehabilitation-biomechanics-laboratory), we developed models for the automatic segmentation of the biceps femoris. The dataset consisted of approximately 900 images from around 150 participants. Participants included were youth and adult soccer players, adult endurance runners, adult track and field athletes as well as adults with a recent ACL tear (in total 30% women). Images were captured across different muscle regions including 33%, 50% and 66% of muscle length. We compared the performance of different models to manual analysis of the images. We used similar training procedures as decribed in our DeepACSA [paper](https://journals.lww.com/acsm-msse/Abstract/9900/DeepACSA__Automatic_Segmentation_of.87.aspx), however, we evaluated the models unsing 5-fold cross-validation to check for overfitting. We provide the model with the highest IoU scores for ACSA segmentation. We compared the different model architectures [VGG16-Unet](https://journals.lww.com/acsm-msse/Abstract/9900/DeepACSA__Automatic_Segmentation_of.87.aspx), [Unet2+](https://arxiv.org/abs/1912.05074) and [Unet3+](https://arxiv.org/abs/2004.08790). Below we have outlined the analysis results and the trained models can be found [here](https://osf.io/a3u4v/). 
@@ -48,9 +58,3 @@ In collaboration with the [ORB Michigan](https://www.kines.umich.edu/research/la
 ![Figure2_VGG16Unet](https://user-images.githubusercontent.com/71383228/182554020-2c8bad75-7f08-4194-8f5f-0a521a70781c.jpg)
 
 DeepACSA workflow. a) Original ultrasound image of the m. rectus femoris (RF) at 50% of femur length that serves as input for the model. b) Detailed U-net CNN architecture with a VGG16 encoder (left path). c) Model prediction of muscle area following post-processing (shown as a binary image). 
-
-## Results of comparing DeepACSA analysis to manual analysis
-
-![Figure3_BAP](https://user-images.githubusercontent.com/71383228/182554096-c5fde7cd-a137-4cc4-ad73-a819368d13ec.jpg)
-
-Bland-Altman plots of all muscles plotting the difference between manual and DeepACSA with incorrect predictions removed (rm), manual and DeepACSA as well as manual and ACSAuto area segmentation measurements against the mean of both measures. Dotted and solid lines illustrate 95% limits of agreement and bias. M. rectus femoris (RF) and m. vastus lateralis (VL), mm. gastrocnemius medialis (GM), and lateralis (GL).

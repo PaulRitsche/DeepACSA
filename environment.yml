@@ -1,4 +1,4 @@
-name: DeepACSA
+name: DeepACSA_test3
 channels:
   - defaults
   - conda-forge
@@ -9,8 +9,8 @@ dependencies:
     - customtkinter==5.2.2
     - CTkToolTip==0.8
     - jupyter==1.0.0
-    - Keras==2.10.0
-    - keras-unet-collection-0.1.13
+    - Keras==2.13.1
+    - keras-unet-collection==0.1.13
     - matplotlib==3.6.1
     - numpy==1.23.4
     - opencv-contrib-python==4.6.0.66
@@ -24,5 +24,5 @@ dependencies:
     - scikit-learn==1.1.2
     - sewar==0.4.5
     - shapely==2.0.5
-    - tensorflow==2.10.0
+    - tensorflow==2.13.0
     - tqdm==4.64.1
